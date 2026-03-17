@@ -50,6 +50,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: 'michael.jenni@blessing.ch',
         pass: '16MnCrS5?'
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 });
 
@@ -181,8 +184,7 @@ app.post('/api/send-report', async (req, res) => {
         console.error('API send-report technical error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error técnico al enviar el correo',
-            error: error.message
+            message: `Error técnico al enviar el correo: ${error.message || 'Sin detalles'}`
         });
     }
 });
