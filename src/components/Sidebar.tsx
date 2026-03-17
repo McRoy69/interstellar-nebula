@@ -45,15 +45,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) =>
                         />
                     </div>
                     <div>
-                        <h2 className="text-base font-black tracking-tight leading-none tech-font whitespace-nowrap"
-                            style={{ color: 'var(--color-text-main)' }}
+                        <h2 className="text-base font-black tracking-tight leading-none tech-font whitespace-nowrap text-white"
                         >Härterei Blessing AG</h2>
                         <div className="flex items-center gap-2 mt-3">
                             <span className="w-2 h-2 rounded-full shadow-[0_0_8px_var(--color-accent-glow)] animate-pulse"
                                 style={{ backgroundColor: 'var(--color-accent)' }}
                             />
-                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase"
-                                style={{ color: 'var(--color-text-dim)' }}
+                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60"
                             >{t('sidebar.maintenancePlan')}</span>
                         </div>
                     </div>
@@ -67,10 +65,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) =>
                     className={`nav-item ${activeId === 'dashboard' ? 'active' : ''}`}
                 >
                     <LayoutDashboard size={24} />
-                    <span className="text-base font-bold uppercase tracking-wider">{t('sidebar.centralStats')}</span>
+                    <span className="text-base font-bold uppercase tracking-wider text-white/80">{t('sidebar.centralStats')}</span>
                 </div>
 
-                <div className="pt-10 pb-4 px-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                <div className="pt-10 pb-4 px-5 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
                     {t('sidebar.productionUnits')}
                 </div>
 
@@ -81,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) =>
                         className={`nav-item ${activeId === dept.id ? 'active' : ''}`}
                     >
                         <Factory size={24} />
-                        <span className="text-base font-medium tracking-tight flex-1">{dept.name}</span>
+                        <span className="text-base font-medium tracking-tight flex-1 text-white/80">{dept.name}</span>
                         {activeId === dept.id && <ChevronRight size={18} style={{ color: 'var(--color-accent)' }} />}
                     </div>
                 ))}
@@ -132,9 +130,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) =>
                     <Settings size={22} style={{ color: activeId === 'settings' ? 'var(--color-accent)' : 'inherit' }} />
                     <span className="text-sm font-bold uppercase tracking-widest">{t('sidebar.settings')}</span>
                 </div>
-                <div className="nav-item text-slate-500/80 cursor-default hover:bg-transparent">
-                    <Info size={22} className="text-slate-600" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500/80 transition-colors">Created by Michael Jenni 2026</span>
+                <div className="nav-item text-white/30 cursor-default hover:bg-transparent">
+                    <Info size={22} className="text-white/40" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 transition-colors">Created by Michael Jenni 2026</span>
                 </div>
             </div>
         </aside>

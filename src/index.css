@@ -152,7 +152,7 @@ body {
   /* Navigation Items - Industrial & Hot */
   .nav-item {
     @apply flex items-center gap-4 px-6 py-4 rounded-xl transition-all duration-300 font-semibold cursor-pointer text-base;
-    color: var(--color-text-dim);
+    color: rgba(255, 255, 255, 0.7);
   }
 
   .nav-item:hover {
