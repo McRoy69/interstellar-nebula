@@ -13,7 +13,7 @@ import { APP_CONFIG } from './config';
 function App() {
   const [activeView, setActiveView] = useState('dashboard');
   const [initialTab, setInitialTab] = useState<string | undefined>(undefined);
-  const { t } = useTranslation();
+  useTranslation();
 
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [departments, setDepartments] = useState<DepartmentData[]>([]);
