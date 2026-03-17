@@ -98,21 +98,33 @@ const getReportHtml = (appData, isAutomated = false) => {
 const sendReport = async (isAutomated = false) => {
     return new Promise((resolve, reject) => {
         db.get('SELECT data FROM app_state ORDER BY id DESC LIMIT 1', async (err, row) => {
-            if (err || !row) {
+            if (err) {
                 console.error('Error fetching data for email:', err);
-                return reject(err || new Error('No data found'));
+                return reject(err);
             }
 
             try {
-                const appData = JSON.parse(row.data);
+                let appData;
+                if (!row) {
+                    console.warn('No data found in DB, using fallback defaults for email');
+                    appData = {
+                        settings: {
+                            currentKw: 13,
+                            notifications: { emails: ['michael.jenni@blessing.ch'] }
+                        }
+                    };
+                } else {
+                    appData = JSON.parse(row.data);
+                }
+
                 const emails = appData.settings?.notifications?.emails || [];
 
                 if (emails.length === 0) {
                     console.log('No email recipients configured.');
-                    return resolve({ success: false, message: 'No recipients' });
+                    return resolve({ success: false, message: 'No hay destinatarios configurados en los Ajustes' });
                 }
 
-                const kw = appData.settings?.currentKw || 12;
+                const kw = appData.settings?.currentKw || 13;
                 const mailOptions = {
                     from: '"Michael Jenni | Blessing AG" <michael.jenni@blessing.ch>',
                     to: emails.join(', '),
