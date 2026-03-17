@@ -172,9 +172,18 @@ app.post('/api/data', (req, res) => {
 app.post('/api/send-report', async (req, res) => {
     try {
         const result = await sendReport(false);
-        res.json(result);
+        if (result.success) {
+            res.json(result);
+        } else {
+            res.status(400).json(result); // result already has 'message'
+        }
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        console.error('API send-report technical error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error técnico al enviar el correo',
+            error: error.message
+        });
     }
 });
 

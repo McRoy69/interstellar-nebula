@@ -147,7 +147,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
             if (result.success) {
                 alert('¡Informe enviado con éxito a los destinatarios configurados!');
             } else {
-                alert('Error al enviar: ' + result.message);
+                alert('Error al enviar: ' + (result.message || result.error || 'Respuesta desconocida'));
             }
         } catch (error) {
             console.error('Send error:', error);
