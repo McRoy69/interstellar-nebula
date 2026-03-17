@@ -18,11 +18,20 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     const { t } = useTranslation();
     const compact = settings.ui.compactMode;
 
-    // Stats calculated from departments state
-    const totalGeplant = departments.reduce((acc, d) => acc + (Number(d.stats?.geplant) || 0), 0);
-    const totalPuenktlich = departments.reduce((acc, d) => acc + (Number(d.stats?.erledigtPuenktlich) || 0), 0);
-    const totalVerspaetet = departments.reduce((acc, d) => acc + (Number(d.stats?.spaetErledigt) || 0), 0);
-    const globalEfficiency = totalGeplant > 0 ? Math.round((totalPuenktlich / totalGeplant) * 100) : 0;
+    // Stats calculated from departments state with extreme robustness
+    const safeSum = (arr: DepartmentData[], key: keyof DepartmentData['stats']) =>
+        arr.reduce((acc, d) => {
+            const val = Number(d.stats?.[key]);
+            return acc + (isNaN(val) ? 0 : val);
+        }, 0);
+
+    const totalGeplant = safeSum(departments, 'geplant');
+    const totalPuenktlich = safeSum(departments, 'erledigtPuenktlich');
+    const totalVerspaetet = safeSum(departments, 'spaetErledigt');
+
+    // Final defensive calculation for global efficiency
+    const globalEfficiencyRaw = totalGeplant > 0 ? (totalPuenktlich / totalGeplant) * 100 : 0;
+    const globalEfficiency = isNaN(globalEfficiencyRaw) ? 0 : Math.round(globalEfficiencyRaw);
 
     const CURRENT_KW = APP_CONFIG.CURRENT_KW;
     const target = settings.thresholds.efficiencyTarget;
@@ -352,7 +361,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                         <div className="flex justify-between items-center mb-4 pb-2 border-b"
                                             style={{ borderColor: 'var(--color-border)' }}
                                         >
-                                            <span className="text-xs font-black uppercase tracking-widest"
+                                            <span className="text-xs font-black uppercase tracking-widest notranslate"
+                                                translate="no"
                                                 style={{ color: 'var(--color-accent)' }}
                                             >{dept.name}</span>
                                             <span className="text-[10px] font-mono font-bold tracking-tighter"
@@ -445,7 +455,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <h4 className={`${compact ? 'text-lg' : 'text-xl'} font-black tracking-tight transition-all`}
+                                            <h4 className={`${compact ? 'text-lg' : 'text-xl'} font-black tracking-tight transition-all notranslate`}
+                                                translate="no"
                                                 style={{ color: 'var(--color-text-main)' }}
                                             >{dept.name}</h4>
                                             <div className="text-right">

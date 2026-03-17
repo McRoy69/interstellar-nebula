@@ -458,7 +458,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                             value={dept.name}
                                             onChange={(e) => updateDeptName(dept.id, e.target.value)}
                                             placeholder={t('settings.depts.placeholder')}
-                                            className="flex-1 bg-transparent border-none font-bold text-base focus:ring-0"
+                                            className="flex-1 bg-transparent border-none font-bold text-base focus:ring-0 notranslate"
+                                            translate="no"
                                             style={{
                                                 color: 'var(--color-text-main)',
                                                 '--tw-placeholder-color': 'var(--color-text-dim)'
@@ -625,7 +626,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                                     <div className="w-2 h-2 rounded-full shadow-[0_0_8px_var(--color-accent-glow)]"
                                                         style={{ backgroundColor: 'var(--color-accent)' }}
                                                     />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest leading-none"
+                                                    <span className="text-[10px] font-black uppercase tracking-widest leading-none notranslate"
+                                                        translate="no"
                                                         style={{ color: 'var(--color-text-main)' }}
                                                     >{dept.name}</span>
                                                 </div>

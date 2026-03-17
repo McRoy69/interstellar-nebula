@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) =>
                         className={`nav-item ${activeId === dept.id ? 'active' : ''}`}
                     >
                         <Factory size={24} />
-                        <span className="text-base font-medium tracking-tight flex-1">{dept.name}</span>
+                        <span className="text-base font-medium tracking-tight flex-1 notranslate" translate="no">{dept.name}</span>
                         {activeId === dept.id && <ChevronRight size={18} />}
                     </div>
                 ))}

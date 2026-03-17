@@ -44,8 +44,8 @@ function App() {
         // Apply Global Sync Logic (Injection of missing KW tasks)
         const CURRENT_KW = APP_CONFIG.CURRENT_KW;
         let syncedDepts = finalDepts.map((dept: any) => {
-          // Hardcore fix for "Armoloy" name if it was somehow renamed to Waffenkammer
-          if (dept.name === 'Waffenkammer' || dept.id === '3') {
+          // Hardcore fix for "Armoloy" name - prevent any accidental translation or renaming
+          if (String(dept.id) === '3' || dept.name.toLowerCase().includes('waffe') || dept.name.toLowerCase().includes('armo')) {
             dept.name = 'Armoloy';
           }
 
@@ -146,7 +146,8 @@ function App() {
   };
 
   return (
-    <div className={`flex h-screen font-sans selection:bg-amber-500/30 transition-colors duration-500 theme-${settings.ui.theme}`}
+    <div className={`flex h-screen font-sans selection:bg-amber-500/30 transition-colors duration-500 theme-${settings.ui.theme} notranslate`}
+      translate="no"
       style={{
         backgroundColor: 'var(--color-bg)',
         color: 'var(--color-text-main)'
