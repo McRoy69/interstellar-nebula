@@ -1,8 +1,6 @@
-const express = require('express');
-const path = require('path');
-const { exec } = require('child_process');
-
 const fs = require('fs');
+const nodemailer = require('nodemailer');
+const cron = require('node-cron');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +39,94 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 app.use(express.json({ limit: '50mb' }));
 
+// SMTP Configuration (Metanet)
+const transporter = nodemailer.createTransport({
+    host: 'futura.metanet.ch',
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+        user: 'michael.jenni@blessing.ch',
+        pass: '16MnCrS5?'
+    }
+});
+
+const getReportHtml = (appData, isAutomated = false) => {
+    const kw = appData.settings?.currentKw || 12;
+    const appUrl = process.env.APP_URL || 'https://wartungsplan.up.railway.app';
+
+    return `
+    <html>
+    <body style="font-family: sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+            <h2 style="color: #2c3e50;">Zentrale Statistik - KW ${kw}</h2>
+            <p>Guten Morgen zusammen,</p>
+            <p>anbei sende ich euch die aktuelle Statistik aller Abteilungen (Flop-2 Verspätungen).</p>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; font-weight: bold;">Direkter Link zur App:</p>
+                <a href="${appUrl}" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">Wartungsplan öffnen</a>
+            </div>
+
+            <p style="font-size: 0.9em; color: #666;">
+                Bei Fragen einfach kurz melden.<br>
+                Vielen Dank und einen erfolgreichen Tag!
+            </p>
+            
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            <p style="font-size: 0.8em; color: #999;">
+                Freundliche Grüsse<br>
+                <strong>Michael Jenni</strong><br>
+                Härterei Blessing AG
+            </p>
+            ${isAutomated ? '<p style="font-size: 0.7em; color: #ccc;">(Dies ist ein automatisch generierter Bericht, jeden Montag um 03:00)</p>' : ''}
+        </div>
+    </body>
+    </html>
+    `;
+};
+
+const sendReport = async (isAutomated = false) => {
+    return new Promise((resolve, reject) => {
+        db.get('SELECT data FROM app_state ORDER BY id DESC LIMIT 1', async (err, row) => {
+            if (err || !row) {
+                console.error('Error fetching data for email:', err);
+                return reject(err || new Error('No data found'));
+            }
+
+            try {
+                const appData = JSON.parse(row.data);
+                const emails = appData.settings?.notifications?.emails || [];
+
+                if (emails.length === 0) {
+                    console.log('No email recipients configured.');
+                    return resolve({ success: false, message: 'No recipients' });
+                }
+
+                const kw = appData.settings?.currentKw || 12;
+                const mailOptions = {
+                    from: '"Michael Jenni | Blessing AG" <michael.jenni@blessing.ch>',
+                    to: emails.join(', '),
+                    subject: `Zentrale_Statistik - KW ${kw}${isAutomated ? ' [Auto]' : ''}`,
+                    html: getReportHtml(appData, isAutomated)
+                };
+
+                const info = await transporter.sendMail(mailOptions);
+                console.log('Email sent: ' + info.response);
+                resolve({ success: true, info });
+            } catch (e) {
+                console.error('Email processing error:', e);
+                reject(e);
+            }
+        });
+    });
+};
+
+// Cron Job: Every Monday at 03:00
+cron.schedule('0 3 * * 1', () => {
+    console.log('Running scheduled weekly report (Monday 03:00)...');
+    sendReport(true).catch(err => console.error('Scheduled report failed:', err));
+});
+
 const distPath = path.join(__dirname, 'dist');
 if (fs.existsSync(distPath)) {
     app.use(express.static(distPath));
@@ -78,6 +164,15 @@ app.post('/api/data', (req, res) => {
         }
         res.json({ success: true, id: this.lastID });
     });
+});
+
+app.post('/api/send-report', async (req, res) => {
+    try {
+        const result = await sendReport(false);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 // For SPA support: redirect all other requests to index.html
