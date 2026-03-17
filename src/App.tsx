@@ -43,7 +43,12 @@ function App() {
 
         // Apply Global Sync Logic (Injection of missing KW tasks)
         const CURRENT_KW = APP_CONFIG.CURRENT_KW;
-        const syncedDepts = finalDepts.map((dept: any) => {
+        let syncedDepts = finalDepts.map((dept: any) => {
+          // Hardcore fix for "Armoloy" name if it was somehow renamed to Waffenkammer
+          if (dept.name === 'Waffenkammer' || dept.id === '3') {
+            dept.name = 'Armoloy';
+          }
+
           const existingTaskKeys = new Set((dept.tasks || []).map((ti: any) => `${ti.anlage}-${ti.title}-${ti.kw}-${ti.year}`));
           const missingTasks: Task[] = [];
 
@@ -68,9 +73,9 @@ function App() {
           const mergedTasks = [...(dept.tasks || []), ...missingTasks];
           const filteredTasks = mergedTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || 2026) >= 2026);
 
-          const geplant = filteredTasks.length;
-          const erledigtPuenktlich = filteredTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length;
-          const spaetErledigt = filteredTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length;
+          const geplant = Number(filteredTasks.length) || 0;
+          const erledigtPuenktlich = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
+          const spaetErledigt = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
           const rate = geplant > 0 ? Math.round((erledigtPuenktlich / geplant) * 100) : 100;
 
           return {
@@ -78,14 +83,21 @@ function App() {
             stats: {
               ...dept.stats,
               geplant,
-              erledigt: filteredTasks.filter((ti: any) => ti.status === 'Done').length,
+              erledigt: Number(filteredTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
               erledigtPuenktlich,
               spaetErledigt,
-              offen: filteredTasks.filter((ti: any) => ti.status !== 'Done').length,
+              offen: Number(filteredTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
               erfüllungsquote: rate
             },
             tasks: filteredTasks
           };
+        });
+
+        // Ensure Armoloy is always last
+        syncedDepts.sort((a, b) => {
+          if (a.name === 'Armoloy') return 1;
+          if (b.name === 'Armoloy') return -1;
+          return 0; // Maintain original order for others
         });
 
         setSettings(finalSettings);
@@ -121,6 +133,10 @@ function App() {
     const timer = setTimeout(saveData, 1000); // Debounce save
     return () => clearTimeout(timer);
   }, [settings, departments, isLoaded]);
+
+  const handleUpdateDepartment = (updatedDept: DepartmentData) => {
+    setDepartments(prev => prev.map(d => d.id === updatedDept.id ? updatedDept : d));
+  };
 
   const activeDept = departments.find((d: DepartmentData) => d.id === activeView);
 
@@ -163,6 +179,7 @@ function App() {
               data={activeDept}
               initialTab={initialTab}
               settings={settings}
+              onUpdate={handleUpdateDepartment}
             />
           )
         )}

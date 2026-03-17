@@ -19,15 +19,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     const compact = settings.ui.compactMode;
 
     // Stats calculated from departments state
-    const totalGeplant = departments.reduce((acc, d) => acc + (d.stats.geplant || 0), 0);
-    const totalPuenktlich = departments.reduce((acc, d) => acc + (d.stats.erledigtPuenktlich || 0), 0);
-    const totalVerspaetet = departments.reduce((acc, d) => acc + (d.stats.spaetErledigt || 0), 0);
-    const globEffenziency = totalGeplant > 0 ? Math.round((totalPuenktlich / totalGeplant) * 100) : 0;
+    const totalGeplant = departments.reduce((acc, d) => acc + (Number(d.stats?.geplant) || 0), 0);
+    const totalPuenktlich = departments.reduce((acc, d) => acc + (Number(d.stats?.erledigtPuenktlich) || 0), 0);
+    const totalVerspaetet = departments.reduce((acc, d) => acc + (Number(d.stats?.spaetErledigt) || 0), 0);
+    const globalEfficiency = totalGeplant > 0 ? Math.round((totalPuenktlich / totalGeplant) * 100) : 0;
 
     const CURRENT_KW = APP_CONFIG.CURRENT_KW;
     const target = settings.thresholds.efficiencyTarget;
-    const isMeetingTarget = globEffenziency >= target;
-    const isNearTarget = globEffenziency >= target * 0.85; // Within 15% range
+    const isMeetingTarget = globalEfficiency >= target;
+    const isNearTarget = globalEfficiency >= target * 0.85; // Within 15% range
 
     const efficiencyColor = isMeetingTarget ? 'text-emerald-400' : isNearTarget ? 'text-amber-400' : 'text-rose-500';
     const efficiencyAccent = isMeetingTarget ? 'text-emerald-500' : isNearTarget ? 'text-amber-500' : 'text-rose-600';
@@ -66,7 +66,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
         doc.setFontSize(9);
         doc.text(t('pdf.efficiency'), 25, 62);
         doc.setFontSize(18);
-        doc.text(`${globEffenziency}%`, 25, 75);
+        doc.text(`${globalEfficiency}%`, 25, 75);
 
         doc.setFontSize(9);
         doc.text(t('pdf.onTime'), 110, 62);
@@ -198,7 +198,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                         </div>
                         <div className={`${compact ? 'text-[8px]' : 'text-[9px]'} font-black text-slate-500 uppercase tracking-widest mb-0.5 transition-all`}>{t('department.efficiency')}</div>
                         <div className="flex items-baseline gap-1.5">
-                            <span className={`${compact ? 'text-2xl' : 'text-3xl'} font-mono font-black ${efficiencyColor} transition-all`}>{globEffenziency}%</span>
+                            <span className={`${compact ? 'text-2xl' : 'text-3xl'} font-mono font-black ${efficiencyColor} transition-all`}>{globalEfficiency}%</span>
                             <span className={`text-[10px] font-bold ${efficiencyAccent}`}>
                                 {isMeetingTarget ? `✓ ${t('dashboard.targets.target')}` : isNearTarget ? `⚠ ${t('dashboard.targets.warn')}` : `✖ ${t('dashboard.targets.alert')}`}
                             </span>
@@ -338,7 +338,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                     <AlertTriangle style={{ color: 'var(--color-accent)' }} size={20} />
                                     <h3 className="text-sm font-black uppercase tracking-widest"
                                         style={{ color: 'var(--color-text-main)' }}
-                                    >{t('dashboard.bottlenecks')} (FLOP-2)</h3>
+                                    >{t('dashboard.bottlenecks')}</h3>
                                 </div>
                             </div>
                             <div className={`p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${compact ? 'gap-3' : 'gap-6'} overflow-y-auto custom-scrollbar transition-all`}>

@@ -18,12 +18,13 @@ interface DepartmentViewProps {
     data: DepartmentData;
     initialTab?: string;
     settings: AppSettings;
+    onUpdate?: (updatedDept: DepartmentData) => void;
 }
 
 type TabType = 'Plan' | 'Journal' | 'Archiv' | 'Anlagen' | 'Statistik';
 
 
-const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, settings }) => {
+const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, settings, onUpdate }) => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<TabType>((initialTab as TabType) || 'Journal');
     const [verantwortlicher, setVerantwortlicher] = useState(data.verantwortlicher || 'MA');
@@ -38,6 +39,38 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         setLocalPlanningTasks(data.planningTasks || []);
         setVerantwortlicher(data.verantwortlicher || 'MA');
     }, [data.id, data.tasks, data.planningTasks]);
+
+    // Bubble up changes to parent
+    React.useEffect(() => {
+        if (!onUpdate) return;
+
+        const filteredTasks = localTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || 2026) >= 2026);
+        const geplant = Number(filteredTasks.length) || 0;
+        const erledigtPuenktlich = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
+        const spaetErledigt = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
+        const rate = geplant > 0 ? Math.round((erledigtPuenktlich / geplant) * 100) : 100;
+
+        const updated: DepartmentData = {
+            ...data,
+            verantwortlicher,
+            tasks: localTasks,
+            planningTasks: localPlanningTasks,
+            stats: {
+                ...data.stats,
+                geplant,
+                erledigt: Number(filteredTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
+                erledigtPuenktlich,
+                spaetErledigt,
+                offen: Number(filteredTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
+                erfüllungsquote: rate
+            }
+        };
+
+        // Only trigger if data actually changed to avoid infinite loops
+        if (JSON.stringify(updated) !== JSON.stringify(data)) {
+            onUpdate(updated);
+        }
+    }, [localTasks, localPlanningTasks, verantwortlicher, data, onUpdate]);
 
 
     const tabs = [
@@ -630,9 +663,9 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                     className="w-full bg-transparent text-center text-xs font-black outline-none cursor-pointer hover:bg-black/5 py-2 rounded"
                                     style={{ color: 'var(--color-text-dim)' }}
                                 >
-                                    <option value="MA" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>MA</option>
-                                    <option value="U" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>U</option>
-                                    <option value="EX" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>EX</option>
+                                    <option value="MA" style={{ backgroundColor: 'var(--color-bg-card)' }}>MA</option>
+                                    <option value="U" style={{ backgroundColor: 'var(--color-bg-card)' }}>U</option>
+                                    <option value="EX" style={{ backgroundColor: 'var(--color-bg-card)' }}>EX</option>
                                 </select>
                             </td>
                             <td className="p-1 border-r" style={{ borderColor: 'var(--color-border)' }}>
@@ -642,13 +675,13 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                     className="w-full bg-transparent text-center text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-black/5 py-2 rounded leading-tight"
                                     style={{ color: 'var(--color-text-dim)' }}
                                 >
-                                    <option value="Täglich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>{t('department.matrix.freqs.daily') || 'Täglich'}</option>
-                                    <option value="Wöchentlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>{t('department.matrix.freqs.weekly') || 'Wöchentlich'}</option>
-                                    <option value="Alle 2 Wochen" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>{t('department.matrix.freqs.biweekly') || 'Alle 2 Wochen'}</option>
-                                    <option value="Monatlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>{t('department.matrix.freqs.monthly') || 'Monatlich'}</option>
-                                    <option value="Vierteljährlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>{t('department.matrix.freqs.quarterly') || 'Vierteljährlich'}</option>
-                                    <option value="Halbjährlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>{t('department.matrix.freqs.semi-annually') || 'Halbjährlich'}</option>
-                                    <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>{t('department.matrix.freqs.annually') || 'Jährlich'}</option>
+                                    <option value="Täglich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.daily') || 'Täglich'}</option>
+                                    <option value="Wöchentlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.weekly') || 'Wöchentlich'}</option>
+                                    <option value="Alle 2 Wochen" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.biweekly') || 'Alle 2 Wochen'}</option>
+                                    <option value="Monatlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.monthly') || 'Monatlich'}</option>
+                                    <option value="Vierteljährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.quarterly') || 'Vierteljährlich'}</option>
+                                    <option value="Halbjährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.semi-annually') || 'Halbjährlich'}</option>
+                                    <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.annually') || 'Jährlich'}</option>
                                 </select>
                             </td>
                             <td className="px-1 border-r text-center text-xs font-mono font-bold"
@@ -694,9 +727,9 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                     onChange={(e) => setNewAnlage(e.target.value)}
                                     className="w-full rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all font-medium shadow-inner border"
                                     style={{
-                                        backgroundColor: 'var(--color-bg-sidebar)',
+                                        backgroundColor: 'var(--color-field-bg)',
                                         borderColor: 'var(--color-border)',
-                                        color: 'var(--color-text-main)',
+                                        color: 'var(--color-field-text)',
                                         '--tw-ring-color': 'var(--color-accent)'
                                     } as any}
                                 />
@@ -706,9 +739,9 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                     onChange={(e) => setNewTitle(e.target.value)}
                                     className="w-full rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all font-medium shadow-inner border"
                                     style={{
-                                        backgroundColor: 'var(--color-bg-sidebar)',
+                                        backgroundColor: 'var(--color-field-bg)',
                                         borderColor: 'var(--color-border)',
-                                        color: 'var(--color-text-main)',
+                                        color: 'var(--color-field-text)',
                                         '--tw-ring-color': 'var(--color-accent)'
                                     } as any}
                                 />
@@ -720,14 +753,14 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                 onChange={(e) => setNewWer(e.target.value)}
                                 className="w-full rounded-lg px-3 py-3 text-xs uppercase font-bold outline-none cursor-pointer border"
                                 style={{
-                                    backgroundColor: 'var(--color-bg-sidebar)',
+                                    backgroundColor: 'var(--color-field-bg)',
                                     borderColor: 'var(--color-border)',
-                                    color: 'var(--color-text-dim)'
+                                    color: 'var(--color-field-text)'
                                 }}
                             >
-                                <option value="MA" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>MA</option>
-                                <option value="U" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>U</option>
-                                <option value="EX" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>EX</option>
+                                <option value="MA" style={{ backgroundColor: 'var(--color-bg-card)' }}>MA</option>
+                                <option value="U" style={{ backgroundColor: 'var(--color-bg-card)' }}>U</option>
+                                <option value="EX" style={{ backgroundColor: 'var(--color-bg-card)' }}>EX</option>
                             </select>
                         </td>
                         <td className="p-4 border-r" style={{ borderColor: 'var(--color-border)' }}>
@@ -736,18 +769,18 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                 onChange={(e) => setNewFreq(e.target.value)}
                                 className="w-full rounded-lg px-3 py-3 text-xs uppercase font-bold outline-none cursor-pointer border"
                                 style={{
-                                    backgroundColor: 'var(--color-bg-sidebar)',
+                                    backgroundColor: 'var(--color-field-bg)',
                                     borderColor: 'var(--color-border)',
-                                    color: 'var(--color-text-dim)'
+                                    color: 'var(--color-field-text)'
                                 }}
                             >
-                                <option value="Täglich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>Täglich</option>
-                                <option value="Wöchentlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>Wöchentlich</option>
-                                <option value="Alle 2 Wochen" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>Alle 2 Wochen</option>
-                                <option value="Monatlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>Monatlich</option>
-                                <option value="Vierteljährlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>Vierteljährlich</option>
-                                <option value="Halbjährlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>Halbjährlich</option>
-                                <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-sidebar)' }}>Jährlich</option>
+                                <option value="Täglich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Täglich</option>
+                                <option value="Wöchentlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Wöchentlich</option>
+                                <option value="Alle 2 Wochen" style={{ backgroundColor: 'var(--color-bg-card)' }}>Alle 2 Wochen</option>
+                                <option value="Monatlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Monatlich</option>
+                                <option value="Vierteljährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Vierteljährlich</option>
+                                <option value="Halbjährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Halbjährlich</option>
+                                <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Jährlich</option>
                             </select>
                         </td>
                         <td colSpan={2} className="px-5">
@@ -759,9 +792,9 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                 onChange={(e) => setNewAbKw(parseInt(e.target.value))}
                                 className="w-20 rounded-lg px-3 py-3 text-sm font-mono font-bold outline-none shadow-inner border"
                                 style={{
-                                    backgroundColor: 'var(--color-bg-sidebar)',
+                                    backgroundColor: 'var(--color-field-bg)',
                                     borderColor: 'var(--color-border)',
-                                    color: 'var(--color-accent)'
+                                    color: 'var(--color-text-main)'
                                 }}
                             />
                         </td>
