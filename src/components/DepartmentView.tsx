@@ -911,7 +911,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
 const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings: AppSettings }) => {
     const { t } = useTranslation();
     const [timeFilter, setTimeFilter] = useState<'Letzte Woche' | 'Letzter Monat' | 'Dieses Jahr' | 'Alle'>('Alle');
-    const [showLateModal, setShowLateModal] = useState(false);
+    const [selectedMetric, setSelectedMetric] = useState<'Done' | 'Pending' | 'Late' | null>(null);
 
     // Baseline for current date
     const CURRENT_KW = APP_CONFIG.CURRENT_KW;
@@ -949,19 +949,49 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
         return pYear === year && pKw >= startKw && pKw <= endKw;
     });
 
-    const erledigt = filteredTasks.filter(t => t.status === 'Done').length;
-    const offen = filteredTasks.filter(t => t.status !== 'Done').length;
-    const quote = Math.round((erledigt / (erledigt + offen)) * 100) || 0;
-
+    const erledigtTasks = filteredTasks.filter(t => t.status === 'Done');
+    const pendingTasks = filteredTasks.filter(t => t.status !== 'Done' && t.status !== 'Late');
     const lateTasks = localTasks.filter(t => t.status === 'Late');
 
-    const statsTarget = settings.thresholds.efficiencyTarget;
-    const isStatsMeetingTarget = quote >= statsTarget;
-    const isStatsNearTarget = quote >= statsTarget * 0.85;
+    const totalErledigt = erledigtTasks.length;
+    const totalOffen = pendingTasks.length + lateTasks.length;
+    const quote = Math.round((totalErledigt / (totalErledigt + totalOffen)) * 100) || 0;
 
-    const statsColor = isStatsMeetingTarget ? 'text-emerald-400' : isStatsNearTarget ? 'text-amber-400' : 'text-rose-400';
-    const statsBg = isStatsMeetingTarget ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : isStatsNearTarget ? 'bg-amber-500/5 hover:bg-amber-500/10' : 'bg-rose-500/5 hover:bg-rose-500/10';
-    const statsBorder = isStatsMeetingTarget ? 'border-emerald-500/20' : isStatsNearTarget ? 'border-amber-500/20' : 'border-rose-500/20';
+    const getModalConfig = () => {
+        switch (selectedMetric) {
+            case 'Done':
+                return {
+                    title: t('department.stats.executed'),
+                    tasks: erledigtTasks,
+                    color: 'text-emerald-500',
+                    icon: <CheckCircle2 size={32} />,
+                    itemBg: 'bg-emerald-500/5',
+                    itemBorder: 'border-emerald-500/20'
+                };
+            case 'Pending':
+                return {
+                    title: t('department.stats.open'),
+                    tasks: pendingTasks,
+                    color: 'text-amber-500',
+                    icon: <Clock size={32} />,
+                    itemBg: 'bg-amber-500/5',
+                    itemBorder: 'border-amber-500/20'
+                };
+            case 'Late':
+                return {
+                    title: t('department.stats.late'),
+                    tasks: lateTasks,
+                    color: 'text-rose-500',
+                    icon: <AlertTriangle size={32} />,
+                    itemBg: 'bg-rose-500/5',
+                    itemBorder: 'border-rose-500/20'
+                };
+            default:
+                return null;
+        }
+    };
+
+    const modalConfig = getModalConfig();
 
     return (
         <div className="p-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start rounded-2xl shadow-xl border relative overflow-hidden"
@@ -972,7 +1002,7 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
         >
 
             <AnimatePresence>
-                {showLateModal && (
+                {selectedMetric && modalConfig && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -986,29 +1016,38 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
                         <div className="flex justify-between items-center mb-10 border-b pb-6"
                             style={{ borderColor: 'var(--color-border)' }}
                         >
-                            <h3 className="text-3xl font-black text-rose-500 tracking-tight flex items-center gap-4">
-                                <AlertTriangle size={32} />
-                                {t('department.stats.late')} ({lateTasks.length})
+                            <h3 className={`text-3xl font-black ${modalConfig.color} tracking-tight flex items-center gap-4`}>
+                                {modalConfig.icon}
+                                {modalConfig.title} ({modalConfig.tasks.length})
                             </h3>
-                            <button onClick={() => setShowLateModal(false)} className="p-3 hover:bg-black/5 rounded-xl transition-all active:scale-95 group">
+                            <button onClick={() => setSelectedMetric(null)} className="p-3 hover:bg-black/5 rounded-xl transition-all active:scale-95 group">
                                 <X size={28} className="text-slate-400 group-hover:text-slate-600 transition-colors" />
                             </button>
                         </div>
                         <div className="flex-1 overflow-y-auto custom-scrollbar pr-4">
                             <div className="space-y-3">
-                                {lateTasks.map(lt => (
-                                    <div key={lt.id} className="p-4 rounded-xl border border-orange-500/20 bg-orange-500/5 flex justify-between items-center hover:bg-orange-500/10 transition-colors">
+                                {modalConfig.tasks.map(task => (
+                                    <div key={task.id} className={`p-4 rounded-xl border ${modalConfig.itemBorder} ${modalConfig.itemBg} flex justify-between items-center hover:opacity-80 transition-all`}>
                                         <div>
-                                            <div className="font-bold" style={{ color: 'var(--color-text-main)' }}>{lt.title}</div>
-                                            <div className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">{lt.anlage} • Verantw.: {lt.wer}</div>
+                                            <div className="font-bold" style={{ color: 'var(--color-text-main)' }}>{task.title}</div>
+                                            <div className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">{task.anlage} • Verantw.: {task.wer}</div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-xl font-mono font-black text-orange-500">{CURRENT_KW - lt.kw}W</div>
-                                            <div className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mt-1">{t('department.stats.delay')}</div>
+                                            {selectedMetric === 'Late' ? (
+                                                <>
+                                                    <div className="text-xl font-mono font-black text-rose-500">{CURRENT_KW - task.kw}W</div>
+                                                    <div className="text-[10px] font-bold text-rose-400 uppercase tracking-widest mt-1">{t('department.stats.delay')}</div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="text-xl font-mono font-black text-slate-400">KW {task.kw}</div>
+                                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{t('pdf.planned')}</div>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
-                                {lateTasks.length === 0 && (
+                                {modalConfig.tasks.length === 0 && (
                                     <div className="text-center text-slate-500 font-bold py-10">{t('department.stats.noLateTasks')}</div>
                                 )}
                             </div>
@@ -1019,8 +1058,26 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
 
             <div className="space-y-12 h-full flex flex-col justify-center">
                 <div className="grid grid-cols-2 gap-8">
-                    <MetricBox label={t('department.stats.executed')} value={erledigt} color="text-emerald-400" icon={<CheckCircle2 size={32} />} bg="bg-emerald-500/5" border="border-emerald-500/20" iconColor="text-emerald-400" />
-                    <MetricBox label={t('department.stats.open')} value={offen} color="text-amber-400" icon={<Clock size={32} />} bg="bg-amber-500/5" border="border-amber-500/20" iconColor="text-amber-400" />
+                    <MetricBox
+                        label={t('department.stats.executed')}
+                        value={totalErledigt}
+                        color="text-emerald-400"
+                        icon={<CheckCircle2 size={32} />}
+                        bg="bg-emerald-500/5 cursor-pointer shadow-[0_0_40px_rgba(16,185,129,0.05)]"
+                        border="border-emerald-500/20"
+                        iconColor="text-emerald-400"
+                        onClick={() => setSelectedMetric('Done')}
+                    />
+                    <MetricBox
+                        label={t('department.stats.open')}
+                        value={totalOffen - lateTasks.length}
+                        color="text-amber-400"
+                        icon={<Clock size={32} />}
+                        bg="bg-amber-500/5 cursor-pointer shadow-[0_0_40px_rgba(245,158,11,0.05)]"
+                        border="border-amber-500/20"
+                        iconColor="text-amber-400"
+                        onClick={() => setSelectedMetric('Pending')}
+                    />
                     <MetricBox
                         label={t('department.stats.late')}
                         value={lateTasks.length}
@@ -1029,7 +1086,7 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
                         bg="bg-rose-500/5 cursor-pointer shadow-[0_0_40px_rgba(244,63,94,0.1)]"
                         border="border-rose-500/30"
                         iconColor="text-rose-400"
-                        onClick={() => setShowLateModal(true)}
+                        onClick={() => setSelectedMetric('Late')}
                     />
                     <MetricBox label={t('department.stats.rate')} value={`${quote}%`} color={statsColor} icon={<Activity size={32} />} bg={statsBg} border={statsBorder} iconColor={statsColor} />
                 </div>
@@ -1088,8 +1145,8 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
                     <PieChart>
                         <Pie
                             data={[
-                                { name: 'Erledigt', value: erledigt },
-                                { name: 'Offen', value: offen },
+                                { name: 'Erledigt', value: totalErledigt },
+                                { name: 'Offen', value: totalOffen },
                             ]}
                             innerRadius={140}
                             outerRadius={180}
