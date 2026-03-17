@@ -139,7 +139,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
         <div className={`h-full bg-transparent overflow-y-auto overflow-x-hidden custom-scrollbar relative font-sans ${compact ? 'px-4 lg:px-6 py-4' : 'px-6 lg:px-10 py-6'} transition-all duration-500`}>
             <div className="max-w-[2000px] mx-auto w-full">
                 {/* Header Section */}
-                <div className={`flex flex-col md:flex-row justify-between items-start md:items-center ${compact ? 'mb-4 p-4' : 'mb-8 p-6'} gap-6 rounded-3xl border backdrop-blur-md transition-all`}
+                <div className={`flex flex-col md:flex-row justify-between items-start md:items-center ${compact ? 'mb-2 p-3' : 'mb-6 p-4'} gap-4 rounded-3xl border backdrop-blur-md transition-all`}
                     style={{
                         backgroundColor: 'var(--color-bg-header)',
                         borderColor: 'var(--color-border)'
@@ -152,10 +152,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                             <Activity size={32} className="text-white" />
                         </div>
                         <div>
-                            <h1 className="text-4xl font-black tracking-tight leading-none tech-font uppercase"
+                            <h1 className={`${compact ? 'text-2xl' : 'text-3xl'} font-black tracking-tight leading-none tech-font uppercase`}
                                 style={{ color: 'var(--color-text-main)' }}
                             >{t('dashboard.centralStats')}</h1>
-                            <p className="mt-2 font-bold uppercase tracking-[0.3em] text-[10px] opacity-70"
+                            <p className="mt-1 font-bold uppercase tracking-[0.3em] text-[9px] opacity-70"
                                 style={{ color: 'var(--color-text-dim)' }}
                             >{APP_CONFIG.BRAND_NAME} • {APP_CONFIG.SUBTITLE}</p>
                         </div>
@@ -197,7 +197,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                 </div>
 
                 {/* KPI Overview */}
-                <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ${compact ? 'gap-3 mb-4' : 'gap-4 mb-8'} transition-all`}>
+                <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 ${compact ? 'gap-3 mb-4' : 'gap-4 mb-8'} transition-all`}>
                     <div className={`stats-card group ${compact ? 'p-3' : 'p-4'}`}>
                         <div className={`flex justify-between items-start ${compact ? 'mb-1' : 'mb-3'}`}>
                             <div className={`${compact ? 'p-1.5' : 'p-2'} ${efficiencyBg} rounded-lg group-hover:bg-opacity-20 transition-colors`}>
@@ -350,7 +350,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                     >{t('dashboard.bottlenecks')}</h3>
                                 </div>
                             </div>
-                            <div className={`p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${compact ? 'gap-3' : 'gap-6'} overflow-y-auto custom-scrollbar transition-all`}>
+                            <div className={`p-8 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 ${compact ? 'gap-3' : 'gap-6'} overflow-y-auto custom-scrollbar transition-all`}>
                                 {departments.map(dept => (
                                     <div key={dept.id} className={`rounded-xl ${compact ? 'p-3' : 'p-5'} border transition-all`}
                                         style={{

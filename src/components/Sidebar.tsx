@@ -14,19 +14,28 @@ interface SidebarProps {
     onSelect: (id: string) => void;
     departments: DepartmentData[];
     isOpen?: boolean;
+    isCollapsed?: boolean;
     onClose?: () => void;
+    onToggleCollapse?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOpen, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOpen, isCollapsed, onClose, onToggleCollapse }) => {
     const { t, i18n } = useTranslation();
 
     return (
-        <aside className={`fixed inset-y-0 z-50 w-[300px] lg:static lg:w-[400px] border-r flex flex-col overflow-hidden transition-all duration-500 ${isOpen ? 'left-0 shadow-2xl' : '-left-[300px] lg:left-0'}`}
+        <aside className={`fixed inset-y-0 z-50 lg:static border-r flex flex-col overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'left-0' : '-left-[320px] lg:left-0'} ${isCollapsed ? 'w-[80px]' : 'w-[300px] lg:w-[320px] xl:w-[350px]'}`}
             style={{
                 backgroundColor: 'var(--color-bg-sidebar)',
                 borderColor: 'var(--color-border)'
             }}
         >
+            {/* Desktop Collapse Toggle */}
+            <button
+                onClick={onToggleCollapse}
+                className="hidden lg:flex absolute -right-3 top-24 w-6 h-6 bg-amber-500 rounded-full border border-white items-center justify-center z-[60] shadow-lg hover:scale-110 active:scale-90 transition-all"
+            >
+                <div className={`w-1.5 h-1.5 border-t-2 border-r-2 border-white transition-transform duration-300 ${isCollapsed ? 'rotate-45 translate-x-[-1px]' : '-rotate-135 translate-x-[1px]'}`} />
+            </button>
             {/* Close button for mobile */}
             <button
                 onClick={onClose}
@@ -35,9 +44,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                 <X size={24} />
             </button>
             {/* Brand Section */}
-            <div className="p-10 pb-8">
+            <div className={`${isCollapsed ? 'p-4' : 'p-10'} pb-8 transition-all duration-500`}>
                 <div className="flex items-center gap-5">
-                    <div className="w-[140px] h-[84px] flex items-center justify-center rounded-2xl shrink-0 p-2 transition-transform hover:scale-105 duration-300 overflow-hidden border"
+                    <div className={`${isCollapsed ? 'w-[50px] h-[40px]' : 'w-[140px] h-[84px]'} flex items-center justify-center rounded-2xl shrink-0 p-2 transition-all hover:scale-105 duration-300 overflow-hidden border`}
                         style={{
                             backgroundColor: 'rgba(255, 255, 255, 0.05)',
                             borderColor: 'var(--color-border)'
@@ -53,50 +62,56 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                             }}
                         />
                     </div>
-                    <div>
-                        <h2 className="text-base font-black tracking-tight leading-none tech-font whitespace-nowrap text-white"
-                        >Härterei Blessing AG</h2>
-                        <div className="flex items-center gap-2 mt-3">
-                            <span className="w-2 h-2 rounded-full shadow-[0_0_8px_var(--color-accent-glow)] animate-pulse"
-                                style={{ backgroundColor: 'var(--color-accent)' }}
-                            />
-                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60"
-                            >{t('sidebar.maintenancePlan')}</span>
+                    {!isCollapsed && (
+                        <div className="transition-all duration-500 opacity-100 scale-100 origin-left">
+                            <h2 className="text-base font-black tracking-tight leading-none tech-font whitespace-nowrap text-white">Härterei Blessing AG</h2>
+                            <div className="flex items-center gap-2 mt-3">
+                                <span className="w-2 h-2 rounded-full shadow-[0_0_8px_var(--color-accent-glow)] animate-pulse"
+                                    style={{ backgroundColor: 'var(--color-accent)' }}
+                                />
+                                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60">{t('sidebar.maintenancePlan')}</span>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 p-8 space-y-3 overflow-y-auto custom-scrollbar">
+            <nav className={`flex-1 ${isCollapsed ? 'p-2' : 'p-8'} space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar transition-all duration-500`}>
                 <div
                     onClick={() => onSelect('dashboard')}
-                    className={`nav-item ${activeId === 'dashboard' ? 'active' : ''}`}
+                    className={`nav-item ${activeId === 'dashboard' ? 'active' : ''} ${isCollapsed ? 'justify-center px-0' : ''}`}
+                    title={isCollapsed ? t('sidebar.centralStats') : ''}
                 >
-                    <LayoutDashboard size={24} />
-                    <span className="text-base font-bold uppercase tracking-wider">{t('sidebar.centralStats')}</span>
+                    <LayoutDashboard size={24} className={isCollapsed ? 'shrink-0' : ''} />
+                    {!isCollapsed && <span className="text-base font-bold uppercase tracking-wider">{t('sidebar.centralStats')}</span>}
                 </div>
 
-                <div className="pt-10 pb-4 px-5 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
-                    {t('sidebar.productionUnits')}
-                </div>
+                {!isCollapsed ? (
+                    <div className="pt-10 pb-4 px-5 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
+                        {t('sidebar.productionUnits')}
+                    </div>
+                ) : (
+                    <div className="pt-6 pb-2 border-t border-white/5 mt-4" />
+                )}
 
                 {departments.map(dept => (
                     <div
                         key={dept.id}
                         onClick={() => onSelect(dept.id)}
-                        className={`nav-item ${activeId === dept.id ? 'active' : ''}`}
+                        className={`nav-item ${activeId === dept.id ? 'active' : ''} ${isCollapsed ? 'justify-center px-0' : ''}`}
+                        title={isCollapsed ? dept.name : ''}
                     >
-                        <Factory size={24} />
-                        <span className="text-base font-medium tracking-tight flex-1 notranslate" translate="no">{dept.name}</span>
-                        {activeId === dept.id && <ChevronRight size={18} />}
+                        <Factory size={24} className={isCollapsed ? 'shrink-0' : ''} />
+                        {!isCollapsed && <span className="text-base font-medium tracking-tight flex-1 notranslate" translate="no">{dept.name}</span>}
+                        {activeId === dept.id && !isCollapsed && <ChevronRight size={18} />}
                     </div>
                 ))}
             </nav>
 
             {/* Footer Settings */}
-            <div className="p-8 bg-transparent space-y-2 pb-10">
-                <div className="flex items-center gap-4 px-8 py-2 mb-4">
+            <div className={`${isCollapsed ? 'p-2' : 'p-8'} bg-transparent space-y-2 pb-10 transition-all duration-500`}>
+                <div className={`flex ${isCollapsed ? 'flex-col items-center gap-2' : 'items-center gap-4 px-8'} py-2 mb-4`}>
                     {[
                         { lang: 'de', flag: chFlag, title: 'Deutsch' },
                         { lang: 'es', flag: esFlag, title: 'Español' },
@@ -107,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                         <button
                             key={l.lang}
                             onClick={() => i18n.changeLanguage(l.lang)}
-                            className={`w-9 h-9 rounded-full overflow-hidden transition-all flex items-center justify-center p-0 outline-none ring-0 relative group ${i18n.language === l.lang
+                            className={`${isCollapsed ? 'w-8 h-8' : 'w-9 h-9'} rounded-full overflow-hidden transition-all flex items-center justify-center p-0 outline-none ring-0 relative group ${i18n.language === l.lang
                                 ? 'scale-110 border-2 z-10'
                                 : 'opacity-40 hover:opacity-100 hover:scale-110 border'
                                 }`}
@@ -131,18 +146,21 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                 </div>
                 <div
                     onClick={() => onSelect('settings')}
-                    className={`nav-item hover:opacity-100 scale-95 hover:scale-100 border transition-all ${activeId === 'settings' ? 'active shadow-[0_0_15px_var(--color-accent-glow)]' : 'border-transparent'}`}
+                    className={`nav-item hover:opacity-100 ${isCollapsed ? 'justify-center px-0 scale-90' : 'scale-95 px-8'} hover:scale-100 border transition-all ${activeId === 'settings' ? 'active shadow-[0_0_15px_var(--color-accent-glow)]' : 'border-transparent'}`}
                     style={{
                         borderColor: activeId === 'settings' ? 'var(--color-accent)' : 'transparent'
                     }}
+                    title={isCollapsed ? t('sidebar.settings') : ''}
                 >
-                    <Settings size={22} />
-                    <span className="text-sm font-bold uppercase tracking-widest">{t('sidebar.settings')}</span>
+                    <Settings size={22} className={isCollapsed ? 'shrink-0' : ''} />
+                    {!isCollapsed && <span className="text-sm font-bold uppercase tracking-widest">{t('sidebar.settings')}</span>}
                 </div>
-                <div className="nav-item text-white/30 cursor-default hover:bg-transparent">
-                    <Info size={22} className="text-white/40" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 transition-colors">Created by Michael Jenni 2026</span>
-                </div>
+                {!isCollapsed && (
+                    <div className="nav-item text-white/30 cursor-default hover:bg-transparent px-8">
+                        <Info size={22} className="text-white/40" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 transition-colors">Created by Michael Jenni 2026</span>
+                    </div>
+                )}
             </div>
         </aside>
     );

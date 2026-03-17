@@ -136,6 +136,7 @@ function App() {
   }, [settings, departments, isLoaded]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleUpdateDepartment = (updatedDept: DepartmentData) => {
     setDepartments(prev => prev.map(d => d.id === updatedDept.id ? updatedDept : d));
@@ -175,7 +176,9 @@ function App() {
         onSelect={(id) => handleNavigate(id)}
         departments={departments}
         isOpen={isSidebarOpen}
+        isCollapsed={isSidebarCollapsed}
         onClose={() => setIsSidebarOpen(false)}
+        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
 
       {/* Mobile Menu Toggle Button */}
