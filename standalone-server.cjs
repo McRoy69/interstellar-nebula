@@ -81,7 +81,7 @@ app.post('/api/data', (req, res) => {
 });
 
 // For SPA support: redirect all other requests to index.html
-app.get('*', (req, res) => {
+app.get('(.*)', (req, res) => {
     const indexPath = path.join(distPath, 'index.html');
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
