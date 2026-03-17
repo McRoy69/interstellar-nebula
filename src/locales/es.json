@@ -181,9 +181,23 @@
             },
             "export": {
                 "title": "Reportes y Notificaciones",
+                "subtitle": "Gestiona los destinatarios y el contenido de los informes periódicos.",
                 "emailLabel": "Destinatarios de Alertas (Email)",
                 "emailDesc": "Direcciones separadas por comas.",
-                "formatLabel": "Formato de Exportación Predeterminado"
+                "formatLabel": "Formato de Exportación Predeterminado",
+                "noEmails": "No hay correos añadidos. Las notificaciones estarán desactivadas.",
+                "addEmail": "Añadir dirección de correo",
+                "placeholderEmail": "ejemplo@empresa.com",
+                "deleteEmail": "Eliminar correo",
+                "centralMetrics": "Métricas: Estadística Central",
+                "deptMetrics": "Métricas por Departamento"
+            },
+            "metrics": {
+                "efficiency": "Eficiencia (%)",
+                "onTime": "Ejecutado a Tiempo",
+                "late": "Ejecutado con Retraso",
+                "openTasks": "Tareas Abiertas",
+                "complianceRate": "Tasa de Cumplimiento"
             },
             "footer": {
                 "autoSave": "Los cambios se aplican y guardan de forma persistente",
@@ -193,7 +207,11 @@
                 "title": "Copia de Seguridad",
                 "export": "Exportar Datos del Sistema (JSON)",
                 "restore": "Restaurar Copia de Seguridad",
-                "description": "Utilice estas herramientas para migración o respaldo de datos."
+                "description": "Utilice estas herramientas para migración o respaldo de datos.",
+                "success": "¡Datos restaurados con éxito! La página se recargará para aplicar los cambios.",
+                "invalidFile": "El archivo no parece ser un backup válido.",
+                "errorReading": "Error al leer el archivo de backup.",
+                "errorExport": "Error al exportar los datos. Por favor, inténtalo de nuevo."
             }
         },
         "pdf": {

@@ -179,9 +179,23 @@
       },
       "export": {
         "title": "Berichte & Benachrichtigungen",
+        "subtitle": "Verwalten Sie die Empfänger und den Inhalt der periodischen Berichte.",
         "emailLabel": "E-Mail-Verteiler für Alarme",
         "emailDesc": "Mehrere Adressen bitte durch Komma trennen.",
-        "formatLabel": "Standard Export-Format"
+        "formatLabel": "Standard Export-Format",
+        "noEmails": "Keine E-Mails hinzugefügt. Benachrichtigungen werden deaktiviert sein.",
+        "addEmail": "E-Mail-Adresse hinzufügen",
+        "placeholderEmail": "beispiel@firma.com",
+        "deleteEmail": "E-Mail löschen",
+        "centralMetrics": "Metriken: Zentrale Statistik",
+        "deptMetrics": "Metriken pro Abteilung"
+      },
+      "metrics": {
+        "efficiency": "Effizienz (%)",
+        "onTime": "Pünktlich ausgeführt",
+        "late": "Verspätet ausgeführt",
+        "openTasks": "Offene Aufgaben",
+        "complianceRate": "Erfüllungsquote"
       },
       "footer": {
         "autoSave": "Änderungen werden automatisch systemweit übernommen",
@@ -191,7 +205,11 @@
         "title": "Datensicherung",
         "export": "Systemdaten exportieren (JSON)",
         "restore": "Datensicherung einspielen",
-        "description": "Verwenden Sie diese Funktionen für Backups oder Server-Migrationen."
+        "description": "Verwenden Sie diese Funktionen für Backups oder Server-Migrationen.",
+        "success": "Daten erfolgreich wiederhergestellt! Die Seite wird neu geladen, um die Änderungen zu übernehmen.",
+        "invalidFile": "Die Datei scheint kein gültiges Backup zu sein.",
+        "errorReading": "Fehler beim Lesen der Backup-Datei.",
+        "errorExport": "Fehler beim Exportieren der Daten. Bitte versuchen Sie es erneut."
       }
     },
     "pdf": {

@@ -120,11 +120,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
     };
 
     const AVAILABLE_METRICS = [
-        { id: 'efficiency', label: 'Eficiencia (%)' },
-        { id: 'on-time', label: 'Ejecutado a Tiempo' },
-        { id: 'late', label: 'Ejecutado con Retraso' },
-        { id: 'offen', label: 'Tareas Abiertas' },
-        { id: 'erfüllungsquote', label: 'Tasa de Cumplimiento' }
+        { id: 'efficiency', label: t('settings.metrics.efficiency') },
+        { id: 'on-time', label: t('settings.metrics.onTime') },
+        { id: 'late', label: t('settings.metrics.late') },
+        { id: 'offen', label: t('settings.metrics.openTasks') },
+        { id: 'erfüllungsquote', label: t('settings.metrics.complianceRate') }
     ];
 
     const handleExport = () => {
@@ -151,10 +151,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                 document.body.removeChild(link);
             }, 500);
 
-            console.log('Exportación JSON (Data URI) completada.');
+            console.log('Export JSON completed.');
         } catch (error) {
-            console.error('Error durante la exportación:', error);
-            alert('Error al exportar los datos. Por favor, inténtalo de nuevo.');
+            console.error('Export error:', error);
+            alert(t('settings.backup.errorExport'));
         }
     };
 
@@ -169,13 +169,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                 if (data.settings && data.departments) {
                     setSettings(data.settings);
                     setDepartments(data.departments);
-                    alert('¡Datos restaurados con éxito! La página se recargará para aplicar los cambios.');
+                    alert(t('settings.backup.success'));
                     window.location.reload();
                 } else {
-                    alert('El archivo no parece ser un backup válido.');
+                    alert(t('settings.backup.invalidFile'));
                 }
             } catch (err) {
-                alert('Error al leer el archivo de backup.');
+                alert(t('settings.backup.errorReading'));
             }
         };
         reader.readAsText(file);
@@ -411,7 +411,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                             color: 'var(--color-text-main)'
                                         }}
                                     >
-                                        <option value="light" style={{ backgroundColor: 'var(--color-field-bg)' }}>Clean Pro (Licht)</option>
+                                        <option value="light" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('settings.ui.themes.light')}</option>
                                         <option value="dark" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('settings.ui.themes.dark')}</option>
                                         <option value="natura" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('settings.ui.themes.natura')}</option>
                                         <option value="vibrant" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('settings.ui.themes.vibrant')}</option>
@@ -496,7 +496,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                         <div className="space-y-12 animate-in slide-in-from-right-4 duration-500 max-w-4xl">
                             <div>
                                 <h2 className="text-2xl font-black mb-2 tracking-tight" style={{ color: 'var(--color-text-main)' }}>{t('settings.export.title')}</h2>
-                                <p className="text-sm font-medium mb-10" style={{ color: 'var(--color-text-dim)' }}>Gestiona los destinatarios y el contenido de los informes periódicos.</p>
+                                <p className="text-sm font-medium mb-10" style={{ color: 'var(--color-text-dim)' }}>{t('settings.export.subtitle')}</p>
 
                                 <div className="space-y-6">
                                     <h3 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
@@ -513,7 +513,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                         }}
                                     >
                                         {settings.notifications.emails.length === 0 ? (
-                                            <div className="text-xs italic font-medium py-4 text-center" style={{ color: 'var(--color-text-dim)' }}>No hay correos añadidos. Las notificaciones estarán desactivadas.</div>
+                                            <div className="text-xs italic font-medium py-4 text-center" style={{ color: 'var(--color-text-dim)' }}>{t('settings.export.noEmails')}</div>
                                         ) : (
                                             settings.notifications.emails.map((email, idx) => (
                                                 <div key={idx} className="flex gap-3 group">
@@ -527,7 +527,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                                         <input
                                                             value={email}
                                                             onChange={(e) => updateEmail(idx, e.target.value)}
-                                                            placeholder="ejemplo@empresa.com"
+                                                            placeholder={t('settings.export.placeholderEmail')}
                                                             className="bg-transparent border-none text-sm w-full outline-none focus:ring-0 font-medium"
                                                             style={{ color: 'var(--color-text-main)' }}
                                                         />
@@ -535,7 +535,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                                     <button
                                                         onClick={() => removeEmail(idx)}
                                                         className="p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 shadow-sm"
-                                                        title="Eliminar correo"
+                                                        title={t('settings.export.deleteEmail')}
                                                     >
                                                         <Trash2 size={18} />
                                                     </button>
@@ -550,7 +550,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                                 color: 'var(--color-text-dim)'
                                             }}
                                         >
-                                            <Plus size={16} /> Añadir dirección de correo
+                                            <Plus size={16} /> {t('settings.export.addEmail')}
                                         </button>
                                     </div>
                                 </div>
@@ -563,7 +563,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                         style={{ color: 'var(--color-text-dim)' }}
                                     >
                                         <Layout size={14} style={{ color: 'var(--color-accent)' }} />
-                                        Métricas: Estadística Central
+                                        {t('settings.export.centralMetrics')}
                                     </h3>
                                     <div className="p-6 border rounded-2xl space-y-2 shadow-inner"
                                         style={{
@@ -610,7 +610,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                         style={{ color: 'var(--color-text-dim)' }}
                                     >
                                         <Layers size={14} style={{ color: 'var(--color-accent)' }} />
-                                        Métricas por Departamento
+                                        {t('settings.export.deptMetrics')}
                                     </h3>
                                     <div className="border rounded-2xl max-h-[450px] overflow-y-auto custom-scrollbar p-6 space-y-8 shadow-inner"
                                         style={{
