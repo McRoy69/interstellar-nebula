@@ -136,7 +136,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     };
 
     return (
-        <div className={`h-full bg-transparent overflow-y-auto custom-scrollbar relative font-sans ${compact ? 'px-6 py-4' : 'px-10 py-6'} transition-all duration-500`}>
+        <div className={`h-full bg-transparent overflow-y-auto overflow-x-hidden custom-scrollbar relative font-sans ${compact ? 'px-4 lg:px-6 py-4' : 'px-6 lg:px-10 py-6'} transition-all duration-500`}>
             <div className="max-w-[2000px] mx-auto w-full">
                 {/* Header Section */}
                 <div className={`flex flex-col md:flex-row justify-between items-start md:items-center ${compact ? 'mb-4 p-4' : 'mb-8 p-6'} gap-6 rounded-3xl border backdrop-blur-md transition-all`}

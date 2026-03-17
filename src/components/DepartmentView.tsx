@@ -312,7 +312,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             />
 
             {/* Sub-Header */}
-            <div className={`backdrop-blur-xl border-b ${compact ? 'px-8 py-6' : 'px-12 py-10'} relative z-10 w-full shadow-lg transition-all`}
+            <div className={`backdrop-blur-xl border-b ${compact ? 'px-6 lg:px-8 py-4 lg:py-6' : 'px-6 lg:px-12 py-6 lg:py-10'} relative z-10 w-full shadow-lg transition-all`}
                 style={{
                     backgroundColor: 'var(--color-bg-header)',
                     borderColor: 'var(--color-border)'
@@ -427,7 +427,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             </div>
 
             {/* Content Area */}
-            <div className={`flex-1 ${compact ? 'px-8 pt-4 pb-8' : 'px-12 pt-8 pb-16'} overflow-y-auto custom-scrollbar relative z-10 transition-all`}>
+            <div className={`flex-1 ${compact ? 'px-4 lg:px-8 pt-4 pb-8' : 'px-6 lg:px-12 pt-6 lg:pt-8 pb-10 lg:pb-16'} overflow-y-auto overflow-x-hidden custom-scrollbar relative z-10 transition-all`}>
                 <div className="max-w-[2000px] w-full mx-auto h-full flex flex-col">
                     <AnimatePresence mode="wait">
                         <motion.div

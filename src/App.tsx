@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -134,6 +135,8 @@ function App() {
     return () => clearTimeout(timer);
   }, [settings, departments, isLoaded]);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const handleUpdateDepartment = (updatedDept: DepartmentData) => {
     setDepartments(prev => prev.map(d => d.id === updatedDept.id ? updatedDept : d));
   };
@@ -143,21 +146,55 @@ function App() {
   const handleNavigate = (id: string, tab?: string) => {
     setActiveView(id);
     setInitialTab(tab);
+    setIsSidebarOpen(false); // Close sidebar on mobile after navigation
   };
 
   return (
-    <div className={`flex h-screen font-sans selection:bg-amber-500/30 transition-colors duration-500 theme-${settings.ui.theme} notranslate`}
+    <div className={`flex min-h-[100dvh] h-[100dvh] font-sans selection:bg-amber-500/30 transition-colors duration-500 theme-${settings.ui.theme} notranslate overflow-hidden`}
       translate="no"
       style={{
         backgroundColor: 'var(--color-bg)',
         color: 'var(--color-text-main)'
       }}
     >
+      {/* Backdrop for mobile */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+          />
+        )}
+      </AnimatePresence>
+
       <Sidebar
         activeId={activeView}
         onSelect={(id) => handleNavigate(id)}
         departments={departments}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
+
+      {/* Mobile Menu Toggle Button */}
+      <button
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="lg:hidden fixed top-6 right-6 z-[60] w-12 h-12 rounded-xl shadow-2xl flex items-center justify-center border transition-all active:scale-95"
+        style={{
+          backgroundColor: 'var(--color-accent)',
+          borderColor: 'var(--color-border)',
+          color: 'var(--color-bg-sidebar)',
+          boxShadow: '0 8px 20px -5px var(--color-accent-glow)'
+        }}
+      >
+        <div className="flex flex-col gap-1.5 pointer-events-none">
+          <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isSidebarOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isSidebarOpen ? 'opacity-0' : ''}`} />
+          <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isSidebarOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+        </div>
+      </button>
 
       <main className="flex-1 overflow-hidden relative">
         {activeView === 'dashboard' ? (

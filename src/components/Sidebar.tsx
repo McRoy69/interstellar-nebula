@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { LayoutDashboard, Factory, Settings, Info, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Factory, Settings, Info, ChevronRight, X } from 'lucide-react';
 import type { DepartmentData } from '../data/mockData';
 
 import chFlag from '../assets/flags/ch.png';
@@ -13,18 +13,27 @@ interface SidebarProps {
     activeId: string;
     onSelect: (id: string) => void;
     departments: DepartmentData[];
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOpen, onClose }) => {
     const { t, i18n } = useTranslation();
 
     return (
-        <aside className="w-[420px] h-screen border-r flex flex-col overflow-hidden z-10 transition-all duration-500"
+        <aside className={`fixed inset-y-0 z-50 w-[300px] lg:static lg:w-[400px] border-r flex flex-col overflow-hidden transition-all duration-500 ${isOpen ? 'left-0 shadow-2xl' : '-left-[300px] lg:left-0'}`}
             style={{
                 backgroundColor: 'var(--color-bg-sidebar)',
                 borderColor: 'var(--color-border)'
             }}
         >
+            {/* Close button for mobile */}
+            <button
+                onClick={onClose}
+                className="lg:hidden absolute top-6 right-6 p-2 rounded-xl text-white/40 hover:text-white"
+            >
+                <X size={24} />
+            </button>
             {/* Brand Section */}
             <div className="p-10 pb-8">
                 <div className="flex items-center gap-5">
