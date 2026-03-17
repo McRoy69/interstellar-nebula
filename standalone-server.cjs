@@ -53,7 +53,11 @@ const transporter = nodemailer.createTransport({
     },
     tls: {
         rejectUnauthorized: false
-    }
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    debug: true,
+    logger: true
 });
 
 const getReportHtml = (appData, isAutomated = false) => {

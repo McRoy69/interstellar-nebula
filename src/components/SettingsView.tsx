@@ -143,15 +143,21 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-            const result = await response.json();
-            if (result.success) {
-                alert('¡Informe enviado con éxito a los destinatarios configurados!');
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    alert('¡Informe enviado con éxito a los destinatarios configurados!');
+                } else {
+                    alert('Error del servidor: ' + (result.message || 'Error desconocido'));
+                }
             } else {
-                alert('Error al enviar: ' + (result.message || result.error || 'Respuesta desconocida'));
+                const errorText = await response.text();
+                alert(`Error del Servidor (${response.status}): ${errorText.substring(0, 100)}...`);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Send error:', error);
-            alert('Error técnico al intentar enviar el informe.');
+            alert('Error técnico/red: ' + (error.message || 'Fallo de conexión'));
         } finally {
             setIsSending(false);
         }
