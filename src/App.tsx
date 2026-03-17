@@ -42,6 +42,15 @@ function App() {
           if (savedDepts) finalDepts = JSON.parse(savedDepts);
         }
 
+        const mergedSettings = {
+          ...defaultSettings,
+          ...finalSettings,
+          thresholds: { ...defaultSettings.thresholds, ...(finalSettings.thresholds || {}) },
+          ui: { ...defaultSettings.ui, ...(finalSettings.ui || {}) },
+          notifications: { ...defaultSettings.notifications, ...(finalSettings.notifications || {}) }
+        };
+        finalSettings = mergedSettings;
+
         // Apply Global Sync Logic (Injection of missing KW tasks)
         const CURRENT_KW = APP_CONFIG.CURRENT_KW;
         let syncedDepts = finalDepts.map((dept: any) => {
@@ -94,11 +103,11 @@ function App() {
           };
         });
 
-        // Ensure Armoloy is always last
+        // Absolute sorting: Armoloy always last, others alphabetical
         syncedDepts.sort((a, b) => {
           if (a.name === 'Armoloy') return 1;
           if (b.name === 'Armoloy') return -1;
-          return 0; // Maintain original order for others
+          return a.name.localeCompare(b.name);
         });
 
         setSettings(finalSettings);

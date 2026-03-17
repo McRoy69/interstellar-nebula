@@ -198,68 +198,71 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
 
                 {/* KPI Overview */}
                 <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 ${compact ? 'gap-3 mb-4' : 'gap-4 mb-8'} transition-all`}>
-                    <div className={`stats-card group ${compact ? 'p-3' : 'p-4'}`}>
-                        <div className={`flex justify-between items-start ${compact ? 'mb-1' : 'mb-3'}`}>
-                            <div className={`${compact ? 'p-1.5' : 'p-2'} ${efficiencyBg} rounded-lg group-hover:bg-opacity-20 transition-colors`}>
-                                <TrendingUp size={compact ? 16 : 20} className={efficiencyAccent} />
+                    {[
+                        {
+                            label: t('department.efficiency'),
+                            value: `${globalEfficiency}%`,
+                            subValue: isMeetingTarget ? `✓ ${t('dashboard.targets.target')}` : isNearTarget ? `⚠ ${t('dashboard.targets.warn')}` : `✖ ${t('dashboard.targets.alert')}`,
+                            color: efficiencyColor,
+                            accent: efficiencyAccent,
+                            bg: efficiencyBg,
+                            icon: <TrendingUp size={compact ? 16 : 20} className={efficiencyAccent} />,
+                            badge: <Activity className="text-slate-600 opacity-50" size={compact ? 14 : 16} />
+                        },
+                        {
+                            label: t('dashboard.totalExecuted'),
+                            value: totalPuenktlich,
+                            subValue: null,
+                            color: 'var(--color-text-main)',
+                            accent: 'text-emerald-500',
+                            bg: 'bg-emerald-500/10',
+                            icon: <ShieldCheck size={compact ? 16 : 20} className="text-emerald-500" />,
+                            badge: <ArrowUpRight className="opacity-50" size={compact ? 14 : 16} style={{ color: 'var(--color-text-dim)' }} />
+                        },
+                        {
+                            label: t('dashboard.criticalPoints'),
+                            value: totalVerspaetet,
+                            subValue: null,
+                            color: 'text-rose-600',
+                            accent: 'text-rose-600',
+                            bg: 'bg-rose-500/10',
+                            icon: <AlertTriangle size={compact ? 16 : 20} className="text-rose-500" />,
+                            badge: <Info className="text-slate-600 opacity-50" size={compact ? 14 : 16} />
+                        },
+                        {
+                            label: t('dashboard.activeDepartments'),
+                            value: departments.length,
+                            subValue: null,
+                            color: 'var(--color-text-main)',
+                            accent: 'text-blue-500',
+                            bg: 'bg-blue-500/10',
+                            icon: <Cpu size={compact ? 16 : 20} className="text-blue-500" />,
+                            badge: <Activity size={compact ? 14 : 16} className="opacity-50" style={{ color: 'var(--color-text-dim)' }} />
+                        }
+                    ].map((kpi, i) => (
+                        <div key={i} className={`stats-card group ${compact ? 'p-3' : 'p-4'}`}>
+                            <div className={`flex justify-between items-start ${compact ? 'mb-1' : 'mb-3'}`}>
+                                <div className={`${compact ? 'p-1.5' : 'p-2'} ${kpi.bg} rounded-lg group-hover:bg-opacity-20 transition-colors`}>
+                                    {kpi.icon}
+                                </div>
+                                {kpi.badge}
                             </div>
-                            <Activity className="text-slate-600 opacity-50" size={compact ? 14 : 16} />
-                        </div>
-                        <div className={`${compact ? 'text-[8px]' : 'text-[9px]'} font-black text-slate-500 uppercase tracking-widest mb-0.5 transition-all`}>{t('department.efficiency')}</div>
-                        <div className="flex items-baseline gap-1.5">
-                            <span className={`${compact ? 'text-2xl' : 'text-3xl'} font-mono font-black ${efficiencyColor} transition-all`}>{globalEfficiency}%</span>
-                            <span className={`text-[10px] font-bold ${efficiencyAccent}`}>
-                                {isMeetingTarget ? `✓ ${t('dashboard.targets.target')}` : isNearTarget ? `⚠ ${t('dashboard.targets.warn')}` : `✖ ${t('dashboard.targets.alert')}`}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className={`stats-card group ${compact ? 'p-3' : 'p-4'}`}>
-                        <div className={`flex justify-between items-start ${compact ? 'mb-1' : 'mb-3'}`}>
-                            <div className={`${compact ? 'p-1.5' : 'p-2'} bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-colors`}>
-                                <ShieldCheck size={compact ? 16 : 20} className="text-emerald-500" />
+                            <div className={`${compact ? 'text-[8px]' : 'text-[9px]'} font-black uppercase tracking-widest mb-0.5 transition-all`}
+                                style={{ color: kpi.label === t('department.efficiency') || kpi.label === t('dashboard.criticalPoints') ? undefined : 'var(--color-text-dim)' }}
+                            >{kpi.label}</div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span
+                                    className={`${compact ? 'text-2xl' : 'text-3xl'} font-mono font-black transition-all ${!kpi.color.startsWith('var') ? kpi.color : ''}`}
+                                    style={{ color: kpi.color.startsWith('var') ? kpi.color : undefined }}
+                                >{kpi.value}</span>
+                                {kpi.subValue && (
+                                    <span className={`text-[10px] font-bold ${kpi.accent}`}>
+                                        {kpi.subValue}
+                                    </span>
+                                )}
                             </div>
-                            <ArrowUpRight className="opacity-50" size={compact ? 14 : 16} style={{ color: 'var(--color-text-dim)' }} />
                         </div>
-                        <div className={`${compact ? 'text-[8px]' : 'text-[9px]'} font-black uppercase tracking-widest mb-0.5 transition-all`}
-                            style={{ color: 'var(--color-text-dim)' }}
-                        >{t('dashboard.totalExecuted')}</div>
-                        <div className="flex items-baseline gap-1.5">
-                            <span className={`${compact ? 'text-2xl' : 'text-3xl'} font-mono font-black transition-all`}
-                                style={{ color: 'var(--color-text-main)' }}
-                            >{totalPuenktlich}</span>
-                        </div>
-                    </div>
-
-                    <div className={`stats-card group ${compact ? 'p-3' : 'p-4'}`}>
-                        <div className={`flex justify-between items-start ${compact ? 'mb-1' : 'mb-3'}`}>
-                            <div className={`${compact ? 'p-1.5' : 'p-2'} bg-red-500/10 rounded-lg group-hover:bg-red-500/20 transition-colors`}>
-                                <AlertTriangle size={compact ? 16 : 20} className="text-red-500" />
-                            </div>
-                            <Info className="text-slate-600 opacity-50" size={compact ? 14 : 16} />
-                        </div>
-                        <div className={`${compact ? 'text-[8px]' : 'text-[9px]'} font-black text-slate-500 uppercase tracking-widest mb-0.5`}>{t('dashboard.criticalPoints')}</div>
-                        <div className="flex items-baseline gap-1.5">
-                            <span className={`${compact ? 'text-2xl' : 'text-3xl'} font-mono font-black text-rose-600 transition-all`}>{totalVerspaetet}</span>
-                        </div>
-                    </div>
-
-                    <div className={`stats-card group ${compact ? 'p-3' : 'p-4'}`}>
-                        <div className={`flex justify-between items-start ${compact ? 'mb-1' : 'mb-3'}`}>
-                            <div className={`${compact ? 'p-1.5' : 'p-2'} bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors`}>
-                                <Cpu size={compact ? 16 : 20} className="text-blue-500" />
-                            </div>
-                            <Activity size={compact ? 14 : 16} className="opacity-50" style={{ color: 'var(--color-text-dim)' }} />
-                        </div>
-                        <div className={`${compact ? 'text-[8px]' : 'text-[9px]'} font-black uppercase tracking-widest mb-0.5`}
-                            style={{ color: 'var(--color-text-dim)' }}
-                        >{t('dashboard.activeDepartments')}</div>
-                        <div className="flex items-baseline gap-1.5">
-                            <span className={`${compact ? 'text-2xl' : 'text-3xl'} font-mono font-black transition-all`}
-                                style={{ color: 'var(--color-text-main)' }}
-                            >{departments.length}</span>
-                        </div>
-                    </div>
+                    ))}
                 </div>
 
                 <div className={`grid grid-cols-1 xl:grid-cols-4 ${compact ? 'gap-4' : 'gap-8'} items-stretch h-fit transition-all`}>
@@ -288,7 +291,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                             </div>
                             <div className="flex-1 p-6">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={departments.map(d => ({ name: d.name, value: d.stats.erfüllungsquote }))} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                                    <AreaChart data={departments
+                                        .slice()
+                                        .sort((a, b) => {
+                                            if (a.name === 'Armoloy') return 1;
+                                            if (b.name === 'Armoloy') return -1;
+                                            return a.name.localeCompare(b.name);
+                                        })
+                                        .map(d => ({ name: d.name, value: d.stats?.erfüllungsquote || 0 }))
+                                    } margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorPerf" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="var(--color-accent)" stopOpacity={0.3} />
@@ -351,65 +362,69 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                 </div>
                             </div>
                             <div className={`p-8 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 ${compact ? 'gap-3' : 'gap-6'} overflow-y-auto custom-scrollbar transition-all`}>
-                                {departments.map(dept => (
-                                    <div key={dept.id} className={`rounded-xl ${compact ? 'p-3' : 'p-5'} border transition-all`}
-                                        style={{
-                                            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                                            borderColor: 'var(--color-border)'
-                                        }}
-                                    >
-                                        <div className="flex justify-between items-center mb-4 pb-2 border-b"
-                                            style={{ borderColor: 'var(--color-border)' }}
+                                {departments
+                                    .slice()
+                                    .sort((a, b) => (a.stats?.erfüllungsquote || 0) - (b.stats?.erfüllungsquote || 0))
+                                    .slice(0, 2)
+                                    .map(dept => (
+                                        <div key={dept.id} className={`rounded-xl ${compact ? 'p-3' : 'p-5'} border transition-all`}
+                                            style={{
+                                                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                                                borderColor: 'var(--color-border)'
+                                            }}
                                         >
-                                            <span className="text-xs font-black uppercase tracking-widest notranslate"
-                                                translate="no"
-                                                style={{ color: 'var(--color-accent)' }}
-                                            >{dept.name}</span>
-                                            <span className="text-[10px] font-mono font-bold tracking-tighter"
-                                                style={{ color: 'var(--color-text-dim)' }}
-                                            >EQ: {dept.stats.erfüllungsquote}%</span>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {dept.bottlenecks?.slice(0, 2).map((item, idx) => (
-                                                <div key={idx} className="flex flex-col gap-1">
-                                                    <div className="flex justify-between gap-2">
-                                                        <span className="text-[11px] font-bold flex-1 leading-tight"
-                                                            style={{ color: 'var(--color-text-main)' }}
-                                                        >{item.title}</span>
-                                                        <span className="text-[10px] font-black px-2 py-0.5 rounded border whitespace-nowrap"
-                                                            style={{
-                                                                backgroundColor: 'var(--color-accent-glow)',
-                                                                color: 'var(--color-accent)',
-                                                                borderColor: 'var(--color-accent)'
-                                                            }}
+                                            <div className="flex justify-between items-center mb-4 pb-2 border-b"
+                                                style={{ borderColor: 'var(--color-border)' }}
+                                            >
+                                                <span className="text-xs font-black uppercase tracking-widest notranslate"
+                                                    translate="no"
+                                                    style={{ color: 'var(--color-accent)' }}
+                                                >{dept.name}</span>
+                                                <span className="text-[10px] font-mono font-bold tracking-tighter"
+                                                    style={{ color: 'var(--color-text-dim)' }}
+                                                >EQ: {dept.stats?.erfüllungsquote || 0}%</span>
+                                            </div>
+                                            <div className="space-y-3">
+                                                {(dept.bottlenecks || []).slice(0, 2).map((item, idx) => (
+                                                    <div key={idx} className="flex flex-col gap-1">
+                                                        <div className="flex justify-between gap-2">
+                                                            <span className="text-[11px] font-bold flex-1 leading-tight"
+                                                                style={{ color: 'var(--color-text-main)' }}
+                                                            >{item.title}</span>
+                                                            <span className="text-[10px] font-black px-2 py-0.5 rounded border whitespace-nowrap"
+                                                                style={{
+                                                                    backgroundColor: 'var(--color-accent-glow)',
+                                                                    color: 'var(--color-accent)',
+                                                                    borderColor: 'var(--color-accent)'
+                                                                }}
+                                                            >
+                                                                {item.count}x
+                                                            </span>
+                                                        </div>
+                                                        <div className="w-full h-1 rounded-full overflow-hidden"
+                                                            style={{ backgroundColor: 'var(--color-border)' }}
                                                         >
-                                                            {item.count}x
-                                                        </span>
+                                                            <div
+                                                                className="h-full rounded-full"
+                                                                style={{
+                                                                    width: `${Math.min(item.count * 10, 100)}%`,
+                                                                    backgroundColor: 'var(--color-accent)',
+                                                                    boxShadow: '0 0 8px var(--color-accent-glow)'
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Ø {item.avgDelay} sem.</span>
+                                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Max {item.maxDelay} sem.</span>
+                                                        </div>
                                                     </div>
-                                                    <div className="w-full h-1 rounded-full overflow-hidden"
-                                                        style={{ backgroundColor: 'var(--color-border)' }}
-                                                    >
-                                                        <div
-                                                            className="h-full rounded-full"
-                                                            style={{
-                                                                width: `${Math.min(item.count * 10, 100)}%`,
-                                                                backgroundColor: 'var(--color-accent)',
-                                                                boxShadow: '0 0 8px var(--color-accent-glow)'
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Ø {item.avgDelay} sem.</span>
-                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Max {item.maxDelay} sem.</span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {(!dept.bottlenecks || dept.bottlenecks.length === 0) && (
-                                                <div className="text-[10px] text-slate-500 italic py-2">{t('dashboard.noBottlenecks')}</div>
-                                            )}
+                                                ))}
+                                                {(!dept.bottlenecks || dept.bottlenecks.length === 0) && (
+                                                    <div className="text-[10px] text-slate-500 italic py-2">{t('dashboard.noBottlenecks')}</div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         </div>
                     </div>

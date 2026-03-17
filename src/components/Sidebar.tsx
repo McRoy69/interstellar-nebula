@@ -23,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
     const { t, i18n } = useTranslation();
 
     return (
-        <aside className={`fixed inset-y-0 z-50 lg:static border-r flex flex-col overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'left-0' : '-left-[320px] lg:left-0'} ${isCollapsed ? 'w-[80px]' : 'w-[300px] lg:w-[320px] xl:w-[350px]'}`}
+        <aside className={`fixed inset-y-0 z-50 lg:static border-r flex flex-col overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'left-0' : '-left-[320px] lg:left-0'} ${isCollapsed ? 'w-[80px]' : 'w-[300px] lg:w-[400px]'}`}
             style={{
                 backgroundColor: 'var(--color-bg-sidebar)',
                 borderColor: 'var(--color-border)'
@@ -95,18 +95,25 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                     <div className="pt-6 pb-2 border-t border-white/5 mt-4" />
                 )}
 
-                {departments.map(dept => (
-                    <div
-                        key={dept.id}
-                        onClick={() => onSelect(dept.id)}
-                        className={`nav-item ${activeId === dept.id ? 'active' : ''} ${isCollapsed ? 'justify-center px-0' : ''}`}
-                        title={isCollapsed ? dept.name : ''}
-                    >
-                        <Factory size={24} className={isCollapsed ? 'shrink-0' : ''} />
-                        {!isCollapsed && <span className="text-base font-medium tracking-tight flex-1 notranslate" translate="no">{dept.name}</span>}
-                        {activeId === dept.id && !isCollapsed && <ChevronRight size={18} />}
-                    </div>
-                ))}
+                {departments
+                    .slice()
+                    .sort((a, b) => {
+                        if (a.name === 'Armoloy') return 1;
+                        if (b.name === 'Armoloy') return -1;
+                        return a.name.localeCompare(b.name);
+                    })
+                    .map(dept => (
+                        <div
+                            key={dept.id}
+                            onClick={() => onSelect(dept.id)}
+                            className={`nav-item ${activeId === dept.id ? 'active' : ''} ${isCollapsed ? 'justify-center px-0' : ''}`}
+                            title={isCollapsed ? dept.name : ''}
+                        >
+                            <Factory size={24} className={isCollapsed ? 'shrink-0' : ''} />
+                            {!isCollapsed && <span className="text-base font-medium tracking-tight flex-1 notranslate" translate="no">{dept.name}</span>}
+                            {activeId === dept.id && !isCollapsed && <ChevronRight size={18} />}
+                        </div>
+                    ))}
             </nav>
 
             {/* Footer Settings */}
