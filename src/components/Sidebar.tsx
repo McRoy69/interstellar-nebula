@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) =>
                     className={`nav-item ${activeId === 'dashboard' ? 'active' : ''}`}
                 >
                     <LayoutDashboard size={24} />
-                    <span className="text-base font-bold uppercase tracking-wider text-white/80">{t('sidebar.centralStats')}</span>
+                    <span className="text-base font-bold uppercase tracking-wider">{t('sidebar.centralStats')}</span>
                 </div>
 
                 <div className="pt-10 pb-4 px-5 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
@@ -79,8 +79,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) =>
                         className={`nav-item ${activeId === dept.id ? 'active' : ''}`}
                     >
                         <Factory size={24} />
-                        <span className="text-base font-medium tracking-tight flex-1 text-white/80">{dept.name}</span>
-                        {activeId === dept.id && <ChevronRight size={18} style={{ color: 'var(--color-accent)' }} />}
+                        <span className="text-base font-medium tracking-tight flex-1">{dept.name}</span>
+                        {activeId === dept.id && <ChevronRight size={18} />}
                     </div>
                 ))}
             </nav>
@@ -127,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments }) =>
                         borderColor: activeId === 'settings' ? 'var(--color-accent)' : 'transparent'
                     }}
                 >
-                    <Settings size={22} style={{ color: activeId === 'settings' ? 'var(--color-accent)' : 'inherit' }} />
+                    <Settings size={22} />
                     <span className="text-sm font-bold uppercase tracking-widest">{t('sidebar.settings')}</span>
                 </div>
                 <div className="nav-item text-white/30 cursor-default hover:bg-transparent">
