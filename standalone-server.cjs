@@ -81,7 +81,13 @@ app.post('/api/data', (req, res) => {
 });
 
 // For SPA support: redirect all other requests to index.html
-app.get('(.*)', (req, res) => {
+// Using middleware instead of wildcard to avoid PathError in modern Express
+app.use((req, res, next) => {
+    // Skip if it's an API call (already handled above)
+    if (req.path.startsWith('/api')) {
+        return next();
+    }
+
     const indexPath = path.join(distPath, 'index.html');
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
