@@ -44,17 +44,17 @@ app.use(express.json({ limit: '50mb' }));
 
 // SMTP Configuration (Metanet)
 const transporter = nodemailer.createTransport({
-    host: '80.74.146.140', // Forced IPv4 for futura.metanet.ch
+    host: 'futura.metanet.ch',
     port: 587,
-    secure: false, // false for STARTTLS on port 587
+    secure: false, // STARTTLS
     auth: {
         user: 'michael.jenni@blessing.ch',
         pass: '16MnCrS5?'
     },
     tls: {
-        rejectUnauthorized: false,
-        servername: 'futura.metanet.ch'
+        rejectUnauthorized: false
     },
+    family: 4, // Explicitly force IPv4 to avoid ENETUNREACH issues
     connectionTimeout: 20000,
     greetingTimeout: 20000,
     debug: true,

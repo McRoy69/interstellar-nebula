@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                     </div>
                     {!isCollapsed && (
                         <div className="transition-all duration-500 opacity-100 scale-100 origin-left">
-                            <h2 className="text-base font-black tracking-tight leading-none tech-font whitespace-nowrap text-white">Härterei Blessing AG</h2>
+                            <h2 className="text-lg font-black uppercase tracking-tight leading-none branding-font whitespace-nowrap text-white">Härterei Blessing AG</h2>
                             <div className="flex items-center gap-2 mt-3">
                                 <span className="w-2 h-2 rounded-full shadow-[0_0_8px_var(--color-accent-glow)] animate-pulse"
                                     style={{ backgroundColor: 'var(--color-accent)' }}
