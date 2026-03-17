@@ -1,0 +1,227 @@
+{
+  "translation": {
+    "sidebar": {
+      "maintenancePlan": "Wartungsplan v2.0",
+      "centralStats": "Zentrale Statistik",
+      "productionUnits": "PRODUKTIONSEINHEITEN",
+      "settings": "Systemeinstellungen",
+      "build": "Build 142 • Stabil"
+    },
+    "dashboard": {
+      "centralStats": "ZENTRALE STATISTIK",
+      "subtitle": "Härterei Blessing AG • Predictive Maintenance Analytics",
+      "liveDataflow": "ECHTZEIT-DATENFLUSS",
+      "period": "Zeitraum: März 2026",
+      "globalEfficiency": "GESAMTEFFIZIENZ",
+      "totalExecuted": "PÜNKTLICHE ERLEDIGUNG",
+      "criticalPoints": "KRITISCHE VERSÄUMNISSE",
+      "activeSystems": "AKTIVE ABTEILUNGEN",
+      "activeDepartments": "MONITORING-BEREICHE",
+      "performancePerDept": "Leistung pro Abteilung",
+      "delayWarnings": "Verspätungs-Warnungen",
+      "critical": "KRITISCH",
+      "incidents": "Vorfälle",
+      "dataUpdate": "Letzte Analyse:",
+      "dataUpdateDesc": "Synchronisation mit den dezentralen Abteilungs-Journalen.",
+      "bottlenecks": "Engpässe (Flop-2)",
+      "noBottlenecks": "Keine kritischen Engpässe identifiziert.",
+      "analysisInfo": "Analyse-Parameter",
+      "analysisInfoDesc": "Effizienzbasierte Berechnung: Planung vs. Ist-Ausführung (Stand KW 11).",
+      "analysisNote": "Die Berechnung erfolgt auf Basis des wöchentlichen Soll-Ist-Abgleichs.",
+      "targets": {
+        "target": "Ziel",
+        "warn": "Warnung",
+        "alert": "Alarm"
+      }
+    },
+    "department": {
+      "tabs": {
+        "Plan": "Planung (KW)",
+        "Journal": "Operatives Journal",
+        "Archiv": "Historie",
+        "Anlagen": "Anlagenmanagement",
+        "Statistik": "KPI-Analyse"
+      },
+      "productionUnit": "PRODUKTIONSEINHEIT",
+      "operativeControl": "OPERATIVE KONTROLLE",
+      "responsible": "Verantwortlich",
+      "status": "Status",
+      "operation": "IN BETRIEB",
+      "efficiency": "Effizienz",
+      "titles": {
+        "Plan": "Jährliche Planungsmatrix (KW 1-52)",
+        "Journal": "Operatives Wartungsjournal",
+        "Archiv": "Historie abgeschlossener Aufgaben",
+        "Anlagen": "Anlagenübersicht & Status",
+        "Statistik": "Detaillierte KPI-Metriken"
+      },
+      "filter": "AUFGABE SUCHEN...",
+      "export": "PDF Export",
+      "loading": "Bereich {{tab}} wird initialisiert...",
+      "matrix": {
+        "taskMachine": "Aufgabe / Anlage",
+        "who": "Ver.",
+        "freq": "Freq.",
+        "start": "Start",
+        "add": "Aufgabe hinzufügen",
+        "task": "Bezeichnung der Aufgabe...",
+        "machine": "Anlage/System...",
+        "freqs": {
+          "daily": "Täglich",
+          "weekly": "Wöchentlich",
+          "biweekly": "Alle 2 Wochen",
+          "monthly": "Monatlich",
+          "quarterly": "Vierteljährlich",
+          "semi-annually": "Halbjährlich",
+          "annually": "Jährlich"
+        }
+      },
+      "journal": {
+        "refId": "REF-ID",
+        "task": "WARTUNGSAUFGABE",
+        "machine": "ANLAGE / SYSTEM",
+        "dateReal": "DATUM (IST)",
+        "visa": "VISUM TÉCHNIKER",
+        "status": "STATUS",
+        "action": "AKTIONEN",
+        "complete": "Abschließen",
+        "onTime": "Pünktlich",
+        "lateWeeks": "Verzug: {{weeks}} Wo."
+      },
+      "statusLabels": {
+        "done": "ERLEDIGT",
+        "late3w": "KRITISCH (>3W)",
+        "late13w": "VERSPÄTET (1-3W)",
+        "current": "AKTUELL"
+      },
+      "stats": {
+        "executed": "ERLEDIGT",
+        "open": "OFFEN",
+        "late": "VERZUG",
+        "rate": "QUOTE %",
+        "progress": "Gesamt-Jahresfortschritt",
+        "livePerf": "Operative Performance",
+        "currentKw": "AKTUELLE KW",
+        "filters": {
+          "all": "Alle Zeiten",
+          "thisYear": "Dieses Jahr",
+          "lastMonth": "Letzter Monat",
+          "lastWeek": "Letzte Woche"
+        },
+        "noLateTasks": "Keine verspäteten Aufgaben."
+      },
+      "instructions": {
+        "planTitle": "Bedienungshinweise Planung",
+        "plan1": "Markierung 'X': Die Wartung ist in dieser Kalenderwoche fällig.",
+        "plan2": "Zuständigkeit: MA (Interne Wartung), U (Operator/User), EX (Extern).",
+        "plan3": "Frequenz: Definiert den Wiederholungszyklus der Aufgabe.",
+        "plan4": "Start-KW: Legt die erste Ausführungswoche im Jahr fest.",
+        "journalTitle": "Bedienungshinweise Journal",
+        "journal1": "Indikatoren: Grün (Pünktlich), Gelb (1-3W Verzug), Rot (>3W Verzug).",
+        "journal2": "Ist-Datum: Tatsächlicher Tag der Ausführung eingeben.",
+        "journal3": "Visum: Kürzel des verantwortlichen Technikers.",
+        "journal4": "Abschließen: Archiviert die Aufgabe und aktualisiert die Statistik."
+      },
+      "anlagen": {
+        "searchPlaceholder": "Anlage filtern...",
+        "noResults": "Keine Einträge für die Auswahl gefunden.",
+        "performance": "Maschinenmetriken",
+        "done": "erledigt",
+        "open": "offen",
+        "late": "kritisch",
+        "selectHint": "Wählen Sie eine Anlage für Details",
+        "systemLabel": "System / Maschine",
+        "lastService": "Letzte Wartung",
+        "totalTasks": "Gesamtanzahl Aufgaben",
+        "plannedTitle": "Nächste geplante Wartungen",
+        "historyTitle": "Wartungshistorie",
+        "kpiDone": "Erledigt",
+        "kpiOpen": "Offen",
+        "kpiLate": "Kritisch"
+      }
+    },
+    "settings": {
+      "title": "Systemeinstellungen",
+      "subtitle": "Konfiguration & Personalisierung",
+      "tabs": {
+        "general": "Grenzwerte",
+        "ui": "Erscheinungsbild",
+        "depts": "Abteilungen",
+        "export": "Export/Info"
+      },
+      "thresholds": {
+        "title": "Daten-Grenzwerte",
+        "criticalTitle": "Kritischer Verzug (Wochen)",
+        "criticalDesc": "Legt fest, ab wann eine Aufgabe im Dashboard als KRITISCH eingestuft wird.",
+        "efficiencyTitle": "Globales Effizienzziel (%)",
+        "efficiencyDesc": "Zielvorgabe für die pünktliche Erledigungsquote."
+      },
+      "ui": {
+        "title": "Benutzeroberfläche",
+        "displayMode": "Informationsdichte",
+        "standard": "Standard",
+        "standardDesc": "Optimales Verhältnis Design/Daten",
+        "compact": "Kompakt",
+        "compactDesc": "Maximale Datenübersicht",
+        "colorTheme": "Farbschema",
+        "themes": {
+          "light": "Clean Pro (Licht)",
+          "dark": "Obsidian Flow (Dunkel)",
+          "natura": "Natura (Organisch)",
+          "vibrant": "Futuristic Tech (Kontrastreich)"
+        }
+      },
+      "depts": {
+        "title": "Produktionseinheiten",
+        "add": "Abteilung hinzufügen",
+        "placeholder": "Name der Abteilung...",
+        "confirmDelete": "Abteilung wirklich löschen? Alle Verknüpfungen gehen unwiderruflich verloren."
+      },
+      "export": {
+        "title": "Berichte & Benachrichtigungen",
+        "emailLabel": "E-Mail-Verteiler für Alarme",
+        "emailDesc": "Mehrere Adressen bitte durch Komma trennen.",
+        "formatLabel": "Standard Export-Format"
+      },
+      "footer": {
+        "autoSave": "Änderungen werden automatisch systemweit übernommen",
+        "applyReload": "Speichern & Aktualisieren"
+      },
+      "backup": {
+        "title": "Datensicherung",
+        "export": "Systemdaten exportieren (JSON)",
+        "restore": "Datensicherung einspielen",
+        "description": "Verwenden Sie diese Funktionen für Backups oder Server-Migrationen."
+      }
+    },
+    "pdf": {
+      "reportTitle": "GLOBALER PERFORMANCE-BERICHT",
+      "overview": "ABTEILUNGSÜBERSICHT",
+      "efficiency": "EFFIZIENZ",
+      "onTime": "PÜNKTLICH",
+      "late": "VERZUG",
+      "units": "ABTEILUNGEN",
+      "planned": "Geplant",
+      "ok": "OK",
+      "lateShort": "Verz.",
+      "rate": "Quote",
+      "crit": "Krit.",
+      "maintenancePlan": "WARTUNGSPLAN",
+      "annualMatrix": "JÄHRLICHE PLANUNGSMATRIX",
+      "productiveJournal": "OPERATIVES JOURNAL",
+      "historicalArchive": "HISTORISCHES ARCHIV",
+      "executionReport": "AUSFÜHRUNGSSTATUS",
+      "metricsPerformance": "METRIKEN & LEISTUNG",
+      "statisticalReport": "STATISTISCHE ANALYSE",
+      "totalPerformance": "GESAMT-PERFORMANCE",
+      "executed": "AUSGEFÜHRT",
+      "open": "OFFEN",
+      "lateDetail": "DETAILS KRITISCHE VERVERSÄUMNISSE",
+      "task": "Aufgabenbeschreibung",
+      "anlage": "Anlage",
+      "dept": "Abt.",
+      "who": "Ver.",
+      "delayWeeks": "Verzug (Wo.)"
+    }
+  }
+}

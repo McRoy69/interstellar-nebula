@@ -1,0 +1,219 @@
+{
+    "translation": {
+        "sidebar": {
+            "maintenancePlan": "Plano de Manutenção v2.0",
+            "centralStats": "Painel de Controle",
+            "productionUnits": "UNIDADES DE PRODUÇÃO",
+            "settings": "Ajustes do Sistema",
+            "build": "Versão 142 • Estável"
+        },
+        "dashboard": {
+            "centralStats": "PAINEL DE CONTROLE CENTRAL",
+            "subtitle": "Härterei Blessing AG • Análise de Desempenho de Manutenção",
+            "liveDataflow": "FLUXO DE DADOS EM TEMPO REAL",
+            "period": "Período: Março 2026",
+            "globalEfficiency": "EFICIÊNCIA GLOBAL",
+            "totalExecuted": "TOTAL EXECUTADO NO PRAZO",
+            "onTimeTotal": "EXECUÇÕES PONTUAIS",
+            "lateTotal": "EXECUÇÕES COM ATRASO",
+            "criticalPoints": "PONTOS CRÍTICOS",
+            "activeSystems": "DEPARTAMENTOS ATIVOS",
+            "activeDepartments": "DEPARTAMENTOS MONITORADOS",
+            "performancePerDept": "Desempenho por Departamento",
+            "delayWarnings": "Alertas de Atraso",
+            "critical": "CRÍTICO",
+            "incidents": "Incidentes",
+            "dataUpdate": "Última atualização:",
+            "dataUpdateDesc": "Os dados estão sincronizados com os diários operativos departamentais.",
+            "bottlenecks": "Gargalos (Flop-2)",
+            "noBottlenecks": "Não foram detectados gargalos críticos.",
+            "analysisInfo": "Métricas de Análise",
+            "analysisInfoDesc": "Cálculo de eficiência: Planejado vs. Execução Real (KW 11).",
+            "analysisNote": "A eficiência é calculada comparando o plano semanal com a execução reportada.",
+            "targets": {
+                "target": "Objetivo",
+                "warn": "Aviso",
+                "alert": "Alerta"
+            }
+        },
+        "department": {
+            "tabs": {
+                "Plan": "Planejamento (Sem)",
+                "Journal": "Diário Operativo",
+                "Archiv": "Arquivo Histórico",
+                "Anlagen": "Equipamentos / Máquinas",
+                "Statistik": "Estatísticas"
+            },
+            "productionUnit": "UNIDADE DE PRODUÇÃO",
+            "operativeControl": "CONTROLE OPERATIVO",
+            "responsible": "Responsável",
+            "status": "Estado",
+            "operation": "EM OPERAÇÃO",
+            "efficiency": "Eficiência",
+            "titles": {
+                "Plan": "Matriz de Planejamento Anual (KW 1-52)",
+                "Journal": "Diário de Manutenção Operativa",
+                "Archiv": "Histórico de Tarefas Concluídas",
+                "Anlagen": "Gestão de Equipamentos e Sistemas",
+                "Statistik": "Análise de Métricas e KPIs"
+            },
+            "filter": "BUSCAR TAREFA...",
+            "export": "Exportar PDF",
+            "loading": "Carregando seção {{tab}}...",
+            "matrix": {
+                "taskMachine": "Tarefa / Equipamento",
+                "who": "Res.",
+                "freq": "Freq.",
+                "start": "Início",
+                "add": "Adicionar Tarefa",
+                "task": "Nome da tarefa...",
+                "machine": "Equipamento/Sistema..."
+            },
+            "journal": {
+                "refId": "ID REF",
+                "task": "TAREFA DE MANUTENÇÃO",
+                "machine": "SISTEMA / EQUIPAMENTO",
+                "dateReal": "DATA DE CIERRE",
+                "visa": "ASSINATURA TÉCNICO",
+                "status": "ESTADO",
+                "action": "AÇÕES",
+                "complete": "Finalizar",
+                "onTime": "Pontual",
+                "lateWeeks": "Atraso: {{weeks}} sem."
+            },
+            "statusLabels": {
+                "done": "CONCLUÍDO",
+                "late3w": "CRÍTICO (>3 Sem)",
+                "late13w": "ATRASADO (1-3 Sem)",
+                "current": "EM DIA"
+            },
+            "stats": {
+                "executed": "REALIZADAS",
+                "open": "PENDENTES",
+                "late": "COM ATRASO",
+                "rate": "TAXA %",
+                "progress": "Progresso de Manutenção Anual",
+                "livePerf": "Desempenho Operativo",
+                "currentKw": "KW ATUAL",
+                "filters": {
+                    "all": "Sempre",
+                    "thisYear": "Este Ano",
+                    "lastMonth": "Último Mês",
+                    "lastWeek": "Semana Passada"
+                },
+                "noLateTasks": "Não há tarefas com atraso."
+            },
+            "instructions": {
+                "planTitle": "Instruções de Planejamento",
+                "plan1": "Marca 'X': A tarefa deve ser realizada na referida semana.",
+                "plan2": "Responsáveis: MA (Manutenção), U (Usuário), EX (Externo).",
+                "plan3": "Frequência: Define a periodicidade requerida.",
+                "plan4": "Início (KW): Determina a semana de ativação do plano.",
+                "journalTitle": "Manual do Diário Operativo",
+                "journal1": "Sinalização: Verde (Pontual), Amarelo (1-3 sem. atraso), Vermelho (>3 sem. atraso).",
+                "journal2": "Data de Cierre: Indicar o dia real de execução.",
+                "journal3": "Assinatura: Iniciais do técnico ou responsável pela tarefa.",
+                "journal4": "Finalizar: Arquiva a tarefa e atualiza as estatísticas globais."
+            },
+            "anlagen": {
+                "searchPlaceholder": "Filtrar por equipamento...",
+                "noResults": "Nenhum equipamento encontrado.",
+                "performance": "Métricas do Ativo",
+                "done": "concluído",
+                "open": "pendente",
+                "late": "crítico",
+                "selectHint": "Selecione um ativo para ver detalhes",
+                "systemLabel": "Equipamento / Máquina",
+                "lastService": "Última Intervenção",
+                "totalTasks": "Total de Intervenções",
+                "plannedTitle": "Próximas Tarefas Planejadas",
+                "historyTitle": "Registro de Intervenções",
+                "kpiDone": "Realizadas",
+                "kpiOpen": "Pendentes",
+                "kpiLate": "Atrasadas"
+            }
+        },
+        "settings": {
+            "title": "Configuração do Sistema",
+            "subtitle": "Gestão de Parâmetros e Personalização",
+            "tabs": {
+                "general": "Limiares",
+                "ui": "Aparência",
+                "depts": "Áreas/Dptos",
+                "export": "Notificações"
+            },
+            "thresholds": {
+                "title": "Limiares de Alerta",
+                "criticalTitle": "Limiar de Atraso Crítico (Semanas)",
+                "criticalDesc": "Define quando uma tarefa passa de 'atrasada' para 'crítica' no dashboard.",
+                "efficiencyTitle": "Objetivo de Eficiência (%)",
+                "efficiencyDesc": "KPI de referência para a taxa de conformidade pontual."
+            },
+            "ui": {
+                "title": "Interface de Usuário",
+                "displayMode": "Densidade de Tela",
+                "standard": "Padrão",
+                "standardDesc": "Equilíbrio entre dados e design",
+                "compact": "Compacto",
+                "compactDesc": "Prioriza a quantidade de informação",
+                "colorTheme": "Esquema de Cores",
+                "themes": {
+                    "dark": "Obsidiana Líquida (Escuro)",
+                    "natura": "Verde Selva (Orgânico)",
+                    "vibrant": "Tecno Neon (Alto Contraste)"
+                }
+            },
+            "depts": {
+                "title": "Unidades de Produção",
+                "add": "Adicionar Novo Departamento",
+                "placeholder": "Nome do departamento...",
+                "confirmDelete": "Confirma a exclusão do departamento? Esta ação é irreversível."
+            },
+            "export": {
+                "title": "Relatórios e Notificações",
+                "emailLabel": "Destinatários de Alertas (Email)",
+                "emailDesc": "Endereços separados por vírgula.",
+                "formatLabel": "Formato de Exportação Padrão"
+            },
+            "footer": {
+                "autoSave": "As alterações são aplicadas e salvas de forma persistente",
+                "applyReload": "Salvar e Atualizar"
+            },
+            "backup": {
+                "title": "Cópia de Segurança",
+                "export": "Exportar Dados do Sistema (JSON)",
+                "restore": "Restaurar Cópia de Segurança",
+                "description": "Utilize estas ferramentas para migração ou backup de dados."
+            }
+        },
+        "pdf": {
+            "reportTitle": "RELATÓRIO DE DESEMPENHO OPERATIVO",
+            "overview": "RESUMO POR DEPARTAMENTO",
+            "efficiency": "EFICIÊNCIA",
+            "onTime": "PONTUAL",
+            "late": "ATRASO",
+            "units": "UNIDADES",
+            "planned": "Planejado",
+            "ok": "CORRETO",
+            "lateShort": "Atr.",
+            "rate": "Taxa",
+            "crit": "Crit.",
+            "maintenancePlan": "PLANO DE MANUTENÇÃO",
+            "annualMatrix": "MATRIZ DE PLANEJAMENTO ANUAL",
+            "productiveJournal": "DIÁRIO DE MANUTENÇÃO",
+            "historicalArchive": "REGISTRO HISTÓRICO",
+            "executionReport": "ESTADO DE EXECUÇÃO",
+            "metricsPerformance": "MÉTRICAS E DESEMPENHO",
+            "statisticalReport": "ANÁLISE ESTATÍSTICA",
+            "totalPerformance": "DESEMPENHO CONSOLIDADO",
+            "executed": "REALIZADO",
+            "open": "ABERTO",
+            "lateDetail": "DETALHAMENTO DE TAREFAS CRÍTICAS",
+            "task": "Descrição da Tarefa",
+            "anlage": "Equipamento",
+            "dept": "Dpto.",
+            "who": "Resp.",
+            "delayWeeks": "Atraso (Sems)"
+        }
+    }
+}

@@ -1,0 +1,3054 @@
+0M)s
+s@E, etc.
+GrAh
+4' R
+efrescar
+ todo y ,re
+WaitFo
+ 180
+6eFu
+rror
+xNex@
+heets("Z
+trale_St
+@Cstik").`Activ
+oTo 
+End^ 
+da l ByV
+meoutSe
+\pLong
+_Single:4 t
+4Do3
+'Do)_!
+xlDo
+ne Then
+llConne
+,onsIdle
+@|it I
+FunB
+^  N
+c>nA%
+`U E
+ach 
+T$$No
+.ODBC
+ Is 
+B7\k
+ajar 
+ Cabecera (KW/Datum/Version, etc.) 
+ asegu
+ Refrescar todo y recalcularr cabe 
+os con
+(usa t
+Zentrale_Statistik 
+fres 
+wer o
+Attribut
+e VB_Nam
+e = "Die
+seArbeit
+smappe"
+00020819
+$ 0046}
+obal
+IFalse
+Creatabl
+Predecl
+BExpose
+Template`Deriv
+stomiz
+Option 
+licit
+& Sub
+ Workboo
+k_Open()
+Dim 
+ev As Bo
+olean, sBu
+calc
+= App
+HEven
+Scr@eenUpd
+*cAS
+' Cabece
+ra (KW/D
+atum/V
+B7\k
+Attribut
+e VB_Nam
+e = "Tab
+elle22"
+00020820v-
+046}
+|Glo
+SpacA
+False
+reatabl
+Predecla
+B@Expose
+emplateD0eriv
+Bus`tomiz
+B7\k
+--- utilidad: buscar una tabla por nombre en todo el libro
+stru
+stik
+--- refresca una tabla de PQ por su nombre (sin RefreshAll)
+Actualizando:  
+ncrono
+ fallback por si fuera conexi
+n sin tabla (poco probable aqu
+ Orden correcto: par
+metro -> base -> salida del gr
+fico
+Param_ZeitraumA@
+Top2_Late_AufgabenA@
+Top2_ChartDataA@
+Zentrale_Statistik
+Param_ZeitraumA@4
+Top2_Late_AufgabenA@4
+Top2_ChartDataA@4
+Zentrale_Statistik
+ 1) Refrescar primero las tablas que alimentan el gr
+fico
+Param_ZeitraumA@
+Top2_Late_AufgabenA@
+Top2_ChartDataA@
+ 2) Refrescar la tabla principal de la hoja
+Zentrale_StatistikA@
+ nombre de la tabla PQ
+ 3) Reconstruir el gr
+fico
+Zentrale_Statistik
+r el
+ 4) Formato Erf
+llungsquote + links
+quot 
+Attribut
+e VB_Nam
+e = "Ref
+resh"
+ption Ex
+plicit
+ub Aktua
+lisieren
+Alles_Ma
+nuell()
+Dim e
+v As Boo
+lean, su
+#= Ap
+q.Enab
+leEvents
+"Scree
+nUpd
+False
+' 1)
+car pr
+imero la
+Uan e
+l gr
+g "P
+aram_Zei
+traum
+Top2_Lat
+e_Aufgab
+Chart
+Data
+[ncip al de
+^ h(oja
+PZ@1ra le_St
+(' no0mbre
+> P"Q
+\' 3
+nstruir
+Build_Fl
+24) F
+ormato E
+llung
+squo@
+GeiPfa
+d_AlsHyp
+C'--- 
+utilidad : busA
+Ren t
+Klibr!
+Priv
+Find!B
+(ByV
+String
+ListOb8jec
+Workshe
+et, lo
+N@ Each 
+I@n Thisa
+bpook.
+Resu1`
+Se*t
+GoTo 
+If No
+ %Ga
+.lo:
+aP8Q p@
+inD~h
+m Ex
+uusB 
+zand
+G& "
+kJ-.Quer:y
+.D  Back@groundb
+  ' s
+ncrond
+' fallb#`
+.i f 
+(poco`
+\aVConn
+F\c -\
+/LCase(
+4CRnc
+Pipre@
+}r<eb
+ueD 
+, cDal
+#XlC 
+FIN54' Or
+Ecorr
+met0~P-> bP  p
+#T<he
+_x_xk"
+5@_Perio`
+}_lh
+B7\k
+Attribut
+e VB_Nam
+e = "Tab
+elle21"
+00020820v-
+046}
+|Glo
+SpacA
+False
+reatabl
+Predecla
+B@Expose
+emplateD0eriv
+Bus`tomiz
+B7\k
+Attribut
+e VB_Nam
+e = "Tab
+elle2"
+|0{0
+0020820-;
+|Glob
+Spac
+ False
+dCr@eatabl
+redecla
+BE xpose
+mplateDe
+Bust0omiz
+tblZeitraum
+resca A@2
+ y reco
+quita cualquier color de relleno
+Quita l
+neas de cuadr
+cula si quieres un blanco total
+Attribut
+e VB_Nam
+e = "Tab
+elle1"
+|0{0
+B7\k
+20820-;
+|Glob
+Spac
+ False
+dCr@eatabl
+redecla
+BE xpose
+mplateDe
+Bust0omiz
+2Op tion 
+ inHandl
+er As Bo
+olean
+Sub Work
+sheet_Ch
+ange(ByV
+al Targe
+2rror 
+GoTo Sal
+Dim rlng
+ NothingC
+"Resu
+ListObje
+cts("tbl
+Zeitraum
+").D
+bBod.y
+B%Is
+  The
+n@Jit 
+Inters
+(C>,
+.CountL!
+L > 1S
+j.EnAp
+Events
+Refresh
+od_An
+EndE8AyHo
+ja_Fondo
+Blanco(
+With Act
+Eior.P
+at@Hn
++xlN
+oneA
+  'q
+uita cuaFl@
+n0eas 
+cula si
+es un 
+ total
+is`fyGrid
+lin@
+= $)
+B7\k
+Attribut
+e VB_Nam
+e = "Tab
+elle3"
+|0{0
+0020820-;
+|Glob
+Spac
+ False
+dCr@eatabl
+redecla
+BE xpose
+mplateDe
+Bust0omiz
+B7\k
+Attribut
+e VB_Nam
+e = "Tab
+elle4"
+|0{0
+0020820-;
+|Glob
+Spac
+ False
+dCr@eatabl
+redecla
+BE xpose
+mplateDe
+Bust0omiz
+B7\k
+Attribut
+e VB_Nam
+e = "Tab
+elle5"
+|0{0
+0020820-;
+|Glob
+Spac
+ False
+dCr@eatabl
+redecla
+BE xpose
+mplateDe
+Bust0omiz
+tblZeitraum
+WB_Info_TabelleDiagramm
+Flop2_ChartData
+Zentrale_Statistik
+B7\k
+====================== PAR
+METROS DE ESTILO ======================
+ Porcentaje de mezcla respecto al color base de la Abteilung
+ #E67E221 ]D
+ #FAD7A0
+====================== UTILIDADES SEGURAS ======================
+ta "#Rd
+Acepta "#RRGGBB" o "RRGGBB" y devuelve siempre "#RRGGBB"
+#B4B4B4
+gris por defectoGBk
+ hexColor esperado "#RRGGBB"; tolera entradas malas -> gris
+ Mezcla el color con blanco (tint>0) o con negro (tint<0).
+ tint en [-1,1]. 0 = sin cambio; 0.12 = 12% m
+s claro; -0.12 = 12% m
+s oscuro
+en [
+s cl 
+s osc 
+ Clamp 0..255 sin ElseIf en la misma l
+nea 
+fallback por si un estilo pisa el Fill==== 
+Lee Param_Zeitraum (tabla 1x2 o rango A2:B2)
+Param_Zeitraum 
+_Chart
+====================== CONSTRUCCI
+N DEL GR
+FICO ======================!
+Zentrale_Statistik
+_Flop2 
+ --- columnas ---
+Top2_ChartData$
+No encuentro la tabla 'Top2_ChartData'.
+ serie]
+Abteilung
+Name1
+ par
+Wert1
+Name2
+Wert2
+gen:
+Abt_Color
+'Top2_ChartData' no tiene filas. 
+ --- rangos para series ---
+ --- eliminar gr
+fico previo (si existe) ---derech
+chtFlop2 
+ === calcular ancho hasta el final de la columna G ===j
+ p.ej. A19la c
+ columna G 
+ (si e 
+ desde A19 hasta borde derecho de G
+ --- crear gr
+fico ---P
+chtFlop2 
+s --
+tData' 
+tulo con fechas del par
+metrod
+Flop-2 Versp
+tungen: 
+dd.mm.yyyy$
+dd.mm.yyyy$
+ === crear series ===
+s ---
+="Worst #1"
+="Worst #2"
+ === Etiquetas y colores por punto ===(
+tilo
+====================== REFRESCAR (opcional) ======================]
+Top2_ChartDataA@
+Zentrale_Statistik
+Zentrale_Statistik
+ ==== Barras verdes en Erf
+llungsquote (col F) ====
+ Rango de Erf
+llungsquote (columna F)
+llun
+0.0%9
+ limpiar reglas anterioresimpiar
+ 1) Crear DataBar (SIN asignar)
+ regq
+ 2) Tomar la 
+ltima regla (la que acabamos de crear),
+ 3) Ajustar propiedades b
+sicas de la regla
+a sobr
+ Deja que Excel calcule min/max autom
+ticamente
+ Color verde (solo esto ya nos vale)
+ DataBar (]
+ color del bot
+Zentrale_Statistik 
+ === 0) Color del bot
+n ===
+btnAktualisieren 
+ Fallback por si no encuentra el bot
+ === 1) Tabla Zentrale_Statistik ===format
+Zentrale_Statistik 
+ verde claro
+ === 2) Columna Erf
+llungsquote (datos) ===
+) y M2
+llungsquote
+ Formato n
+mero + limpiar CF antiguos
+0.0% 
+ === 3) Celdas auxiliares para fijar 0%
+100% ===
+M1:M2
+0.0% 
+ 0 %|
+ 100 %(
+ Rango total donde aplica la DataBar
+ === 4) Crear DataBar ===
+ <-- mismo verde que el bot
+WB_Info_TabelleDiagramm
+Tabelle: Jahreswerte bis aktuelle KW.
+Diagramm: Flop-2 versp
+tete Aufgaben je Abteilung im gew
+hlten Zeitraum.
+rar ve
+ Borrar versi
+n anterior si existe
+ Ancho 80% del Diagramm, centrado
+333333
+ Un poco de espacio debajo del Diagramm
+rrow
+Aptos Narrow9
+ "Tabelle:" en negrita
+Tabelle:
+Tabelle:
+ "Diagramm:" en negrita
+Diagramm:
+Diagramm:
+tblZeitraum
+ <- nombre de tu tabla Zeitraum
+ Bot
+n que dispara AktualisierenAlles_Manuell
+*aktualisierenalles_manuell*
+*aktualisierenalles*
+ Buscar la tabla Zeitraum por nombre
+star e]
+ 1) Texto de info bajo el diagrama
+ 2) Bot
+n "Aktualisieren" debajo del texto, centrado bajo 
+ un poco debajo del texto
+ebaj 
+ centrado respecto al Diagramaq
+ 3) Tabla Zeitraum: SIEMPRE debajo del Diagrama en columna Gha del
+ Columna fija = G
+ Primera fila debajo del Diagrama
+ si la quieres un poco m
+s abajo: +2
+ Mover la tabla Zeitraum
+ Ajustar ancho de la 
+ltima columna (donde est
+ "Jahr (bis KW aktuell)")co
+ se adapta al texto
+nimo c
+modo, ajusta a tu gusto
+Flop2_ChartData
+ --- Serie 1 (Worst #1) ---
+ peor = naranja oscuro
+ --- Serie 2 (Worst #2) ---
+ segundo peor = naranja claro
+ === Ejes / escala ===
+ Valor (X)
+ Categor
+a (Y)
+ peor arriba
+ Texto, bot
+n y Zeitraum
+Error en Build_Flop2_Chart:  
+Attribut
+e VB_Nam
+e = "Gra
+fik"
+tion Exp
+licit
+ PAR
+METROS 
+DE ESTIL
+ Por
+centaje 
+de mezcl
+a respec
+to al co
+lor bas
+Abteilu
+Priv
+Const 
+ORANGE_D
+ARK  As 
+Long
+27EE6   
+' #E67E2
+:LIGHT
+@A0D7FA
+F AD7A0
+FO_SHAPE
+_NAME
+="WB_Inf
+o_Tabell
+eDiagram
+]ZEITR
+AUM_TABL
+%tblZe
+itraum"
+<- nombr
+tu tab
+DES SEGU
+;Fun
+SafeTx
+;Vari
+ant)
+'$ O
+@If IsE
+( v) OrA
+Type
+= vbNul
+l Then
+Else
+7Num
+7BM@
+CDb>l
+eDNo
+rmalizeH@ex(ByV
+>n?'Acept
+a "#RRGG
+BB" o "E
+}vuelve
+ siemp
+Trim$b(%Mh))C
+en(ha'6 A
+na<1, h,u
+#" & h
+Left$
+'gris p@c
+o`0 ToRGB
+@!ing
+' hE
+1%3; to`lera 
+Dim r
+, gG
+GoTo Fal`lbackc
+=Z I#(
+$<r 4C
+Lng("&H
+Mid 1
+Exit 
+' Mje
+co (tint
+>0)@g
+<0).A
+6 [-1,1]
+. 0 
+sin 
+cambio; 
+0.12@
+oscuro
+hade
+1&HFF&
+\ &H1
+`>= 0#
+ + (255 
+- r) * 
+lampP!.
+Oen 
+ma l
+r <P%
+S6*p
+. Lighte6nq
+,c7)
+pc>t
+, Abs(
+Dark
+ Pa`FPo@
+_48With 0pt.F
+).Visi
+msoTru
+.Solid
+xor.
+vsi un
+ estilo 
+pispnl F
+linek
+Find
+xistO\bj
+orksheet<, 
+ach 
+book.}
+I0<NoB
+Is@|t~h0
+Ref dtFr
+omB;P
+'Lee
+1x2Pw
+rango A2
+:B2$
+ /unt
+(1).
+aBodyRp
+.Cel
+ls(1, 1)
+.Value)
+dtTo 
+= CDate(P.Cel
+nd With
+Else
+llback:
+@dtFrom
+s.Range(p"A2"
+ CONSTR
+UCCI
+EL GR
+%Pub
+lic 
+, Bu
+ild_Flop
+2_Chart(
+nOptio@nal By
+targetSh
+eet As S tring
+entrale_
+Statisti
+!opLe
+!A19"
+<Dim ev
+Boolean
+, su
+cal"c
+.Ena
+bleEv@)s
+Screen
+Upd@
+:M`anual
+n Error 
+ERRHE
+IWork6sAnC-S
+This
+boodk.
+zJel
+yObje
+= Fi
+ndTA[("T
+*If 
+Is Noth
+ 5, , "N@o encu
+o  la t
+a "'
+--- colupmnas
+ULong,
+ iN1
+ClrG
+btei
+lung 
+Wer>t
+<Bodyb
+Coun$D
+>n < 1
+-; no tie
+ne filas
+os pa
+ra serie
+L>rD>B
+, rc>
+e?!B`f
+eliminar
+fico
+ previo @(si ex
+Resum
+e Nex
+ichtB
+NDpelet@
+ ar a
+ncho has`ta el
+B GAr
+rightE
+Do`u
+Width
+p.ej. 0r
+"GqA#(v
+'UQ G
+dere
+D\reH$`]
+!, c
+$.Ad
+:=24 * (
+4co.
+U"v/x
+xlBar
+Clust
+HasLeg@
+PlotA0
+.Format.
+Fill.Vis
+ ' T
+con 6f@
+etro3
+qPGe, 
+etP@_m
+"qE-
+2 Versp
+n: " 
+dd.mm.y
+=00.s
+.New
+st #1L""
+GAbdc2
+^ Etiqu
+baseRGB7
+toneb
+u!s1.0,
+Label
+Show
+gory/
+Posi
+  .ShowC
+ategoryN
+ame = Fa@lse
+Position
+hxlLabel
+DCenter
+End With
+For i
+d1 To n
+' --- S
+erie 1 (
+Worst #1N)
+If IsNu
+6c(rW1.
+Cells(i,
+ 1).Valu
+e) Then a
+8CDbl
+1SafeT xt(rN
+.> 0 AA
+vLenB(
+!)> 
+.HasDat
+ETru
+" & C
+Str(CLng (v1))
+CPo1
+ORANGE_D
+' pe
+= naran
+ja oscur
+ELIGH
+T  ' seg
+undo
+Fcla
+G' === 
+Ejes / e`scala!
+im mx As
+ Doubl
+AAppli
+.Max(
+ h(X
+ch.Axes(
+'L.Min
+imumS@
+<= 1.0
+TickB
+Hber
+a |(Y
+pacing
+.Reverse
+PlotOrde>r
+arPriba
+&.(&F
+ont.Siz
+;Cha
+rtGroups
+GapWid4th
+o, bot
+n y Zeit
+raum
+ce_Info
+ ws,
+Butthon_
+FIN:C
+alcul
+Screen
+Upd`
+HEna`3Ev
+Exit
+ SubA8ERR
+MsgBox` "Err
+uild_Flo(p2_
+:rip
+, vbCrite
+Rtesp
+letD>y&
+'@D/
+= REFRES
+CAR (opc
+P@Fic
+fresh_T
+ByPA lob
+IhStr
+LLis
+tObject
+Finzd
+lo.Query
+  Backg
+2ndy2
+bookConn
+UntilAs
+iesD
+KN$H#
+:b/(
+#e "T
+^5 "Z
+:ral
+e_St
+<sti
+k", "A19
+1PLs
+Only2E
+ras 
+Zdp{
+llun
+gsquote @(col F
+yEfQP
+aBars(ws
+ sheet,
+Row"3
+ongu
+last7h
+5r@P
+@)dPJo&
+0o de
+[>.B
+impiar r$eg
+ (SI
+N asigp
+s.Ad2d1
+' 22@
+tima3
+que acab0amos
+Count
+' 3) A
+just
+pro piedaA,b
+' Dep
+@Excel 
+le min/m
+ax autom
+pm`=
+.Modify 
+Type:=xl
+  .MaxPo
+int.Modi
+fy Type:
+=xlCondi
+tionValu
+eAutomat
+' Color
+ verde (
+ esto 
+ya nos v
+ale)
+\On 
+^Resu
+me Next
+P.Bar
+ RGB(146
+, 208, 8 0)  '
+YGoTo
+End W ith
+PublicB 
+ For
+Erfuellu
+ngsquote
+XDim ws
+ As Work0shee
+ListObj
+rngDa
+RangeG
+,btn
+del bot
+ThisA6boo
+8s("Ze
+ntr@n_St
+|`stik"
+ === @b
+ .S0hape@
+tualisie
+ren").Fi
+ll.@ge
+Iy' Fall@back p
+ encuB1F 
+?AEIf H!0Y
+@enI
+1@67, 46
+) Tabla 
+Is N
+othi
+{Th@1pExit
+yCj2B)
+umna
+ (datods)?
+ lo.
+8"Tody
+uo n
+mero + l
+impiar C
+F antigu
+.Num
+ = "
+0.0%"K
+s.Delet
+(elda
+s auxil`
+es para 
+00%')
+("M1:M2ai_A;
+(1, 1).
+o total
+e ap`
+<a  \j
+(D,, 
+&re #
+L{cL
+Show
+(Tru?
+Solid
+ <-- mis
+.AxisPosG
+Non,
+rivat
+eRqPlace_ InfoT
+derChart
+#jP 
+txtR
+trPKg
+pleft
+e,@)p
+, p2
+4e: Jah@reswer
+ KW.
+" & vbCr4Lf
+"Diagram
+m: Flop-B2!
+B @Aufgab@Xj
+e Abtei
+hl"t
+Zei@uum
+r@2!
+nALer
+i3le !aH
+wsetINFO_
+SHAPE_NAxME)vL
+ncho
+ * 0.n6c
+Y($co
+) H/ 2
+ espac"i
+baja
+Heigh
+QJ`'
+. CA,box( 
+  Ori
+on:=ms
+Horizon%
+:=32
+JNap
+.line.
+s C7
+Margi
+dWr<ap
+P@{P<
+.Alig
+nm@ p
+e0fK
+8>0Q
+"eO"0
+ negprita
+StrA
+qaacter
+Len(
+.Bol
+IfU\
+les_Manq
+|Func
+ FindRe
+fPohBu
+s As Wor
+ksheet)
+Shape
+Dim sh
+Ttrin
+For E
+lIn w4s.
+ Err
+LRes
+ume Next
+X= LCas
+e$(sh.On
+Action)
+GoTo 0
+HLike
+ "*aktua
+lisieren
+alles_ma
+nuell*" f_
+ Set
+ FindRef
+reshButtdon
+Edxi
+nd If
+uscar la
+ tab
+traum p
+ nombr
+ivate 
+istObjec
+Hz@a
+rlo.`Name)
+EITRAUM_
+TABLE_NApME) 
+VJ/@
+ub Place
+_Cp_And_
+ML, c
+FCha
+Btn 
+rows@
+destRow
+de ia
+o el dia
+grama
+FO_SHAPd=
+' 2) 
+n "A
+en@`d
+=tr 9$5
+SNot
+TWxith
+Top`T
+.Height 
++ 10
+Left
+co"."
++ (@
+Wi"d
+/ 2D
+' cd#
+{o al
+ D*9a
+' 3@B
+ SIEMPRE#
+ en@clu
+mna GC
+#2Jy
+Ba=: 
+ca= 
+]s.Cou
+fija
+("G1")
+s= 'B.
+^tomR
+DCO@
+s Ba!G: +2
+M8ove
+t D0Bina
+vL:=p{
+ApPplic
+C`opyMo`C`
+ls@J9
+Ajus
+kanch
+ltima
+Jahr (bi`s KW 
+rapT@C0
+kToF
+' se ada
+!as:< 16rna?m
+nimo c
+modo, a2
+}u g
+333333
+Zentrale_Statistik
+Flop2_ChartData
+n\SE@
+SO\I@
+ der@
+ne\@
+B7\k
+Zentrale_Statistik 
+ AJUSTA el rango a tu columna DateiPfad:.
+B7:B50 
+ por ejemplo B7:B50
+ por si ya hay unomo
+ Aseg
+rate que empieza por \\nas\.../menosk
+Attribut
+e VB_Nam
+e = "Lin
+Publ
+ic Sub D
+ateiPfad
+_AlsHype
+Dim sh
+ As Work sheet
+2Range,$ c
+<= ThisA
+?book.
+("Zentra
+le_Stati stik"
+AJUSTA e
+`o a 
+tu colum
+("B7:B
+50")
+c' p
+or ejempXlo 
+`In 
+ If Le
+n(Trim(c
+.Value))
+ > 0
+On Err
+Resu
+Nex'
+.D8ele
+ ya hay 
+.GoTo
+ que 
+ieza
+<\\n@as\...
+"Add An
+chor:=c,
+resXs:=
+oDisplay
+End@W
+AJp c
+Wartungsstatistik H
+rterei Blessing AG
+AUTO
+M:\SERVER_MANAGEME
+Wartungsstatistik H
+rterei Blessing AG
+ing 
+AUTO
+Wartungsstatistik H
+rterei Blessing AG
+M:\SERVER_MANAGEMENT\08 Corporate Identity\Logo\Logo 2020\2 Logo Blessing\Logo klein schwarz.jpeg
+AUTO
+M:\SERVER_MANAGEMENT\08 Corporate Identity\Logo\Logo 2020\2 Logo Blessing\Logo klein schwarz.jpeg
+MENT`
+MENT`
+ Ble`
+warz
+MENT`
+ Ble`
+warz
+Aptos Narrow
+WB_Logo
+WB_Title
+WB_InfoRight
+WB_HeaderPill
+B7\k
+=============================
+ 1) WRAPPER (solo texto + logo)
+=============================
+Gesamt
+bersicht Wartungsstatistik 
+ bis KW 
+00$ 
+tulo arriba en la Kopfzeileschw
+ si no llega fecha, usa hoy
+==========================
+ WRAPPERS DE APLICACION
+==========================
+M:\SERVER_MANAGEMENT\08 Corporate Identity\Logo\Logo 2020\2 Logo Blessing\Logo klein schwarz.jpeg
+AUTO
+Wartungsstatistik H
+rterei Blessing AG
+Aptos Narrow
+ limpia Druckbereich
+ oculta saltos de p
+gina]
+WB_Logo
+WB_Title
+WB_InfoRight
+M:\SERVER_MANAGEMENT\08 Corporate Identity\Logo\Logo 2020\2 Logo Blessing\Logo klein schwarz.jpeg
+AUTO
+Wartungsstatistik H
+rterei Blessing AG
+==========================
+ 2) CONSTRUCTOR SOLO TEXTO (sin pildoras)
+==========================]
+WB_HeaderPill
+ limpiar restos anteriores
+ coordenadas base]
+AUTO
+ logo
+tulo
+ derecha (Versi
+n / Datum)
+Version: 
+Datum: 
+dd.mm.yyyy$ 
+ / KW
+00$ 
+ colocar meta a la derecha sin pisar el t
+tulo
+ encabezado de impresi
+n (texto superior de p
+gina)
+&"Calibri,Bold"
+bersicht - 
+dd.mm.yyyy$ 
+ / KW
+00$ 
+ limpieza visual
+ orden
+AUTO
+M:\SERVER_MANAGEMENT\08 Corporate Identity\Logo\Logo 2020\2 Logo Blessing\Logo klein schwarz.jpeg
+ KW ISO del d
+o ISO = a
+o del jueves de esa semana
+0", 
+Attribut
+e VB_Nam
+e = "Tit
+ulo"
+tion Exp
+licit
+> 1)
+ WRAPPER
+ (solo t
+exto + l
+ogo)
+m Sub Ap
+plyWorkb
+ookHeade
+LOnly(` _
+a l ByV
+As S
+Wartungs
+statisti
+rter
+ei Bless
+)jah
+(VarianBt
+?2025
+@1.0A
+/Fecha
+/D"a
+,Ma@xWidth
+;r0tCol
+FNAU
+M:\SERV
+ER_MANAG
+EMENT\08
+ CorporA-
+Iden@^y\
+H0\2 
+klein 
+schwarz.
+jpeg"
+Dim ws
+0shee
+If  Len(C
+> 0 Then
+rror
+ Resu
+G oTo 0
+Acti
+veSG+End 
+@.@4Is pNoth
+/' si
+ no lleg
+a fA
+, us
+a hoy
+Builld"
+c, CLng
+(![)
+ %S,
+ xSub
+ DE APLI@CACION
+Refre
+shAllVis
+ible
+Each
+ws .Page
+.PrintArdea 
+ limpia @Druckb
+Disp(lay
+oculta s
+altos de
+ginaK
+1:=s
+C:=Q
+.<:=
+B-:=
+UE:=
+eH:=
+:=!i3J5
+Window '^N)
+p&ewP
+x@lNormaPJe
+SxNCab
+ecera_A
+ParAh
+sOfRB
+udaO!
+, kw
+ng, isoJ
+' KW ISOa
+/l d
+IsoW
+eekNum(dA
+del jPueve
+ema%5E
+ear(d - 
+day(d, 
+vbMon
+a en l
+a Kopfze\il
+@Asicht
+ bis!
+" & 
+Lmat
+$(kw, "0
+/o#o)?S
+57:73Wf;
+%8:=
+4riv
+Fd# First Empty
+agc /1 p
+umns.Cxoun
+.Cells(@1, c).
+u|e)
+= 17
+) CONSTR
+UCTOR SO
+LO TEXTO
+extz
+MAX_W
+Const UI
+_FONT
+Gow`.
+nst TITL
+E_SIZE  
+As Singl
+e = 22
+JLOG
+GAP_BOX
+$TEXT_CO
+oLong
+&H3128
+PnmLogo
+)"WB_
+Meta
+InfoR
+ight
+@Header
+DAppli
+cation.S
+creenUpd
+oFalse
+ lim
+piar res
+tos ante
+Error Re
+sume Nex
+ws.Sha
+pes(
+F).D
+elet
+F$Go8To 
+ordenada0s baA9A"Di
+m leftEd
+, topzY
+irstEmptpyColA
+f Len(st(art
+Or UC
+"AUTO" T8hen
+Row1(wLs)
+3= @YC
+ells(1, 
+olumn
+nd If
+).T`op + $x
+-+ MAX_W
+tObject,
+Path) > B0L(Set 
+ PlacePi
+ctureSca
+= II
+Is No
+, 0,
+.Width
+l.AddT
+nbox(mso
+OrientB|@Horizo
+dHsh"
+.line.
+VisibB
+.AutoSi
+rdWrap
+Range
+e UI_
+FONT
+Bold
+Tru'
+or.RGB
+%9!"
+-NonD
+%le"
+'m: 
+gecha (
+Versi
+/ Datum
+.VnE>txtXo,x kwq
+!kshee tFuncbmIs
+oWeekNum
+on: " & 
+vbCrLfu
+at$(d, "
+dd.mm.y
+0:a:6A
+".sh
+Parag
+.Alig
+bcol
+la E6sin 
+5MHax((@+ $
+}-pA
+Cencab
+ezado@
+QD(t
+no s
+gilna
+mun4
+Page
+;u&p
+.C 'er
+"&""Ca@libri,
+Ocht 
+F[E1
+/ oE"cE
+ visual
+Disp
+layq
+Brea
+YveWindo
+xlNor
+malView|
+hZO0
+r pAB
+SubQ+
+&vat
+q(ByVal< s
+,2(s
+_ZRZG~[#s
+7arQ
+ngle: h 
+= s.Heig ht
+TextFram
+e2.AutoS
+4pNone
+End Su
+vate Fun
+ction Pl
+acePictu
+reScaled
+DByVa
+l ws As 
+Workshee
+fileP
+#Stri
+ leftPJo
+arget
+shape.N
+On E
+rror GoT
+Handle
+tIf Len@(Dir$(
+0 Thenc
+Dim s
+&, F
+RTru@
+S, -1
+LockAsp
+~tCf
+OVUE-
+NT\08 Corporate Identity\Logo\Logo 2020\2 Logo Blessing\Logo klein schwarz.jpeg
+Wartungsstatistik H
+rterei Blessing AG
+AUTO
+M:\SERVER_MANAGEMENT\08 Corporate Identity\Logo\Logo 2020\2 Logo Blessing\Logo klein schwarz.jpeg
+A%lD
+@A%l
+Zentrale_Statistik
+michael.jenni@blessing.ch
+futura.metanet.ch
+16MnCrS5?tanet
+michael.jenni@blessing.ch
+Zentrale_Statistik - KW 
+werner.schweizer@blessing.ch
+n Ta`
+sse`
+-Net`
+r><a`
+ERVE`
+ISO `
+er L`
+e\Ze`
+k_1_`
+><br`
+kurz`
+nk u`
+en T`
+ni</`
+-Net`
+r><a
+er L`
+ne\Z`
+0.xl`
+ Fra`
+den< 
+inen`
+br><`
+></h
+\\nas\Daten\SERVER_MANAGEMENT\04 ISO\ISO 9001\9.  Bewertung der Leistung\Wartungsplaene\Zentrale_Statistik_1_0.xlsm
+michael.jenni@blessing.ch;dominik.schweizer@blessing.ch;nicolas.schweizer@blessing.ch;philipp.brodbeck@blessing.ch
+michael.jenni@blessing.ch;jose.staub@blessing.ch
+sing@
+ing.0"
+<html><body>Guten Morgen zusammen,<br><br>anbei sende ich euch die aktuelle Statistik alle Abteilungen (Flop-2 Versp
+tungen).<br><br>Direkter Link zur Excel-Datei (nur im Blessing-Netzwerk erreichbar):<br><a href="\\nas\Daten\SERVER_MANAGEMENT\04 ISO\ISO 9001\9.  Bewertung der Leistung\Wartungsplaene\Zentrale_Statistik_1_0.xlsm">Zentrale_Statistik_1_0.xlsm 
+ffnen</a><br><br><span style="font-size:9pt;color:#666666">Falls der Link nicht funktioniert (z.B. in Thunderbird): Pfad kopieren und im Explorer einf
+gen:<br>\\nas\Daten\SERVER_MANAGEMENT\04 ISO\ISO 9001\9. Bewertung der Leistung\Wartungsplaene\Zentrale_Statistik_1_0.xlsm<br>Mac: /volumes/nas/Daten/SERVER_MANAGEMENT/04 ISO/ISO 9001/9. Bewertung der Leistung/Wartungsplaene/Zentrale_Statistik_1_0.xlsm</span><br><br>Bei Fragen einfach kurz melden<br>Vielen Dank und einen erfolgreichen Tag!<br><br>Freundliche Gr
+sse<br>Michael Jenni</body></html>
+B7\k
+ si no existe -> error aqu
+ (Opcional) actualizar t
+tulos/labels antes
+ Refrescar y esperartuell
+ ISO lunes + KW
+00$ 
+yyyy-mm-dd$ 
+TEMP$ d
+\Zentrale_Statistik_
+yyyy-mm-dd$ 
+.pdf
+ Exportar PDF
+ de  
+ Verificar que el PDF realmente existe (evita -2147024894 en AddAttachment)
+s ===
+PDF wurde nicht erstellt:  
+OS SALk
+ Enviar por CDO/SMTP (con BCC)
+da r
+Error al enviar: 
+=============================
+ WAIT / CONNECTIONS
+bles!
+=============================
+llenk
+=============================
+ TITLES / LABELS (safe)
+=============================
+port]
+ res 
+ jueves de esa semana
+Gesamt
+bersicht Wartungsstatistik 
+ bis KW 
+00$ 
+TitelKW
+TitelKW
+txtTitel$
+txtTitel 
+tion/s
+KW_Aktuell$
+KW_Aktuell 
+om/cdo
+HeutigesDatum
+HeutigesDatum
+rosoft
+Jahr_Aktuell$
+Jahr_Aktuell 
+Lbl_Uebersicht$
+bersicht: 
+dd.mm.yyyy$ 
+ / KW
+00$ 
+Lbl_Uebersicht 
+=============================
+ SEND MAIL (CDO) + BCC
+=============================
+CDO.Message
+- si
+CDO.Configuration
+r aqu
+http://schemas.microsoft.com/cdo/configuration/sendusing;
+http://schemas.microsoft.com/cdo/configuration/smtpserver
+http://schemas.microsoft.com/cdo/configuration/smtpserverport
+http://schemas.microsoft.com/cdo/configuration/smtpauthenticate
+http://schemas.microsoft.com/cdo/configuration/sendusername
+Zentrale_Statistik - KW 
+\04 ]D
+16MnCrS5?
+tu]D
+michael.jenni@blessing.ch
+ SMTP
+0.xl
+\\nas\Daten\SERVER_MANAGEMENT\04 ISO\ISO 9001\9.  Bewertung der Leistung\Wartungsplaene\Zentrale_Statistik_1_0.xlsm
+ True para 465/587 con TLS/SSL
+ 465 (SSL) o 587 (STARTTLS)
+futura.metanet.ch
+http://schemas.microsoft.com/cdo/configuration/sendpassword
+michael.jenni@blessing.ch
+ Destinatariosnik.]D
+Zentrale_Statistik
+=== AJUSTA ESTOS VALORES ===ilipp.
+<html><body>
+Guten Morgen zusammen,<br><br>
+anbei sende ich euch die aktuelle Statistik alle Abteilungen (Flop-2 Versp
+tungen).<br><br>
+Direkter Link zur Excel-Datei (nur im Blessing-Netzwerk erreichbar):<br>
+<a href="
+">Zentrale_Statistik_1_0.xlsm 
+ffnen</a><br><br>
+<span style="font-size:9pt;color:#666666">
+Falls der Link nicht funktioniert (z.B. in Thunderbird): Pfad kopieren und im Explorer einf
+gen:<br>
+\\nas\Daten\SERVER_MANAGEMENT\04 ISO\ISO 9001\9. Bewertung der Leistung\Wartungsplaene\Zentrale_Statistik_1_0.xlsm<br>
+Mac: /volumes/nas/Daten/SERVER_MANAGEMENT/04 ISO/ISO 9001/9. Bewertung der Leistung/Wartungsplaene/Zentrale_Statistik_1_0.xlsm
+</span><br><br>
+Bei Fragen einfach kurz melden<br>
+Vielen Dank und einen erfolgreichen Tag!<br><br>
+Freundliche Gr
+sse<br>
+Michael Jenni
+</body></html>
+http://schemas.microsoft.com/cdo/configuration/smtpusessl
+michael.jenni@blessing.ch;
+jose.staub@blessing.ch
+=============================
+os y
+ EXPORT PDF (robusto)
+=============================
+ 1) 
+ltima celda real (Find puede devolver Nothing)
+tati 
+ 2) Extender por shapes visibles (BottomRightCell puede fallar en algunos objetos)
+isoMon 
+o IS 
+ 3) Ajustes de impresi
+n para 1 p
+gina@
+tTit 
+ 4) ExportarG
+michael.jenni@blessing.ch;
+dominik.schweizer@blessing.ch;
+nicolas.schweizer@blessing.ch;
+philipp.brodbeck@blessing.ch
+uell
+ Asegurar cleanup + error 
+til (no "se traga" el fallo)
+Export PDF fehlgeschlagen (
+werner.schweizer@blessing.ch
+ Nota: si quieres 
+propagar
+ el error al caller, descomenta:'
+=============================
+ Err.Raise vbObjectError + 514, "ExportarPDF_IncluyendoShapes", msg
+ (Opcional) Compacta UsedRange de 
+bersicht_Aktuell
+=============================
+bersicht_Aktuell
+Attribut
+e VB_Nam
+e = "Pos
+Opti
+on Expli
+=== AJUS
+TA ESTOS
+ VALORES
+Priv
+Const 
+SHEET_NA
+ME As S
+Zentr
+ale_Stat`istik
+natar
+MMAIL _FROM
+chael.je
+nni@bles
+sing.ch
+!;" & 
+dominik.
+schweize
+nicol
+phili
+pp.brodbHeck!ZCC0Zj
+ose.stau
+b!1B
+wern
+lSMTP
+_SERVE
+-"futur
+a.metane
+PORT
+465 
+(SSL
+) o 587 
+RTTLS)a
+!USE_@
+B@oolean
+rue  ' 
+PparaA
+16M@nCrS5?U
+UBJ_PREF
+ - K
+FILE_0LINKJ
+"\\nas\D
+6_MAN
+AGEMENT\
+04 ISO\`
+ 9001\9.
+  Be Ctu
+der Le
+\War
+spl aene\
+_0.xlsmU
+BODY_HTM
+<html>
+<body>
+n Morg
+en zusam
+men,<br 
+anbei @sende @
+euch die
+ aktuell&e
+Ab0teil
+lop-2 Ve
+DirektQA"ink
+el-a+i (n
+ur im B
+ -Netz
+erre
+<a h
+ref=""a
+>8, 
+fnen</a
+`styl
+font-sA
+:9pt;@
+r:#6
+""G(
+-F #s b>
+ht funk
+iert (z.
+B. in Th
+u@-rbird)
+: Pfad k|op`
+%einf
+?S,S
+Mac: /vo@lumes/
+,</A6P9B
+ZFr*a
+rz meld
+IViel
+"Fre
+l0*e Gr
+s4se
+Px J
+C?ub`
+ Sub
+ Enviar_-
+@Workboo k, sh
+temp4Fo@
+Pdf'
+@asunto
+LPg, is|oM
+rror Go
+To fin_m
+Set 
+/is%
+' si  no ex
+.Scr
+eenUpd
+[yAl
+' (O
+al) a
+ctualiza
+tulo
+s/labels` ante
+uild
+' Ref
+rescp
+y e@sperar
+hAll#
+WaitFord
+P 180s
+.@CalculpmFVua
+PtWeekday
+, vb
+Func
+P.Is
+Num(
+mat$(kw
+, "00")0@
+-mm-dd"
+0=26ron$(
+"TEMPA
+1T3 e/{k_
+.pdf
+cluy
+xoSh
+v(ifi
+ realm
+e52(evita
+ -214702 4894 @LAd>d
+n( z$(
+)*)P00
+:eh4Er
+r.RaiseP
+Object
++ 513, 
+ wur
+p3IfG
+#O p
+CDO/
+MailV_
+LRes
+m Nex
+ > ]
+` Kill
+.]H1
+MsgBox "yc
+2d9A
+BExcl>ap< R
+WAIT / C
+ONNECTIO
+yVal tim
+eoutSec 
+As Long 
+= 120)
+Dim t
+Single:
+VoEvents
+"If Appl
+ication.@Calcul
+tate
+ixlD
+one Then
+:llCon
+<sIdl
+) Exi
+zEnd LIf
+?Loop
+ Sub
+Priv
+NFu2n
+Bo0olea
+Workboo
+LFor E
+ach 
+d4is
+ Err
+ume Next#
+  Is =
+.Refres?F
+PYE LE?
+To 0
+pTrueC|
+' TI
+TLES / L
+ABELS (s
+ Buil
+istik_
+asOf
+shee
+, isoMo
+0Year
+tulo
+Str?
+Else
+Set  
+(^A_
+s(SHE
+ET_NAME@)
+- We
+ekday(d,
+.Isoa
+Num>(
+3) ' 
+jueves d
+e esa se0mana
+rsicht W
+artungss
+ bis
+ KW " & 
+mat$(kw
+, "00"
+|ame`
+("TitelK
+ws.Ra
+Shap
+KW_Aktpuell
+Heutig
+es`LumO
+Jahr
+Lbl_
+Ue%@
+"dd.mm.y
+Gnmg?)?
+Zno*%i
+p!Le
+xi,#
+eSEN
+D MAIL (
+eSendMai
+fropmAdd
+bodyT
+e, ?
+Path
+lsisHtml
+FaPi
+o@cdoMsg1
+|s %
+E?Ql
+=0 CreP{
+.Messag
+`figur
+.Field3
+c&Wi
+tem("htt
+p://sch
+s.micros
+oft.com/!
+/con
+@"us }
+D= 2
+mtpserve
+SMTP_S
+ERVER
+port
+PORT
+aut@
+rn0p
+passw
++1z=
+_SSL
+b)p&@5
+/;.g-W
+ 3JX
+MLB J1
+WAbNm`
+c' EX!4 P
+F (robus
+Public
+ Sub Exp
+ortarPDF
+_Incluye
+ndoShape
+s(ByVal 
+sh As Wo
+rksheet,
+,pdfPat
+6String
+Dim la stRow
+)rng
+ange, s
+|, c
+-pr evDPB
+riant
+On Erro
+r GoTo E
+ation.Sc
+reenUpd
+E= False
+.Dis
+playPage@Breaks
+#' 1)
+ltima @celda 
+ (Find p
+uede dev
+olver No
+Set f
+2Cells.
+(What:=
+"*", Aft
+er:=
+, LookAA
+xlPar
+In:=
+xlFormu@o
+, Search
+OrdA
+xlBy
+Direc
+eious
+2  Then
+5By@
+>' 2)
+ vis
+ibles (B
+ottomRig
+fall
+ar `,algu
+nos obje
+toE2
+: Eac
+kInAY
+{GB`6
+MmsopTrue
+FFjR
+esume Ne
+RdHc lHk
+I>FI
+= \c.
+' 3) 
+n par
+a 1 p
+a%.P
+.Ad0dres
+Or0ientB
+Landsc
+Zoom
+ FitTo
+erHo
+rizo
+Vert
+LeftxMar !
+ts(0.8
+Top_
+AN!=e
+'| 4
+}A@sFixed
+t Type
+, FilenLam@
+uality
+St0!ard, 
+deDocPr
+es:=
+Ignore
+#, Open
+sh:=4%
+CLEANU
+_GUG@
+~g&Exi
+egur
+Ucle
+anup + e
+|no 
+"se trag
+a" el 
+(= "
+ehlgesch
+n (" &
+aZN`
+"): 
+.Numb
+a: si qu
+scom
+0fct
+14,5
++Subq
+ (Opc
+al) Comp
+acta Use&d
+cht_Aktu
++This
+/2%2a
+un0_
+D:dF
+CPNr
+olup
+0Savp
+C:\Temp\UeberLog.txt
+B7\k
+C:\Temp\UeberLog.txt
+C:\Temp\ 
+C:\Temp
+yyyy-mm-dd hh:nn:ss
+Inicio Run_Uebersicht_ConLogA@
+OK: Macro termin
+ sin error
+ERROR: 
+Attribut
+e VB_Nam
+e = "Pos
+t_1"
+tion Exp
+licit
+Priva
+onst LOG
+_FILE As$ S
+\Temp\Ue
+berLog.t
+xSub 
+.Line(By
+Val msg
+Integ
+rro@r Resu
+/If D
+ir("
+~", 
+ector
+" The
+n Mk
+FreeFhile
+nt #f,
+mat(No w, "y
+m-dd hh:
+nn:ss");
+ " | ";
+Close
+End 
+ Run_
+sicht_
+GoTo
+yCal
+l Enviar
+_Zentral
+e_Statis
+OK: 
+Macro te
+rmin
+Exi&t
+-@3H:L
+ROR:
+@& E@rr.Num
+Desc
+B7\k
+Attribut
+e VB_Nam
+e = "mod
+Actualiz
+B7\k
+Attribut
+e VB_Nam
+e = "Tab
+elle6"
+|0{0
+0020820-;
+|Glob
+Spac
+ False
+dCr@eatabl
+redecla
+BE xpose
+mplateDe
+Bust0omiz
+B7\k
+Attribut
+e VB_Nam
+e = "Tab
+elle7"
+|0{0
+0020820-;
+|Glob
+Spac
+ False
+dCr@eatabl
+redecla
+BE xpose
+mplateDe
+Bust0omiz
+VBAP
+roject
+B7\k
+9std
+ole>
+\G{00020
+430-
+0046}#
+2.0#0#C:
+\Windows
+\SysWOW6
+e2.tlb
+#OLE Aut
+omation
+EOffic
+E2DF
+8D04C-5B
+FA-101B-
+BDE5
+m Files 
+(x86)\Co
+mmon
+crosoft 
+Shared\O
+FFICE16\
+MSO.DLL#
+P 16.0 
+ LibrXabelle2S
+Tabelle1R
+Tabelle3T
+Tabelle4U
+Tabelle5V
+Modul1
+Grafik
+HexToRGB2
+hexColor
+Build_Flop2_Chart
+targetSheet
+topLeftCell
+lo ^
+ListObject
+Worksheet
+wsch
+Sheets
+MsgBox
+vbExclamation
+ListObjects7
+ThisWorkbook|
+Worksheets
+Sort
+SortFields
+Clear
+ListColumns
+Range
+SortOn
+xlSortOnValues
+Order
+xlDescending>
+DataOption[
+xlSortNormal
+Header
+xlYes
+Apply,
+colAbtZ
+colN1
+colW1
+colN2
+colW2
+colClr=
+Index
+rngAbtc
+rngN1\
+rngW1
+rngN2]
+rngW2
+rngClr
+DataBodyRange
+Columnsp9
+Rows
+Count0v
+ChartObject
+Chart?
+Series]
+ChartObjects
+Delete
+Top5
+Height|
+ChartType
+xlBarClusteredQ
+HasLegendB
+SetSourceData
+SeriesCollection;:
+NewSeries
+XValuesb
+Values
+ApplyDataLabels
+Points
+HasDataLabel
+DataLabel
+Cells
+Value
+rgbVal
+Fill,
+ForeColor
+Axes
+xlValue<V
+MinimumScale
+xlCategoryZ
+TickLabelSpacing
+Visible
+msoFalseF.
+Solid
+PlotArea
+ChartArea
+Refresh_And_Build
+Application
+ScreenUpdating!
+RefreshAll8l
+_B_str_LeftV
+_B_str_Mid
+_Defaultj
+Workbookk
+FindListObjectAcrossWorkbook
+loNameEV
+Refresh_TableByName
+QueryTable
+Refresh
+BackgroundQuery
+WorkbookConnection+
+CalculateUntilAsyncQueriesDone
+Refresh_And_Build_Safe
+ev$]
+scr"
+EnableEvents
+FINw
+calcBt
+XlCalculation
+Calculationh
+xlCalculationManual
+DisplayAlerts
+Auditor_CierraReabremy
+hit/
+patt>
+VBProjectOh
+VBComponents
+CodeModule
+CountOfLines!\
+Lines
+vbTextCompare
+Test_ChartOnly
+ERRHJ[
+vbInformation
+Erro
+Description
+vbCritical+}
+Test_OnlyRefresh
+Now%
+Fallback2}
+FindTable:
+su)_
+Raise
+iAbt
+iW1F
+iW2G
+iClr
+rAbt
+rN1?
+rW1g
+rN2@
+rW2h
+rClr
+N1L^
+W1t_
+N2M^
+W2u_
+Value2
+IsErrorU
+ReversePlotOrderT
+Test_ChartOnly2f
+SafeTxt
+IsEmpty
+VarType
+vbNull
+SafeNumn(
+IsNumeric$*
+NormalizeHex
+Trim@
+v1t_
+v2u_
+t1*_
+t2+_
+colH
+Refresh_ChartAndBuild
+_B_str_Trim
+Build_
+B7\k
++EaJ
+Dlv=
+line
+Name
+Excel
+Win16
+Win32
+Win64x
+VBA6
+VBA7
+Projekt1
+stdole
+VBAProject
+Office
+DieseArbeitsmappe
+_Evaluate
+Tabelle222
+Tabelle233
+Tabelle211
+TaFlop2_Chart_DBG
+paso
+vbCrLf
+_B_var_FIN
+msoTrue
+DataLabels
+Position
+xlLabelPositionOutsideEnd
+ShowSeriesName
+ShowValueG
+FontU
+Size
+Color2F
+vbBlack
+mxN^
+MaximumScale
+TickLabels
+NumberFormat
+ChartGroupstV
+GapWidth
+HasDataLabels
+ShowCategoryName
+xlLabelPositionCenter
+TINT_SERIE1^L
+TINT_SERIE2_L
+ShadeColor
+baseRGB
+tint
+PaintPointColorL[
+Point
+Interior;
+ptCell`!
+ChartStyle2z
+tone1
+tone2
+Worksheet_Change
+Target
+Intersect1
+Change
+dtFrom%
+dtTo
+wsParam>'
+HasTitle
+ChartTitle_
+RefreshAndBuildl
+wsP{
+Parent
+QueryTables
+Connections
+RefreshTable.
+StatusBar
+LCase:
+RefreshTop2PipelineG
+rebuild
+_B_var_Format
+_B_var_RefreshAndBuild
+inHandler
+_B_var_LCase'
+Salir
+rngU
+CountLarge
+Refresh_Period_And_Chartd%
+RefreshPQTableg
+sheetName6
+DarkenRGB
+LightenRGB
+_B_var_DarkenRGB
+TONE_DARK
+TONE_LIGHT
+GetParamDates2
+Value3
+Linkh
+MakeDateiPfadLinksy
+loTry
+ListColumn
+disp
+Hyperlinks:
+InStrRev
+Anchor#r
+Address
+TextToDisplay
+titulo0
+ApplyWorkbookHeaderTextOnly
+wsName
+Abteilung
+VerantwortlicherW|
+jahr
+Version
+Fecha
+MaxWidth
+startCol
+LogoPath
+ActiveSheet%N
+BuildSheetHeader_TextOnly
+Header_RefreshAllVisible=/
+xlSheetVisible
+PageSetup
+PrintArea
+DisplayPageBreaks
+ActiveWindow
+View
+xlNormalViewf
+Cabecera_AplicarAhora3h
+FirstEmptyColRow1Y{
+MAX_WYl
+UI_FONTNg
+TITLE_SIZEp
+INFO_SIZE}
+LOGO_H
+GAP_BOX
+GAP_LR
+TEXT_COLOR
+nmLogoe
+nmTit
+nmInfoL
+nmMetaR:
+nmPill
+Shapes
+leftEdge~
+topY@
+rightEdge
+firstEmptyCol
+UCase5
+shLogoo
+logoW
+PlacePictureScaled
+IIfz
+shTitle
+AddTextbox
+msoTextOrientationHorizontal
+TextFrame2
+AutoSize!
+msoAutoSizeShapeToFitText
+WordWrap
+TextRange
+Bold
+msoAutoSizeNone
+titleRight
+shMetaR
+txtR
+WorksheetFunction
+IsoWeekNum
+ParagraphFormat
+Alignment
+msoAlignRightiX
+metaWVi
+shInfoLvD
+txtL
+MarginLeft<
+MarginRight
+MarginTop
+MarginBottomeJ
+leftNaturalW
+leftNaturalH
+leftXk
+maxRight
+spaceForLeft4.
+VerticalAnchor
+msoAnchorMiddlez^
+FitTextHeightForWidthJ
+PrintCommunicationnG
+CenterHeader
+ZOrder
+msoBringToFront
+targetW
+filePath
+leftPos
+topPos
+targetH
+shapeName
+ErrHandler
+AddPicture
+LockAspectRatioc
+_B_var_Datev
+_B_str_UCaseK
+_B_str_Format
+_B_var_AbteilungG
+_B_var_shInfoL
+_B_var_leftNaturalWS&
+_B_var_leftXXS
+_B_var_maxRight
+metaLeftm
+Hoja_FondoBlanco
+Patterni
+xlNone
+DisplayGridlines
+Post
+SHEET_NAME
+MAIL_FROM
+MAIL_TO
+MAIL_CC
+SMTP_SERVER
+SMTP_PORT
+SMTP_USE_SSL
+SMTP_USERW{
+SMTP_PASS
+MAIL_SUBJ_PREFIX
+MAIL_BODY
+Enviar_Uebersicht_Aktuellyw
+tempFolder_
+tempPdf3?
+asunto
+lunes
+fin_malo=
+Weekday
+vbMonday
+Environ
+ExportPDF_IncluyendoShapes
+SendMail_CDO
+fin_ok.
+Kill
+fromAddrV
+toAddr
+ccAddrC
+subjh8
+bodyTxt
+attachPath
+cdoMsg
+cdoConf
+CreateObject
+Fields7
+Item
+Update
+Configuration
+From~ 
+SubjectRP
+TextBody
+AddAttachment
+Send
+pdfPath
+lastRoww
+lastCol64
+Findn
+What
+After
+LookAt
+xlPart
+LookIn
+xlFormulasZ
+SearchOrder
+xlByRows
+SearchDirectionr
+xlPrevious
+xlByColumns
+Column
+BottomRightCellF
+PrintObject
+ResetAllPageBreaksH
+Orientation
+xlPortraitD
+Zoom
+FitToPagesWide
+FitToPagesTall
+CenterHorizontally
+LeftMargin
+CentimetersToPoints
+RightMargin[
+TopMargin
+BottomMarginu
+HeaderMargin8
+FooterMargin
+ExportAsFixedFormat
+xlTypePDFnG
+Filenamej
+Quality8
+xlQualityStandard
+IncludeDocProperties
+IgnorePrintAreas
+OpenAfterPublishv
+CompactarUsedRange_Uebersicht*
+lr#^
+UsedRange
+Save
+Post_1
+LOG_FILED
+LogLine
+msgQ
+vbDirectoryg
+MkDir
+Run_Uebersicht_ConLogA
+Number
+_B_var_String
+Enviar_Zentrale_Statistik
+_B_str_Environ
+_B_var_MAIL_CC
+_B_var_Enviar_Uebersicht_Aktuell
+modActualizar
+AktualisierenAlles_Manuell
+xlCalculationAutomatic
+MAIL_BODY_HTMLst
+isHtmlI
+HTMLBodyB
+FILE_LINKk4
+xlLandscape&
+DateiPfad_AlsHyperlinks3
+_B_var_TrimmT
+Format_Erfuellungsquotej!
+FormatCondition
+FormatConditionsu
+AddDatabar
+MinPoint]
+Modify&
+xlConditionValueNumber%x
+MaxPoint4
+BarColor77
+fc6]
+xlDatabarh
+PFAD_WARTUNGSPLAENE[
+dateiname
+vollpfad
+_B_var_PFAD_WARTUNGSPLAENE
+_B_var_MakeDateiPfadLinks
+AktualisierenAlles_Manuell_1,
+BarFillType
+xlDataBarFillSolidY
+BarBorder
+xlDataBarBorderNone
+Databarp$
+PPublic 
+ApplyEfQuotaBars
+firstRow
+AxisPosition,
+xlDataBarAxisNone
+_B_var_Format_Erfuellungsquote
+_B_var_ApplyEfQuotaBars
+dataRng
+xlConditionValueAutomaticMin
+xlConditionValueAutomaticMax
+prevCalc
+tStartf
+Timer
+AnyConnectionRefreshing
+connu
+RefreshingE
+CleanExit
+rngData
+rngAux&
+rngAll
+Union
+btnColor
+Workbook_Open
+INFO_SHAPE_NAME*
+Place_InfoTextUnderChart
+Shape
+widthPos`4
+msoAlignLeftz
+_B_var_INFO_SHAPE_NAME
+msoAlignCenter`;
+Charactersrg
+ZEITRAUM_DD_NAME
+Position_ZeitraumDropdown
+PAD_XO
+PAD_YL
+_B_var_Position_ZeitraumDropdown
+ZEITRAUM_TABLE_NAMEh
+FindRefreshButtonShape
+OnAction
+FindZeitraumTable
+Place_Button_And_Zeitraum
+shInfo
+shBtnu
+loZw
+rngZ$N
+rowsZ
+colsZ
+destRow
+destCol
+Cut.
+Destination
+CutCopyMode
+AutoFit&
+_B_str_LCaseP
+Place_ZeitraumUnderChartr
+WrapText}
+ShrinkToFit
+ColumnWidth
+Year6n
+Tabelle6W
+Tabelle7X
+ORANGE_DARK
+ORANGE_LIGHT
+_B_var_TONE_DARKVi
+ExportarPDF_IncluyendoShapes
+CenterVerticallyI
+LISTOJA
+BuildStatistik_ToDateNH
+WaitForRefreshE$
+CalculateFull|
+timeoutSec
+CalculationState`=
+xlDone
+AllConnectionsIdle
+ODBCConnection
+OLEDBConnection
+_B_var_BuildStatistik_ToDate
+asOfDateRL
+moE^
+prevDPB
+Activate
+isoJahr
+isoMon
+isoYear
+NameExists
+ShapeExists!
+nmh^
+Names
+endCol
+chartWidth
+MAIL_BCC
+vbObjectError
+bccAddr
+BCC*x
+CLEANUP
+DieseAr
+beitsmap peG
+elle22G
+62@&
+freshG
+//Kj9v
+GrafikGb
+@tituloc
+PostGb
+modA
+ctualizaTrG
+timeoutSec
+asOfDate
+fromAddr4
+C:\Program Files (x86)\Common Files\Microsoft Shared\VBA\VBA7.1\VBE7.DLL
+C:\Program Files (x86)\Microsoft Office\root\Office16\EXCEL.EXE
+Excel
+C:\Windows\SysWOW64\stdole2.tlb
+stdole
+C:\Program Files (x86)\Common Files\Microsoft Shared\OFFICE16\MSO.DLL
+Office
+Enviar_Zentrale_Statistik
+WaitForRefresh
+AllConnectionsIdle
+BuildStatistik_ToDate
+NameExists
+ShapeExists
+SendMail_CDO
+ExportarPDF_IncluyendoShapes
+CompactarUsedRange_Uebersicht
+DieseArbeitsmappe
+Tabelle22
+Refresh
+Tabelle21
+Tabelle2
+Tabelle1
+Tabelle3
+Tabelle4
+Tabelle5
+Grafik
+Link
+titulo
+Post
+Post_1
+modActualizar
+Tabelle6
+Tabelle7
+VBAProject
+VBA/
+VBE7.DLL
+Workbook
+Workbook_Open
+ApplyWorkbookHeaderTextOnly
+Header_RefreshAllVisible
+Cabecera_AplicarAhora
+FirstEmptyColRow1
+BuildSheetHeader_TextOnly
+FitTextHeightForWidth
+PlacePictureScaled
+Worksheet
+AktualisierenAlles_Manuell
+FindTable
+RefreshTable
+RefreshTop2Pipeline
+Refresh_Period_And_Chart
+RefreshPQTable
+SafeTxt
+SafeNum
+NormalizeHex
+HexToRGB
+ShadeColor
+LightenRGB
+DarkenRGB
+PaintPointColor
+GetParamDates
+Build_Flop2_Chart
+Refresh_TableByName
+Refresh_ChartAndBuild
+Test_ChartOnly2
+ApplyEfQuotaBars
+Format_Erfuellungsquote
+Place_InfoTextUnderChart
+FindRefreshButtonShape
+FindZeitraumTable
+Place_Button_And_Zeitraum
+DateiPfad_AlsHyperlinks
+Worksheet_Change
+Hoja_FondoBlanco
+LogLine
+Run_Uebersicht_ConLog
+toAddr
+ccAddr
+bccAddr
+subj
+bodyTxt
+attachPath
+isHtml
+pdfPath
+wsName
+titulo
+jahr
+Version
+Fecha
+MaxWidth
+startCol
+LogoPath
+MAX_W
+targetW
+filePath
+leftPos
+topPos
+targetH
+shapeName
+loName
+rebuild
+sheetName
+hexColor
+baseRGB
+tint
+rgbVal
+dtFrom
+dtTo
+targetSheet
+topLeftCell
+firstRow
+lastRow
+Target
+msg5
+DieseArbeitsmappe
+Tabelle22
+Tabelle21
+Tabelle2
+Tabelle1
+Tabelle3
+Tabelle4
+Tabelle5
+Grafik
+Refresh
+Link
+Titulo
+Post
+Post_1
+modActualizar
+Tabelle6
+Tabelle7
+ID="{A98D2F12-6542-43E5-9C17-28D60ADFF0FA}"
+Document=DieseArbeitsmappe/&H00000000
+Document=Tabelle22/&H00000000
+Document=Tabelle21/&H00000000
+Document=Tabelle2/&H00000000
+Document=Tabelle1/&H00000000
+Document=Tabelle3/&H00000000
+Document=Tabelle4/&H00000000
+Document=Tabelle5/&H00000000
+Module=Grafik
+Module=Refresh
+Module=Link
+Module=Titulo
+Module=Post
+Module=Post_1
+Module=modActualizar
+Document=Tabelle6/&H00000000
+Document=Tabelle7/&H00000000
+Name="VBAProject"
+HelpContextID="0"
+VersionCompatible32="393222000"
+CMG="888A677D6B7D6B7D6B7D6B"
+DPB="75779A8B6A796B796B79"
+GC="62608DA27BA37BA384"
+[Host Extender Info]
+&H00000001={3832D640-CF90-11CF-8E43-00A0C911005A};VBE;&H00000000
+[Workspace]
+DieseArbeitsmappe=390, 390, 984, 1263, 
+Tabelle22=0, 0, 0, 0, C
+Tabelle21=0, 0, 0, 0, C
+Tabelle2=0, 0, 0, 0, C
+Tabelle1=52, 52, 646, 925, 
+Tabelle3=0, 0, 0, 0, C
+Tabelle4=0, 0, 0, 0, C
+Tabelle5=0, 0, 0, 0, C
+Grafik=26, 26, 620, 899, 
+Refresh=104, 104, 698, 977, 
+Link=78, 78, 672, 951, 
+Titulo=416, 416, 1010, 1289, 
+Post=364, 364, 958, 1237, 
+Post_1=390, 390, 984, 1263, 
+modActualizar=208, 208, 932, 844, Z
+Tabelle6=0, 0, 0, 0, C
+Tabelle7=0, 0, 0, 0, C

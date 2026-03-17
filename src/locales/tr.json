@@ -1,0 +1,219 @@
+{
+    "translation": {
+        "sidebar": {
+            "maintenancePlan": "Bakım Planı v2.0",
+            "centralStats": "Kontrol Paneli",
+            "productionUnits": "ÜRETİM BİRİMLERİ",
+            "settings": "Sistem Ayarları",
+            "build": "Versiyon 142 • Kararlı"
+        },
+        "dashboard": {
+            "centralStats": "MERKEZİ KONTROL PANELİ",
+            "subtitle": "Härterei Blessing AG • Bakım Performans Analitiği",
+            "liveDataflow": "GERÇEK ZAMANLI VERİ AKIŞI",
+            "period": "Dönem: Mart 2026",
+            "globalEfficiency": "GENEL VERİMLİLİK",
+            "totalExecuted": "ZAMANINDA TAMAMLANAN",
+            "onTimeTotal": "ZAMANINDA UYGULAMA",
+            "lateTotal": "GECİKMELİ UYGULAMA",
+            "criticalPoints": "KRİTİK NOKTALAR",
+            "activeSystems": "AKTİF DEPARTMANLAR",
+            "activeDepartments": "İZLENEN BÖLÜMLER",
+            "performancePerDept": "Departman Başına Performans",
+            "delayWarnings": "Gecikme Uyarıları",
+            "critical": "KRİTİK",
+            "incidents": "Olaylar",
+            "dataUpdate": "Son Güncelleme:",
+            "dataUpdateDesc": "Veriler departman operasyon jurnalleri ile senkronize edilmiştir.",
+            "bottlenecks": "Darboğazlar (Flop-2)",
+            "noBottlenecks": "Kritik darboğaz tespit edilmedi.",
+            "analysisInfo": "Analiz Metrikleri",
+            "analysisInfoDesc": "Verimlilik hesabı: Planlanan vs. Gerçekleşen (KW 11 itibarıyla).",
+            "analysisNote": "Verimlilik, haftalık plan ile raporlanan uygulama karşılaştırılarak hesaplanır.",
+            "targets": {
+                "target": "Hedef",
+                "warn": "Uyarı",
+                "alert": "Alarm"
+            }
+        },
+        "department": {
+            "tabs": {
+                "Plan": "Planlama (Hafta)",
+                "Journal": "Operasyon Jurnali",
+                "Archiv": "Geçmiş Kayıtlar",
+                "Anlagen": "Ekipman / Makine",
+                "Statistik": "İstatistikler"
+            },
+            "productionUnit": "ÜRETİM BİRİMİ",
+            "operativeControl": "OPERATİF KONTROL",
+            "responsible": "Sorumlu",
+            "status": "Durum",
+            "operation": "DEVREDE",
+            "efficiency": "Verimlilik",
+            "titles": {
+                "Plan": "Yıllık Planlama Matrisi (KW 1-52)",
+                "Journal": "Operatif Bakım Jurnali",
+                "Archiv": "Tamamlanan Görev Geçmişi",
+                "Anlagen": "Ekipman ve Sistem Yönetimi",
+                "Statistik": "Metrik ve KPI Analizi"
+            },
+            "filter": "GÖREV ARA...",
+            "export": "PDF Dışa Aktar",
+            "loading": "Bölüm {{tab}} yükleniyor...",
+            "matrix": {
+                "taskMachine": "Görev / Ekipman",
+                "who": "Sor.",
+                "freq": "Frek.",
+                "start": "Başlangıç",
+                "add": "Görev Ekle",
+                "task": "Görev adı...",
+                "machine": "Ekipman/Sistem..."
+            },
+            "journal": {
+                "refId": "REF NO",
+                "task": "BAKIM GÖREVİ",
+                "machine": "SİSTEM / EKİPMAN",
+                "dateReal": "KAPANIŞ TARİHİ",
+                "visa": "TEKNİSYEN İMZASI",
+                "status": "DURUM",
+                "action": "İŞLEMLER",
+                "complete": "Tamamla",
+                "onTime": "Zamanında",
+                "lateWeeks": "Gecikme: {{weeks}} hf."
+            },
+            "statusLabels": {
+                "done": "TAMAMLANDI",
+                "late3w": "KRİTİK (>3 Hf)",
+                "late13w": "GECİKMİŞ (1-3 Hf)",
+                "current": "GÜNCEL"
+            },
+            "stats": {
+                "executed": "GERÇEKLEŞEN",
+                "open": "BEKLEYEN",
+                "late": "GECİKMELİ",
+                "rate": "ORAN %",
+                "progress": "Yıllık Bakım İlerlemesi",
+                "livePerf": "Operatif Performans",
+                "currentKw": "GÜNCEL HT",
+                "filters": {
+                    "all": "Tüm Zamanlar",
+                    "thisYear": "Bu Yıl",
+                    "lastMonth": "Geçen Ay",
+                    "lastWeek": "Geçen Hafta"
+                },
+                "noLateTasks": "Gecikmiş görev bulunmamaktadır."
+            },
+            "instructions": {
+                "planTitle": "Planlama Talimatları",
+                "plan1": "X İşareti: Bakım o hafta yapılmalıdır.",
+                "plan2": "Sorumlular: MA (Bakım), U (Kullanıcı), EX (Dış Servis).",
+                "plan3": "Frekans: Gereken tekrarlama periyodunu tanımlar.",
+                "plan4": "Başlangıç (KW): Planın etkinleşeceği haftayı belirler.",
+                "journalTitle": "Jurnal Kullanım Kılavuzu",
+                "journal1": "Sinyalizasyon: Yeşil (Zamanında), Sarı (1-3 hf gecikme), Kırmızı (>3 hf gecikme).",
+                "journal2": "Kapanış Tarihi: Gerçek uygulama gününü belirtin.",
+                "journal3": "İmza: Görevi tamamlayan teknisyenin parafı.",
+                "journal4": "Tamamla: Görevi arşivler ve genel istatistikleri günceller."
+            },
+            "anlagen": {
+                "searchPlaceholder": "Ekipman filtrele...",
+                "noResults": "Ekipman bulunamadı.",
+                "performance": "Varlık Metrikleri",
+                "done": "tamamlandı",
+                "open": "açık",
+                "late": "kritik",
+                "selectHint": "Detayları görmek için bir varlık seçin",
+                "systemLabel": "Ekipman / Makine",
+                "lastService": "Son Müdahale",
+                "totalTasks": "Toplam Müdahale",
+                "plannedTitle": "Planlanan Bakımlar",
+                "historyTitle": "Müdahale Kaydı",
+                "kpiDone": "Tamamlanan",
+                "kpiOpen": "Bekleyen",
+                "kpiLate": "Kritik"
+            }
+        },
+        "settings": {
+            "title": "Sistem Yapılandırması",
+            "subtitle": "Parametre Yönetimi ve Kişiselleştirme",
+            "tabs": {
+                "general": "Eşikler",
+                "ui": "Görünüm",
+                "depts": "Alanlar/Dep.",
+                "export": "Bildirimler"
+            },
+            "thresholds": {
+                "title": "Uyarı Eşikleri",
+                "criticalTitle": "Kritik Gecikme Eşiği (Hafta)",
+                "criticalDesc": "Bir görevin dashboard'da ne zaman 'gecikmiş'ten 'kritik'e geçeceğini belirler.",
+                "efficiencyTitle": "Verimlilik Hedefi (%)",
+                "efficiencyDesc": "Zamanında tamamlama oranı için referans KPI."
+            },
+            "ui": {
+                "title": "Kullanıcı Arayüzü",
+                "displayMode": "Ekran Yoğunluğu",
+                "standard": "Standart",
+                "standardDesc": "Veri ve tasarım dengesi",
+                "compact": "Kompakt",
+                "compactDesc": "Bilgi yoğunluğuna öncelik verir",
+                "colorTheme": "Renk Şeması",
+                "themes": {
+                    "dark": "Sıvı Obsidyen (Koyu)",
+                    "natura": "Orman Yeşili (Organik)",
+                    "vibrant": "Tekno Neon (Yüksek Kontrast)"
+                }
+            },
+            "depts": {
+                "title": "Üretim Birimleri",
+                "add": "Yeni Departman Ekle",
+                "placeholder": "Departman adı...",
+                "confirmDelete": "Departmanı silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+            },
+            "export": {
+                "title": "Raporlar ve Bildirimler",
+                "emailLabel": "Uyarı Alıcıları (E-posta)",
+                "emailDesc": "Virgül ile ayrılmış adresler.",
+                "formatLabel": "Varsayılan Dışa Aktarma Formatı"
+            },
+            "footer": {
+                "autoSave": "Değişiklikler otomatik olarak kaydedilir",
+                "applyReload": "Kaydet ve Güncelle"
+            },
+            "backup": {
+                "title": "Yedekleme",
+                "export": "Sistem Verilerini Dışa Aktar (JSON)",
+                "restore": "Yedeği Geri Yükle",
+                "description": "Taşıma veya yedekleme işlemleri için bu araçları kullanın."
+            }
+        },
+        "pdf": {
+            "reportTitle": "OPERATİF PERFORMANS RAPORU",
+            "overview": "DEPARTMAN ÖZETİ",
+            "efficiency": "VERİMLİLİK",
+            "onTime": "ZAMANINDA",
+            "late": "GECİKME",
+            "units": "BİRİMLER",
+            "planned": "Planlanan",
+            "ok": "UYGUN",
+            "lateShort": "Gec.",
+            "rate": "Oran",
+            "crit": "Krit.",
+            "maintenancePlan": "BAKIM PLANI",
+            "annualMatrix": "YILLIK PLANLAMA MATRİSİ",
+            "productiveJournal": "BAKIM JURNALİ",
+            "historicalArchive": "GEÇMİŞ KAYITLAR",
+            "executionReport": "UYGULAMA DURUMU",
+            "metricsPerformance": "METRİKLER VE PERFORMANS",
+            "statisticalReport": "İSTATİSTİKSEL ANALİZ",
+            "totalPerformance": "KONSOLİDE PERFORMANS",
+            "executed": "GERÇEKLEŞEN",
+            "open": "AÇIK",
+            "lateDetail": "KRİTİK GÖREV AYRINTILARI",
+            "task": "Görev Tanımı",
+            "anlage": "Ekipman",
+            "dept": "Dep.",
+            "who": "Sor.",
+            "delayWeeks": "Gecikme (Hf)"
+        }
+    }
+}

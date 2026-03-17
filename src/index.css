@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+:root {
+  /* "Clean Pro" - PASTEL LIGHT THEME (Primary) */
+  --color-bg: #f1f5f9;
+  --color-bg-sidebar: #2c3344;
+  --color-bg-card: #ffffff;
+  --color-bg-header: #ffffff;
+  --color-border: #e2e8f0;
+  --color-glass-highlight: rgba(162, 210, 255, 0.2);
+  --color-text-main: #4a5568;
+  --color-text-dim: #718096;
+  --color-accent: #89aef3;
+  --color-accent-glow: rgba(137, 174, 243, 0.25);
+  --color-success: #8be4b5;
+  --color-success-glow: rgba(139, 228, 181, 0.3);
+  --color-field-bg: #eef4ff;
+  --color-field-text: #5a6b8d;
+}
+
+.theme-dark {
+  /* "Obsidian Flow" - DARK THEME */
+  --color-bg: #0a0908;
+  --color-bg-sidebar: #0e0d0c;
+  --color-bg-card: rgba(10, 9, 8, 0.6);
+  --color-bg-header: rgba(10, 9, 8, 0.7);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-glass-highlight: rgba(255, 255, 255, 0.15);
+  --color-text-main: #ffffff;
+  --color-text-dim: #94a3b8;
+  --color-accent: #f59e0b;
+  --color-accent-glow: rgba(245, 158, 11, 0.4);
+  --color-success: #10b981;
+  --color-success-glow: rgba(16, 185, 129, 0.4);
+  --color-field-bg: var(--color-bg-sidebar);
+  --color-field-text: var(--color-text-main);
+}
+
+.theme-natura {
+  --color-bg: #1e2312;
+  --color-bg-sidebar: #15190d;
+  --color-bg-card: rgba(30, 35, 18, 0.6);
+  --color-bg-header: rgba(30, 35, 18, 0.7);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-glass-highlight: rgba(255, 255, 255, 0.2);
+  --color-text-main: #e2d8b0;
+  --color-text-dim: #a3ad8d;
+  --color-accent: #bc6c25;
+  --color-accent-glow: rgba(188, 108, 37, 0.3);
+  --color-success: #10b981;
+  --color-success-glow: rgba(16, 185, 129, 0.3);
+  --color-field-bg: var(--color-bg-sidebar);
+  --color-field-text: var(--color-text-main);
+}
+
+.theme-vibrant {
+  --color-bg: #070814;
+  --color-bg-sidebar: #05060f;
+  --color-bg-card: rgba(10, 15, 30, 0.75);
+  --color-bg-header: rgba(10, 15, 30, 0.85);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-glass-highlight: rgba(255, 255, 255, 0.25);
+  --color-text-main: #ffffff;
+  --color-text-dim: #94a3b8;
+  --color-accent: #e879f9;
+  --color-accent-glow: rgba(232, 121, 249, 0.4);
+  --color-success: #10b981;
+  --color-success-glow: rgba(16, 185, 129, 0.4);
+  --color-field-bg: var(--color-bg-sidebar);
+  --color-field-text: var(--color-text-main);
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+@layer components {
+
+  /* High-Contrast Industrial Panel */
+  .panel {
+    background-color: var(--color-bg-card);
+    backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid var(--color-border);
+    box-shadow:
+      0 15px 35px -10px rgba(0, 0, 0, 0.05),
+      0 5px 15px -5px rgba(0, 0, 0, 0.05);
+    @apply rounded-[2.5rem] transition-all duration-500 overflow-hidden;
+  }
+
+  .theme-dark .panel,
+  .theme-vibrant .panel,
+  .theme-natura .panel {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border-top: 1px solid var(--color-glass-highlight);
+    box-shadow:
+      0 30px 60px -12px rgba(0, 0, 0, 0.45),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  }
+
+  .theme-vibrant .panel {
+    backdrop-filter: blur(10px);
+    background-color: rgba(21, 25, 50, 0.7);
+    border-color: rgba(45, 52, 107, 0.8);
+  }
+
+  .panel:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 30px var(--color-accent-glow), 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    @apply -translate-y-2;
+  }
+
+  /* Specific Liquid Glow for Obsidian */
+  :root .panel:hover {
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.15), inset 0 0 10px rgba(245, 158, 11, 0.05);
+  }
+
+  .theme-vibrant .panel:hover {
+    box-shadow: 0 0 25px rgba(192, 38, 211, 0.3), inset 0 0 10px rgba(192, 38, 211, 0.1);
+  }
+
+  /* Solid Header */
+  .glass-header {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 0, 0, 0.02) 100%);
+    backdrop-filter: blur(30px) saturate(150%);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Liquid Glow for Deep Nebula (Default) */
+  :root .glass-header::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-[2px];
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    box-shadow: 0 0 15px var(--color-accent-glow);
+    animation: liquid-flow 10s ease-in-out infinite;
+  }
+
+  /* Navigation Items - Industrial & Hot */
+  .nav-item {
+    @apply flex items-center gap-4 px-6 py-4 rounded-xl transition-all duration-300 font-semibold cursor-pointer text-base;
+    color: var(--color-text-dim);
+  }
+
+  .nav-item:hover {
+    background-color: var(--color-bg-card);
+    color: var(--color-text-main);
+    @apply translate-x-1;
+  }
+
+  .nav-item.active {
+    background-color: var(--color-accent);
+    color: var(--color-bg-sidebar);
+    box-shadow: 0 4px 12px var(--color-accent-glow);
+    border-left: 4px solid var(--color-accent);
+  }
+
+  .theme-dark .nav-item.active,
+  .theme-vibrant .nav-item.active,
+  .theme-natura .nav-item.active {
+    background-color: var(--color-accent-glow);
+    color: var(--color-accent);
+    box-shadow: inset 0 0 12px var(--color-accent-glow);
+  }
+
+  /* Stats Card - Balanced for high information density */
+  .stats-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    @apply p-6 rounded-2xl transition-all duration-300;
+  }
+
+  .stats-card:hover {
+    border-color: var(--color-accent);
+    @apply transform -translate-y-1;
+    box-shadow: 0 10px 30px -10px var(--color-accent-glow);
+  }
+
+  /* Status Badges - High Visibility */
+  .status-badge {
+    @apply px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider flex items-center gap-2;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-main);
+  }
+}
+
+/* Custom Scrollbar - Industrial */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+.tech-font {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.flame-text {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-text-main) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.thermal-glow {
+  box-shadow: 0 0 15px var(--color-accent-glow);
+}
+
+/* Global Calendar Icon Styling - Robust SVG approach */
+input[type="date"] {
+  color-scheme: light;
+  position: relative;
+}
+
+.theme-dark input[type="date"],
+.theme-natura input[type="date"] {
+  color-scheme: dark;
+}
+
+/* Removed the specific vibrant/natura overrides as they are handled above */
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+  z-index: 1;
+}
+
+/* Custom white icon overlay */
+input[type="date"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  color: var(--color-text-main);
+}
+
+.theme-dark input[type="date"],
+.theme-vibrant input[type="date"],
+.theme-natura input[type="date"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+}
+
+/* Ensure Lucide Calendar icons are also prominent */
+@keyframes liquid-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.lucide-calendar {
+  color: white !important;
+}

@@ -1,0 +1,229 @@
+{
+    "translation": {
+        "sidebar": {
+            "maintenancePlan": "Plan de Mantenimiento v2.0",
+            "centralStats": "Panel de Control",
+            "productionUnits": "UNIDADES DE PRODUCCIÓN",
+            "settings": "Ajustes del Sistema",
+            "build": "Versión 142 • Estable"
+        },
+        "dashboard": {
+            "centralStats": "PANEL DE CONTROL CENTRAL",
+            "subtitle": "Härterei Blessing AG • Análisis de Rendimiento de Mantenimiento",
+            "liveDataflow": "FLUJO DE DATOS EN TIEMPO REAL",
+            "period": "Período: Marzo 2026",
+            "globalEfficiency": "EFICIENCIA GLOBAL",
+            "totalExecuted": "TOTAL EJECUTADO A TIEMPO",
+            "onTimeTotal": "EJECUCIONES PUNTUALES",
+            "lateTotal": "EJECUCIONES CON RETRASO",
+            "criticalPoints": "PUNTOS CRÍTICOS",
+            "activeSystems": "DEPARTAMENTOS ACTIVOS",
+            "activeDepartments": "DEPARTAMENTOS MONITOREADOS",
+            "performancePerDept": "Rendimiento por Departamento",
+            "delayWarnings": "Alertas de Retraso",
+            "critical": "CRÍTICO",
+            "incidents": "Incidentes",
+            "dataUpdate": "Última actualización:",
+            "dataUpdateDesc": "Los datos están sincronizados con los diarios operativos departamentales.",
+            "bottlenecks": "Cuellos de Botella (Flop-2)",
+            "noBottlenecks": "No se han detectado cuellos de botella.",
+            "analysisInfo": "Métricas de Análisis",
+            "analysisInfoDesc": "Cálculo de eficiencia basado en la planificación vs. ejecución real (KW 11).",
+            "analysisNote": "La eficiencia se calcula comparando el plan semanal con la ejecución reportada.",
+            "targets": {
+                "target": "Objetivo",
+                "warn": "Aviso",
+                "alert": "Alerta"
+            }
+        },
+        "department": {
+            "tabs": {
+                "Plan": "Planificación (Sem)",
+                "Journal": "Diario Operativo",
+                "Archiv": "Archivo Histórico",
+                "Anlagen": "Equipos / Maquinaria",
+                "Statistik": "Estadísticas"
+            },
+            "productionUnit": "UNIDAD DE PRODUCCIÓN",
+            "operativeControl": "CONTROL OPERATIVO",
+            "responsible": "Responsable",
+            "status": "Estado",
+            "operation": "EN SERVICIO",
+            "efficiency": "Eficiencia",
+            "titles": {
+                "Plan": "Matriz de Planificación Anual (KW 1-52)",
+                "Journal": "Diario de Mantenimiento Operativo",
+                "Archiv": "Historial de Tareas Finalizadas",
+                "Anlagen": "Gestión de Equipos y Sistemas",
+                "Statistik": "Análisis de Métricas y KPIs"
+            },
+            "filter": "BUSCAR TAREA...",
+            "export": "Exportar PDF",
+            "loading": "Cargando sección {{tab}}...",
+            "matrix": {
+                "taskMachine": "Tarea / Equipo",
+                "who": "Res.",
+                "freq": "Frec.",
+                "start": "Inicio",
+                "add": "Añadir Tarea",
+                "task": "Nombre de la tarea...",
+                "machine": "Equipo/Sistema...",
+                "freqs": {
+                    "daily": "Diario",
+                    "weekly": "Semanal",
+                    "biweekly": "Cada 2 Semanas",
+                    "monthly": "Mensual",
+                    "quarterly": "Trimestral",
+                    "semi-annually": "Semestral",
+                    "annually": "Anual"
+                }
+            },
+            "journal": {
+                "refId": "ID REF",
+                "task": "TAREA DE MANTENIMIENTO",
+                "machine": "SISTEMA / EQUIPO",
+                "dateReal": "FECHA CIERRE",
+                "visa": "FIRMA TÉCNICO",
+                "status": "ESTADO",
+                "action": "ACCIONES",
+                "complete": "Finalizar",
+                "onTime": "Puntual",
+                "lateWeeks": "Retraso: {{weeks}} sem."
+            },
+            "statusLabels": {
+                "done": "COMPLETADO",
+                "late3w": "CRÍTICO (>3 Sem)",
+                "late13w": "ATRASADO (1-3 Sem)",
+                "current": "AL DÍA"
+            },
+            "stats": {
+                "executed": "REALIZADAS",
+                "open": "PENDIENTES",
+                "late": "CON RETRASO",
+                "rate": "TASA %",
+                "progress": "Progreso de Mantenimiento Anual",
+                "livePerf": "Rendimiento Operativo",
+                "currentKw": "KW ACTUAL",
+                "filters": {
+                    "all": "Todo",
+                    "thisYear": "Este Año",
+                    "lastMonth": "Último Mes",
+                    "lastWeek": "Semana Pasada"
+                },
+                "noLateTasks": "No hay tareas con retraso."
+            },
+            "instructions": {
+                "planTitle": "Instrucciones de Planificación",
+                "plan1": "Marca 'X': La tarea debe realizarse en dicha semana.",
+                "plan2": "Responsables: MA (Mantenimiento), U (Usuario), EX (Externo).",
+                "plan3": "Frecuencia: Define la periodicidad requerida.",
+                "plan4": "Inicio (KW): Determina la semana de activación del plan.",
+                "journalTitle": "Manual del Diario Operativo",
+                "journal1": "Semaforización: Verde (Puntual), Amarillo (1-3 sem. retraso), Rojo (>3 sem. retraso).",
+                "journal2": "Fecha de Cierre: Indicar el día real de ejecución.",
+                "journal3": "Firma: Iniciales del técnico o responsable de la tarea.",
+                "journal4": "Finalizar: Archiva la tarea y actualiza las estadísticas globales."
+            },
+            "anlagen": {
+                "searchPlaceholder": "Filtrar por equipo...",
+                "noResults": "No se encontraron equipos.",
+                "performance": "Métricas de Activo",
+                "done": "finalizado",
+                "open": "pendiente",
+                "late": "crítico",
+                "selectHint": "Seleccione un activo para ver detalles",
+                "systemLabel": "Equipo / Maquinaria",
+                "lastService": "Última Intervención",
+                "totalTasks": "Total de Intervenciones",
+                "plannedTitle": "Próximas Tareas Planificadas",
+                "historyTitle": "Registro de Intervenciones",
+                "kpiDone": "Realizadas",
+                "kpiOpen": "Pendientes",
+                "kpiLate": "Atrasadas"
+            }
+        },
+        "settings": {
+            "title": "Configuración del Sistema",
+            "subtitle": "Gestión de Parámetros y Personalización",
+            "tabs": {
+                "general": "Umbrales",
+                "ui": "Apariencia",
+                "depts": "Áreas/Dptos",
+                "export": "Notificaciones"
+            },
+            "thresholds": {
+                "title": "Umbrales de Alerta",
+                "criticalTitle": "Umbral de Retraso Crítico (Semanas)",
+                "criticalDesc": "Define cuándo una tarea pasa de 'atrasada' a 'crítica' en el dashboard.",
+                "efficiencyTitle": "Objetivo de Eficiencia (%)",
+                "efficiencyDesc": "KPI de referencia para la tasa de cumplimiento puntual."
+            },
+            "ui": {
+                "title": "Interfaz de Usuario",
+                "displayMode": "Densidad de Pantalla",
+                "standard": "Estándar",
+                "standardDesc": "Equilibrio entre datos y diseño",
+                "compact": "Compacto",
+                "compactDesc": "Prioriza la cantidad de información",
+                "colorTheme": "Esquema de Colores",
+                "themes": {
+                    "light": "Clean Pro (Claro)",
+                    "dark": "Obsidiana Líquida (Oscuro)",
+                    "natura": "Verde Selva (Orgánico)",
+                    "vibrant": "Tecno Neón (Alto Contraste)"
+                }
+            },
+            "depts": {
+                "title": "Unidades de Producción",
+                "add": "Agregar Nuevo Departamento",
+                "placeholder": "Nombre del departamento...",
+                "confirmDelete": "¿Confirmas la eliminación del departamento? Esta acción es irreversible."
+            },
+            "export": {
+                "title": "Reportes y Notificaciones",
+                "emailLabel": "Destinatarios de Alertas (Email)",
+                "emailDesc": "Direcciones separadas por comas.",
+                "formatLabel": "Formato de Exportación Predeterminado"
+            },
+            "footer": {
+                "autoSave": "Los cambios se aplican y guardan de forma persistente",
+                "applyReload": "Guardar y Actualizar"
+            },
+            "backup": {
+                "title": "Copia de Seguridad",
+                "export": "Exportar Datos del Sistema (JSON)",
+                "restore": "Restaurar Copia de Seguridad",
+                "description": "Utilice estas herramientas para migración o respaldo de datos."
+            }
+        },
+        "pdf": {
+            "reportTitle": "INFORME DE RENDIMIENTO OPERATIVO",
+            "overview": "RESUMEN POR DEPARTAMENTO",
+            "efficiency": "EFICIENCIA",
+            "onTime": "PUNTUAL",
+            "late": "RETRASO",
+            "units": "UNIDADES",
+            "planned": "Planificado",
+            "ok": "CORRECTO",
+            "lateShort": "Atr.",
+            "rate": "Tasa",
+            "crit": "Crit.",
+            "maintenancePlan": "PLAN DE MANTENIMIENTO",
+            "annualMatrix": "MATRIZ DE PLANIFICACIÓN ANUAL",
+            "productiveJournal": "DIARIO DE MANTENIMIENTO",
+            "historicalArchive": "REGISTRO HISTÓRICO",
+            "executionReport": "ESTADO DE EJECUCIÓN",
+            "metricsPerformance": "MÉTRICAS Y RENDIMIENTO",
+            "statisticalReport": "ANÁLISIS ESTADÍSTICO",
+            "totalPerformance": "RENDIMIENTO CONSOLIDADO",
+            "executed": "REALIZADO",
+            "open": "ABIERTO",
+            "lateDetail": "DESGLOSE DE TAREAS CRÍTICAS",
+            "task": "Descripción de Tarea",
+            "anlage": "Equipo",
+            "dept": "Dpto.",
+            "who": "Resp.",
+            "delayWeeks": "Retraso (Sems)"
+        }
+    }
+}

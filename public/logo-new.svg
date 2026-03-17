@@ -1,0 +1,24 @@
+<svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .font-light { font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 300; }
+      .font-bold { font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 900; }
+      .font-medium { font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 500; }
+    </style>
+  </defs>
+
+  <!-- Border -->
+  <!-- Top-left: (20, 20). Top-right: (480, 40). Bottom-right: (460, 280). Bottom-left: (40, 260) -->
+  <polygon points="15,20 488,40 460,275 40,285" fill="none" stroke="#1d1d1d" stroke-width="16" stroke-linejoin="miter" stroke-miterlimit="4" />
+  
+  <g transform="translate(100, 110)">
+    <!-- HÄRTEREI -->
+    <text x="0" y="0" class="font-light" font-size="52" letter-spacing="14.5" fill="#1d1d1d">HÄRTEREI</text>
+    
+    <!-- BLΣSSING -->
+    <text x="0" y="70" class="font-bold" font-size="76" letter-spacing="5" fill="#1d1d1d">BLΣSSING</text>
+    
+    <!-- Starker Stahl. -->
+    <text x="0" y="130" class="font-medium" font-size="28" fill="#1d1d1d">Starker Stahl.</text>
+  </g>
+</svg>
