@@ -993,6 +993,14 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
 
     const modalConfig = getModalConfig();
 
+    const statsTarget = settings.thresholds.efficiencyTarget;
+    const isStatsMeetingTarget = quote >= statsTarget;
+    const isStatsNearTarget = quote >= statsTarget * 0.85;
+
+    const statsColor = isStatsMeetingTarget ? 'text-emerald-400' : isStatsNearTarget ? 'text-amber-400' : 'text-rose-400';
+    const statsBg = isStatsMeetingTarget ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : isStatsNearTarget ? 'bg-amber-500/5 hover:bg-amber-500/10' : 'bg-rose-500/5 hover:bg-rose-500/10';
+    const statsBorder = isStatsMeetingTarget ? 'border-emerald-500/20' : isStatsNearTarget ? 'border-amber-500/20' : 'border-rose-500/20';
+
     return (
         <div className="p-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start rounded-2xl shadow-xl border relative overflow-hidden"
             style={{
