@@ -365,7 +365,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                 {departments
                                     .slice()
                                     .sort((a, b) => (a.stats?.erfüllungsquote || 0) - (b.stats?.erfüllungsquote || 0))
-                                    .slice(0, 2)
                                     .map(dept => (
                                         <div key={dept.id} className={`rounded-xl ${compact ? 'p-3' : 'p-5'} border transition-all`}
                                             style={{
