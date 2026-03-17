@@ -81,7 +81,7 @@
         "task": "WARTUNGSAUFGABE",
         "machine": "ANLAGE / SYSTEM",
         "dateReal": "DATUM (IST)",
-        "visa": "VISUM TÉCHNIKER",
+        "visa": "VISUM",
         "status": "STATUS",
         "action": "AKTIONEN",
         "complete": "Abschließen",
@@ -119,7 +119,7 @@
         "journalTitle": "Bedienungshinweise Journal",
         "journal1": "Indikatoren: Grün (Pünktlich), Gelb (1-3W Verzug), Rot (>3W Verzug).",
         "journal2": "Ist-Datum: Tatsächlicher Tag der Ausführung eingeben.",
-        "journal3": "Visum: Kürzel des verantwortlichen Technikers.",
+        "journal3": "Visum: Kürzel der verantwortlichen Person.",
         "journal4": "Abschließen: Archiviert die Aufgabe und aktualisiert die Statistik."
       },
       "anlagen": {

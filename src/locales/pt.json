@@ -74,7 +74,7 @@
                 "task": "TAREFA DE MANUTENÇÃO",
                 "machine": "SISTEMA / EQUIPAMENTO",
                 "dateReal": "DATA DE CIERRE",
-                "visa": "ASSINATURA TÉCNICO",
+                "visa": "VISUM",
                 "status": "ESTADO",
                 "action": "AÇÕES",
                 "complete": "Finalizar",
@@ -112,7 +112,7 @@
                 "journalTitle": "Manual do Diário Operativo",
                 "journal1": "Sinalização: Verde (Pontual), Amarelo (1-3 sem. atraso), Vermelho (>3 sem. atraso).",
                 "journal2": "Data de Cierre: Indicar o dia real de execução.",
-                "journal3": "Assinatura: Iniciais do técnico ou responsável pela tarefa.",
+                "journal3": "Visum: Iniciais do técnico ou responsável pela tarefa.",
                 "journal4": "Finalizar: Arquiva a tarefa e atualiza as estatísticas globais."
             },
             "anlagen": {
