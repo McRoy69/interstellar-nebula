@@ -30,6 +30,35 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<'general' | 'ui' | 'depts' | 'export'>('general');
     const [confirmingId, setConfirmingId] = useState<string | null>(null);
+    const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+    const [passwordInput, setPasswordInput] = useState('');
+    const [pendingTab, setPendingTab] = useState<'depts' | 'export' | null>(null);
+    const [isAuthorized, setIsAuthorized] = useState(false);
+
+    const handleTabClick = (tab: 'general' | 'ui' | 'depts' | 'export') => {
+        if ((tab === 'depts' || tab === 'export') && !isAuthorized) {
+            setPendingTab(tab);
+            setShowPasswordPrompt(true);
+            setPasswordInput('');
+        } else {
+            setActiveTab(tab);
+        }
+    };
+
+    const verifyPassword = () => {
+        if (passwordInput === '3400') {
+            setIsAuthorized(true);
+            if (pendingTab) {
+                setActiveTab(pendingTab);
+            }
+            setShowPasswordPrompt(false);
+            setPendingTab(null);
+            setPasswordInput('');
+        } else {
+            alert('Passwort falsch / Contraseña incorrecta');
+            setPasswordInput('');
+        }
+    };
 
     const handleThresholdChange = (key: keyof AppSettings['thresholds'], value: number) => {
         setSettings(prev => ({
@@ -246,7 +275,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                 {/* Tabs Sidebar */}
                 <div className="w-64 space-y-2 shrink-0">
                     <button
-                        onClick={() => setActiveTab('general')}
+                        onClick={() => handleTabClick('general')}
                         className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-all shadow-md ${activeTab === 'general' ? 'text-white' : 'hover:bg-black/5'}`}
                         style={{
                             backgroundColor: activeTab === 'general' ? 'var(--color-accent)' : 'var(--color-bg-card)',
@@ -259,7 +288,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                         {t('settings.tabs.general')}
                     </button>
                     <button
-                        onClick={() => setActiveTab('ui')}
+                        onClick={() => handleTabClick('ui')}
                         className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-all shadow-md ${activeTab === 'ui' ? 'text-white' : 'hover:bg-black/5'}`}
                         style={{
                             backgroundColor: activeTab === 'ui' ? 'var(--color-accent)' : 'var(--color-bg-card)',
@@ -272,7 +301,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                         {t('settings.tabs.ui')}
                     </button>
                     <button
-                        onClick={() => setActiveTab('depts')}
+                        onClick={() => handleTabClick('depts')}
                         className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-all shadow-md ${activeTab === 'depts' ? 'text-white' : 'hover:bg-black/5'}`}
                         style={{
                             backgroundColor: activeTab === 'depts' ? 'var(--color-accent)' : 'var(--color-bg-card)',
@@ -285,7 +314,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                         {t('settings.tabs.depts')}
                     </button>
                     <button
-                        onClick={() => setActiveTab('export')}
+                        onClick={() => handleTabClick('export')}
                         className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-all shadow-md ${activeTab === 'export' ? 'text-white' : 'hover:bg-black/5'}`}
                         style={{
                             backgroundColor: activeTab === 'export' ? 'var(--color-accent)' : 'var(--color-bg-card)',
@@ -295,7 +324,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                         }}
                     >
                         <Mail size={18} />
-                        {t('settings.tabs.export')}
+                        {t('settings.export.title')}
                     </button>
                 </div>
 
@@ -710,27 +739,73 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                         </div>
                     )}
                 </div>
-
-                {/* Footer */}
-                <div className="mt-12 pt-8 border-t flex justify-between items-center shadow-[0_-1px_0_var(--color-border)]"
-                    style={{ borderColor: 'var(--color-border)' }}
-                >
-                    <div className="flex items-center gap-3" style={{ color: 'var(--color-text-dim)' }}>
-                        <Save size={16} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">{t('settings.footer.autoSave')}</span>
-                    </div>
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all"
-                        style={{
-                            backgroundColor: 'var(--color-accent)',
-                            color: 'var(--color-bg-sidebar)'
-                        }}
-                    >
-                        {t('settings.footer.applyReload')}
-                    </button>
-                </div>
             </div>
+
+            {/* Global Footer - Global Save & Apply */}
+            <div className="mt-auto pt-10 flex justify-between items-center bg-white/50 backdrop-blur-lg p-8 rounded-3xl border shadow-xl shadow-black/5"
+                style={{ borderColor: 'var(--color-border)' }}
+            >
+                <div className="flex items-center gap-4 px-4" style={{ color: 'var(--color-text-dim)' }}>
+                    <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center">
+                        <Save size={18} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t('settings.footer.autoSave')}</span>
+                </div>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-12 py-4 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl active:scale-95 transition-all hover:-translate-y-1"
+                    style={{
+                        backgroundColor: 'var(--color-accent)',
+                        color: 'var(--color-bg-sidebar)'
+                    }}
+                >
+                    {t('settings.footer.applyReload')}
+                </button>
+            </div>
+
+            {/* Password Prompt Modal */}
+            {showPasswordPrompt && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-300 p-6">
+                    <div className="w-full max-w-sm bg-white p-10 rounded-[2.5rem] shadow-2xl border flex flex-col items-center animate-in zoom-in-95 duration-300"
+                        style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}
+                    >
+                        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-6 border border-amber-500/20">
+                            <Settings size={32} className="text-amber-500" />
+                        </div>
+                        <h3 className="text-lg font-black uppercase tracking-tight mb-2 text-center" style={{ color: 'var(--color-text-main)' }}>
+                            Admin Access
+                        </h3>
+                        <p className="text-xs font-bold uppercase tracking-widest text-center mb-8 opacity-60" style={{ color: 'var(--color-text-dim)' }}>
+                            Passwort erforderlich
+                        </p>
+                        <input
+                            type="password"
+                            autoFocus
+                            value={passwordInput}
+                            onChange={(e) => setPasswordInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && verifyPassword()}
+                            placeholder="****"
+                            className="w-full bg-black/5 border-none rounded-2xl p-6 text-center text-2xl font-black tracking-[0.5em] focus:ring-2 focus:ring-amber-500 transition-all mb-6"
+                            style={{ color: 'var(--color-text-main)' }}
+                        />
+                        <div className="flex gap-3 w-full">
+                            <button
+                                onClick={() => setShowPasswordPrompt(false)}
+                                className="flex-1 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all hover:bg-black/5"
+                                style={{ color: 'var(--color-text-dim)' }}
+                            >
+                                Abbrechen
+                            </button>
+                            <button
+                                onClick={verifyPassword}
+                                className="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-amber-500/20 transition-all"
+                            >
+                                Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -46,12 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
             {/* Brand Section */}
             <div className={`${isCollapsed ? 'p-4' : 'p-10'} pb-8 transition-all duration-500`}>
                 <div className="flex items-center gap-5">
-                    <div className={`${isCollapsed ? 'w-[50px] h-[40px]' : 'w-[140px] h-[84px]'} flex items-center justify-center rounded-2xl shrink-0 p-2 transition-all hover:scale-105 duration-300 overflow-hidden border`}
-                        style={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            borderColor: 'var(--color-border)'
-                        }}
-                    >
+                    <div className={`${isCollapsed ? 'w-[50px] h-[40px]' : 'w-[140px] h-[84px]'} flex items-center justify-center shrink-0 p-0 transition-all hover:scale-105 duration-300 overflow-hidden`}>
                         <img
                             src="/blessing-logo.png"
                             alt="Logo"
@@ -63,13 +58,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                         />
                     </div>
                     {!isCollapsed && (
-                        <div className="transition-all duration-500 opacity-100 scale-100 origin-left">
-                            <h2 className="text-lg font-black uppercase tracking-tight leading-none branding-font whitespace-nowrap text-white">Härterei Blessing AG</h2>
-                            <div className="flex items-center gap-2 mt-3">
-                                <span className="w-2 h-2 rounded-full shadow-[0_0_8px_var(--color-accent-glow)] animate-pulse"
+                        <div className="transition-all duration-500 opacity-100 scale-100 origin-left flex flex-col justify-center">
+                            <h2 className="text-[11px] font-black uppercase tracking-[0.1em] leading-[1.3] branding-font text-white opacity-95">
+                                Härterei<br />Blessing AG
+                            </h2>
+                            <div className="flex items-center gap-2 mt-2">
+                                <span className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_var(--color-accent-glow)] animate-pulse"
                                     style={{ backgroundColor: 'var(--color-accent)' }}
                                 />
-                                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60">{t('sidebar.maintenancePlan')}</span>
+                                <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-white/40">{t('sidebar.maintenancePlan')}</span>
                             </div>
                         </div>
                     )}
