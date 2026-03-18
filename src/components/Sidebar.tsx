@@ -162,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                     title={isCollapsed ? t('sidebar.settings') : ''}
                 >
                     <Settings size={22} className="shrink-0" />
-                    {!isCollapsed && <span className="text-sm font-bold uppercase tracking-widest">{t('sidebar.settings')}</span>}
+                    {!isCollapsed && <span className="text-xs font-bold uppercase tracking-wider">{t('sidebar.settings')}</span>}
                 </div>
                 {!isCollapsed && (
                     <div className="nav-item text-white/30 cursor-default hover:bg-transparent px-8 whitespace-nowrap">
