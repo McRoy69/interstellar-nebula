@@ -41,6 +41,50 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         setVerantwortlicher(data.verantwortlicher || 'MA');
     }, [data.id, data.tasks, data.planningTasks]);
 
+    // 3. Background Translation for tasks that don't have it yet
+    React.useEffect(() => {
+        let changed = false;
+
+        const translateMissing = async () => {
+            const updatedPlanningTasks = [...localPlanningTasks];
+            for (let i = 0; i < updatedPlanningTasks.length; i++) {
+                const task = updatedPlanningTasks[i];
+                if (!task.translations || Object.keys(task.translations).length === 0) {
+                    const trans = await getTaskTranslations(task.title, task.anlage);
+                    if (trans && Object.keys(trans).length > 0) {
+                        updatedPlanningTasks[i] = { ...task, translations: trans };
+                        changed = true;
+                        // Sequential update with tiny delay to avoid rate limit
+                        if (i % 3 === 0) setLocalPlanningTasks([...updatedPlanningTasks]);
+                        await new Promise(r => setTimeout(r, 100));
+                    }
+                }
+            }
+
+            const updatedTasks = [...localTasks];
+            for (let i = 0; i < updatedTasks.length; i++) {
+                const task = updatedTasks[i];
+                if (!task.translations || Object.keys(task.translations).length === 0) {
+                    const trans = await getTaskTranslations(task.title, task.anlage);
+                    if (trans && Object.keys(trans).length > 0) {
+                        updatedTasks[i] = { ...task, translations: trans };
+                        changed = true;
+                        if (i % 3 === 0) setLocalTasks([...updatedTasks]);
+                        await new Promise(r => setTimeout(r, 100));
+                    }
+                }
+            }
+
+            if (changed) {
+                setLocalPlanningTasks(updatedPlanningTasks);
+                setLocalTasks(updatedTasks);
+            }
+        };
+
+        const timer = setTimeout(translateMissing, 2000);
+        return () => clearTimeout(timer);
+    }, [data.id]);
+
     // Bubble up changes to parent
     React.useEffect(() => {
         if (!onUpdate) return;
@@ -654,10 +698,10 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                     </button>
                                     <div>
                                         <div className="text-sm font-bold leading-tight" style={{ color: 'var(--color-text-main)' }}>
-                                            {task.translations?.[i18n.language]?.title || task.title}
+                                            {task.translations?.[i18n.language.split('-')[0]]?.title || task.translations?.[i18n.language]?.title || task.title}
                                         </div>
                                         <div className="text-[10px] font-black uppercase tracking-widest mt-0.5" style={{ color: 'var(--color-accent)' }}>
-                                            {task.translations?.[i18n.language]?.anlage || task.anlage}
+                                            {task.translations?.[i18n.language.split('-')[0]]?.anlage || task.translations?.[i18n.language]?.anlage || task.anlage}
                                         </div>
                                     </div>
                                 </div>
@@ -858,7 +902,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
                             <tr key={task.id} className="hover:bg-black/5 group transition-colors">
                                 <td className="py-6 pl-12">
                                     <div className="text-base font-bold" style={{ color: 'var(--color-text-main)' }}>
-                                        {task.translations?.[i18n.language]?.title || task.title}
+                                        {task.translations?.[i18n.language.split('-')[0]]?.title || task.translations?.[i18n.language]?.title || task.title}
                                     </div>
                                     <div className="text-xs font-black tracking-wider uppercase mt-1"
                                         style={{ color: 'var(--color-text-dim)' }}
@@ -872,7 +916,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
                                             color: 'var(--color-field-text)'
                                         }}
                                     >
-                                        {task.translations?.[i18n.language]?.anlage || task.anlage}
+                                        {task.translations?.[i18n.language.split('-')[0]]?.anlage || task.translations?.[i18n.language]?.anlage || task.anlage}
                                     </span>
                                 </td>
                                 <td className="py-6">
@@ -1077,10 +1121,10 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
                                     <div key={task.id} className={`p-4 rounded-xl border ${modalConfig.itemBorder} ${modalConfig.itemBg} flex justify-between items-center hover:opacity-80 transition-all`}>
                                         <div>
                                             <div className="font-bold" style={{ color: 'var(--color-text-main)' }}>
-                                                {task.translations?.[i18n.language]?.title || task.title}
+                                                {task.translations?.[i18n.language.split('-')[0]]?.title || task.translations?.[i18n.language]?.title || task.title}
                                             </div>
                                             <div className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">
-                                                {task.translations?.[i18n.language]?.anlage || task.anlage} • Verantw.: {task.wer}
+                                                {task.translations?.[i18n.language.split('-')[0]]?.anlage || task.translations?.[i18n.language]?.anlage || task.anlage} • Verantw.: {task.wer}
                                             </div>
                                         </div>
                                         <div className="text-right">
@@ -1300,7 +1344,8 @@ const AnlagenView = ({ tasks, planningTasks, settings }: { tasks: Task[], planni
             const name = t.anlage;
             if (!name || GENERIC_NAMES.has(name.trim())) return;
             if (!map[name]) {
-                const translatedName = t.translations?.[i18n.language]?.anlage || name;
+                const langKey = i18n.language.split('-')[0];
+                const translatedName = t.translations?.[langKey]?.anlage || t.translations?.[i18n.language]?.anlage || name;
                 map[name] = { name: translatedName, totalTasks: 0, doneTasks: 0, openTasks: 0, lateTasks: 0, lastService: '-', nextTasks: [] };
             }
 
@@ -1321,7 +1366,8 @@ const AnlagenView = ({ tasks, planningTasks, settings }: { tasks: Task[], planni
         planningTasks.forEach(t => {
             if (!t.anlage || GENERIC_NAMES.has(t.anlage.trim())) return;
             if (map[t.anlage]) {
-                const title = t.translations?.[i18n.language]?.title || t.title;
+                const langKey = i18n.language.split('-')[0];
+                const title = t.translations?.[langKey]?.title || t.translations?.[i18n.language]?.title || t.title;
                 if (!map[t.anlage].nextTasks.includes(title)) {
                     map[t.anlage].nextTasks.push(title);
                 }

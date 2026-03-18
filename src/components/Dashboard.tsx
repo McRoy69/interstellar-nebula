@@ -390,7 +390,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                                             <span className="text-[11px] font-bold flex-1 leading-tight"
                                                                 style={{ color: 'var(--color-text-main)' }}
                                                             >
-                                                                {item.translations?.[i18n.language]?.title || item.title}
+                                                                {item.translations?.[i18n.language.split('-')[0]]?.title || item.translations?.[i18n.language]?.title || item.title}
                                                             </span>
                                                             <span className="text-[10px] font-black px-2 py-0.5 rounded border whitespace-nowrap"
                                                                 style={{
