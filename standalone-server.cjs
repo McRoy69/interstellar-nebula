@@ -159,8 +159,9 @@ const EMAIL_I18N = {
     }
 };
 
-const getReportHtml = (appData, isAutomated = false, lang = 'de') => {
+const getReportHtml = (appData, isAutomated = false, lang = 'de', recipientName = '') => {
     const t = EMAIL_I18N[lang] || EMAIL_I18N['de'];
+    const greeting = recipientName ? `${t.greeting.split(' ')[0]} ${recipientName},` : t.greeting;
     const kw = appData.settings?.currentKw || 12;
     const appUrl = process.env.APP_URL || 'https://wartungsplan.up.railway.app';
     const departments = appData.departments || [];
@@ -222,7 +223,7 @@ const getReportHtml = (appData, isAutomated = false, lang = 'de') => {
                 <p style="color: #718096; margin-top: 5px;">Härterei Blessing AG • Monitoring Report</p>
             </div>
 
-            <p>${t.greeting}</p>
+            <p>${greeting}</p>
             <p>${t.subtitle}</p>
             
             <table style="width: 100%; border-collapse: collapse; margin: 25px 0; background: #ffffff;">
@@ -277,15 +278,29 @@ const sendReport = async (isAutomated = false, providedData = null) => {
                 const lang = appData.lang || 'de';
                 const t = EMAIL_I18N[lang] || EMAIL_I18N['de'];
 
-                const mailOptions = {
-                    from: 'Wartungsplan <onboarding@resend.dev>', // Use verified domain later
-                    to: emails.join(', '),
-                    subject: `${t.subject} - KW ${kw}${isAutomated ? ' [Auto]' : ''}`,
-                    html: getReportHtml(appData, isAutomated, lang)
-                };
+                const results = [];
+                for (const email of emails) {
+                    try {
+                        // Extract name from email: nicolas.schweizer@... -> Nicolas
+                        const prefix = email.split('@')[0];
+                        const firstName = prefix.split('.')[0];
+                        const capitalizedName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
 
-                const result = await sendEmailResend(mailOptions);
-                resolve(result);
+                        const mailOptions = {
+                            from: 'Wartungsplan <onboarding@resend.dev>',
+                            to: email,
+                            subject: `${t.subject} - KW ${kw}${isAutomated ? ' [Auto]' : ''}`,
+                            html: getReportHtml(appData, isAutomated, lang, capitalizedName)
+                        };
+
+                        const result = await sendEmailResend(mailOptions);
+                        results.push(result);
+                    } catch (err) {
+                        console.error(`Failed to send email to ${email}:`, err);
+                    }
+                }
+
+                resolve({ success: true, count: results.length });
             } catch (e) {
                 console.error('Email processing error:', e);
                 reject(e);
