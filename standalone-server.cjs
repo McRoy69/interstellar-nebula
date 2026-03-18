@@ -48,24 +48,24 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 app.use(express.json({ limit: '50mb' }));
 
-// SMTP Configuration (Metanet)
+// SMTP Configuration (Metanet) - Optimized for Cloud Environments (matches working VBA SSL setup)
 const transporter = nodemailer.createTransport({
-    host: 'futura.metanet.ch',
-    port: 587,
-    secure: false, // STARTTLS
+    host: '80.74.146.140', // Direct IPv4 for futura.metanet.ch to skip problematic IPv6
+    port: 465,             // Port 465 for SSL (matching user's VBA config)
+    secure: true,          // SSL/TLS (matching user's SMTP_USE_SSL = True)
     auth: {
         user: 'michael.jenni@blessing.ch',
         pass: '16MnCrS5?'
     },
     tls: {
-        rejectUnauthorized: false,
-        servername: 'futura.metanet.ch'
+        rejectUnauthorized: false, // Allow if cert hostname doesn't match IP (we use servername below)
+        servername: 'futura.metanet.ch', // CRITICAL for certificate validation with IP host
+        minVersion: 'TLSv1.2'
     },
-    requireTLS: true,
-    family: 4, // Force IPv4
-    connectionTimeout: 60000,
-    greetingTimeout: 60000,
-    socketTimeout: 60000,
+    family: 4, // Force IPv4 explicitly
+    connectionTimeout: 20000,
+    greetingTimeout: 20000,
+    socketTimeout: 30000,
     debug: true,
     logger: true
 });
