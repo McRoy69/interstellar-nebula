@@ -728,12 +728,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                     className="w-full flex items-center justify-center gap-2 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed group"
                                 >
                                     <Send size={18} className={isSending ? 'animate-pulse' : 'group-hover:translate-x-1 transition-transform'} />
-                                    {isSending ? 'Enviando...' : 'Enviar Informe por Email Ahora'}
+                                    {isSending ? t('settings.export.sending') : t('settings.export.sendButton')}
                                 </button>
 
                                 <p className="text-[10px] text-center font-bold uppercase tracking-wider opacity-60 flex items-center justify-center gap-2" style={{ color: 'var(--color-text-dim)' }}>
                                     <AlertCircle size={12} />
-                                    Envío automático: Todos los lunes a las 03:00 am
+                                    {t('settings.export.autoSendNote')}
                                 </p>
                             </div>
                         </div>

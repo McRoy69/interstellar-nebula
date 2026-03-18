@@ -188,7 +188,10 @@
         "placeholderEmail": "beispiel@firma.com",
         "deleteEmail": "E-Mail löschen",
         "centralMetrics": "Metriken: Zentrale Statistik",
-        "deptMetrics": "Metriken pro Abteilung"
+        "deptMetrics": "Metriken pro Abteilung",
+        "sendButton": "E-Mail-Bericht jetzt senden",
+        "sending": "Wird gesendet...",
+        "autoSendNote": "Automatischer Versand: Jeden Montag um 03:00 Uhr"
       },
       "metrics": {
         "efficiency": "Effizienz (%)",

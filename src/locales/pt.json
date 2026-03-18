@@ -173,7 +173,15 @@
                 "title": "Relatórios e Notificações",
                 "emailLabel": "Destinatários de Alertas (Email)",
                 "emailDesc": "Endereços separados por vírgula.",
-                "formatLabel": "Formato de Exportação Padrão"
+                "formatLabel": "Formato de Exportação Padrão",
+                "addEmail": "Adicionar endereço de e-mail",
+                "placeholderEmail": "exemplo@empresa.com",
+                "deleteEmail": "Excluir e-mail",
+                "centralMetrics": "Métricas: Estatística Central",
+                "deptMetrics": "Métricas por Departamento",
+                "sendButton": "Enviar Relatório por E-mail Agora",
+                "sending": "Enviando...",
+                "autoSendNote": "Envio automático: Toda segunda-feira às 03:00 am"
             },
             "footer": {
                 "autoSave": "As alterações são aplicadas e salvas de forma persistente",

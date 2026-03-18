@@ -190,7 +190,10 @@
                 "placeholderEmail": "ejemplo@empresa.com",
                 "deleteEmail": "Eliminar correo",
                 "centralMetrics": "Métricas: Estadística Central",
-                "deptMetrics": "Métricas por Departamento"
+                "deptMetrics": "Métricas por Departamento",
+                "sendButton": "Enviar Informe por Email Ahora",
+                "sending": "Enviando...",
+                "autoSendNote": "Envío automático: Todos los lunes a las 03:00 am"
             },
             "metrics": {
                 "efficiency": "Eficiencia (%)",
