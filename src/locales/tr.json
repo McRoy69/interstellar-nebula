@@ -171,9 +171,26 @@
             },
             "export": {
                 "title": "Raporlar ve Bildirimler",
+                "subtitle": "Periyodik raporların alıcılarını ve içeriğini yönetin.",
                 "emailLabel": "Uyarı Alıcıları (E-posta)",
-                "emailDesc": "Virgül ile ayrılmış adresler.",
-                "formatLabel": "Varsayılan Dışa Aktarma Formatı"
+                "emailDesc": "Virgül ile ayrılmış e-posta adresleri.",
+                "formatLabel": "Varsayılan Dışa Aktarma Formatı",
+                "noEmails": "E-posta adresi eklenmedi. Bildirimler devre dışı bırakılacak.",
+                "addEmail": "Yeni E-posta Ekle",
+                "placeholderEmail": "ornek@sirket.com",
+                "deleteEmail": "E-postayı Sil",
+                "centralMetrics": "Metrikler: Merkezi İstatistik",
+                "deptMetrics": "Departman Bazında Metrikler",
+                "sendButton": "E-posta Raporunu Şimdi Gönder",
+                "sending": "Gönderiliyor...",
+                "autoSendNote": "Otomatik Gönderim: Her Pazartesi saat 03:00'te"
+            },
+            "metrics": {
+                "efficiency": "Verimlilik (%)",
+                "onTime": "Zamanında Uygulanan",
+                "late": "Gecikmeli Uygulanan",
+                "openTasks": "Bekleyen Görevler",
+                "complianceRate": "Uyum Oranı"
             },
             "footer": {
                 "autoSave": "Değişiklikler otomatik olarak kaydedilir",

@@ -171,9 +171,11 @@
             },
             "export": {
                 "title": "Relatórios e Notificações",
+                "subtitle": "Gerencie os destinatários e o conteúdo dos relatórios periódicos.",
                 "emailLabel": "Destinatários de Alertas (Email)",
                 "emailDesc": "Endereços separados por vírgula.",
                 "formatLabel": "Formato de Exportação Padrão",
+                "noEmails": "Nenhum e-mail adicionado. As notificações estarão desativadas.",
                 "addEmail": "Adicionar endereço de e-mail",
                 "placeholderEmail": "exemplo@empresa.com",
                 "deleteEmail": "Excluir e-mail",
@@ -182,6 +184,13 @@
                 "sendButton": "Enviar Relatório por E-mail Agora",
                 "sending": "Enviando...",
                 "autoSendNote": "Envio automático: Toda segunda-feira às 03:00 am"
+            },
+            "metrics": {
+                "efficiency": "Eficiência (%)",
+                "onTime": "Executado no Prazo",
+                "late": "Executado com Atraso",
+                "openTasks": "Tarefas Abertas",
+                "complianceRate": "Taxa de Conformidade"
             },
             "footer": {
                 "autoSave": "As alterações são aplicadas e salvas de forma persistente",
