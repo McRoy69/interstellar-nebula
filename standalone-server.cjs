@@ -8,6 +8,12 @@ const cron = require('node-cron');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const dns = require('dns');
+// Force IPv4 as priority to avoid IPv6 ENETUNREACH issues in cloud environments
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
+
 // SQLite Database Setup
 const sqlite3 = require('sqlite3').verbose();
 const dbPath = process.env.DATABASE_PATH || path.join(__dirname, 'database.sqlite');
@@ -55,6 +61,7 @@ const transporter = nodemailer.createTransport({
         rejectUnauthorized: false,
         servername: 'futura.metanet.ch'
     },
+    family: 4, // Force IPv4
     connectionTimeout: 60000,
     greetingTimeout: 60000,
     socketTimeout: 60000,
