@@ -359,6 +359,22 @@ app.get('/api/data', (req, res) => {
     });
 });
 
+app.get('/api/translate', async (req, res) => {
+    const { text, to } = req.query;
+    if (!text || !to) return res.status(400).json({ error: 'Missing text or to' });
+    try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        // Google Translate unofficial API returns a nested array
+        const translatedText = data[0].map(x => x[0]).join('');
+        res.json({ translatedText });
+    } catch (e) {
+        console.error('Translation error:', e);
+        res.status(500).json({ error: 'Translation failed' });
+    }
+});
+
 app.post('/api/data', (req, res) => {
     const data = JSON.stringify(req.body);
     db.run('INSERT INTO app_state (data, updated_at) VALUES (?, CURRENT_TIMESTAMP)', [data], function (err) {

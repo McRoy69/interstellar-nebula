@@ -78,7 +78,8 @@ function App() {
                   year: 2026,
                   status: 'Open',
                   wer: pt.wer,
-                  isLate: false
+                  isLate: false,
+                  translations: pt.translations
                 });
               }
             }

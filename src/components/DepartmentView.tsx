@@ -13,6 +13,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { isTaskPlanned } from '../data/mockData';
 import { APP_CONFIG } from '../config';
+import { getTaskTranslations } from '../utils/translation';
 
 interface DepartmentViewProps {
     data: DepartmentData;
@@ -114,7 +115,11 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     };
 
 
-    const handleAddTask = (title: string, anlage: string, wer: string, frequenz: string, abKw: number) => {
+    const handleAddTask = async (title: string, anlage: string, wer: string, frequenz: string, abKw: number) => {
+        // Optimistic UI update or wait for translations?
+        // Let's do it properly and wait for translations to avoid jumping.
+        const translations = await getTaskTranslations(title, anlage);
+
         const newPlanningTask: PlanningTask = {
             id: `p-${Date.now()}`,
             title,
@@ -123,7 +128,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             frequenz,
             weeks: {},
             abKw,
-            overrides: {}
+            overrides: {},
+            translations
         };
         setLocalPlanningTasks(prev => [...prev, newPlanningTask]);
     };
@@ -506,9 +512,11 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                                 .filter(t => {
                                                     if (!searchQuery) return true;
                                                     const q = searchQuery.toLowerCase();
-                                                    return t.title.toLowerCase().includes(q) ||
-                                                        t.anlage.toLowerCase().includes(q) ||
-                                                        t.id.toLowerCase().includes(q);
+                                                    const title = tItem.translations?.[i18n.language]?.title || tItem.title;
+                                                    const anlage = tItem.translations?.[i18n.language]?.anlage || tItem.anlage;
+                                                    return title.toLowerCase().includes(q) ||
+                                                        anlage.toLowerCase().includes(q) ||
+                                                        tItem.id.toLowerCase().includes(q);
                                                 })
                                                 .sort((a, b) => {
                                                     // Calculate delay priority
@@ -645,8 +653,12 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                         <Trash2 size={16} />
                                     </button>
                                     <div>
-                                        <div className="text-sm font-bold leading-tight" style={{ color: 'var(--color-text-main)' }}>{task.title}</div>
-                                        <div className="text-[10px] font-black uppercase tracking-widest mt-0.5" style={{ color: 'var(--color-accent)' }}>{task.anlage}</div>
+                                        <div className="text-sm font-bold leading-tight" style={{ color: 'var(--color-text-main)' }}>
+                                            {task.translations?.[i18n.language]?.title || task.title}
+                                        </div>
+                                        <div className="text-[10px] font-black uppercase tracking-widest mt-0.5" style={{ color: 'var(--color-accent)' }}>
+                                            {task.translations?.[i18n.language]?.anlage || task.anlage}
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -845,7 +857,9 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
                         return (
                             <tr key={task.id} className="hover:bg-black/5 group transition-colors">
                                 <td className="py-6 pl-12">
-                                    <div className="text-base font-bold" style={{ color: 'var(--color-text-main)' }}>{task.title}</div>
+                                    <div className="text-base font-bold" style={{ color: 'var(--color-text-main)' }}>
+                                        {task.translations?.[i18n.language]?.title || task.title}
+                                    </div>
                                     <div className="text-xs font-black tracking-wider uppercase mt-1"
                                         style={{ color: 'var(--color-text-dim)' }}
                                     >KW {task.kw} / {task.year}</div>
@@ -857,7 +871,9 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
                                             borderColor: 'var(--color-border)',
                                             color: 'var(--color-field-text)'
                                         }}
-                                    >{task.anlage}</span>
+                                    >
+                                        {task.translations?.[i18n.language]?.anlage || task.anlage}
+                                    </span>
                                 </td>
                                 <td className="py-6">
                                     <span className="text-sm font-black px-2 py-1 rounded border"

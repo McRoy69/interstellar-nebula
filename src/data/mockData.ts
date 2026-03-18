@@ -14,6 +14,9 @@ export interface Task {
   delayWeeks?: number;
   doneKw?: number;
   doneYear?: number;
+  translations?: {
+    [lang: string]: { title: string; anlage: string; }
+  };
 }
 
 export interface PlanningTask {
@@ -25,6 +28,9 @@ export interface PlanningTask {
   weeks: { [key: number]: boolean };
   abKw?: number;
   overrides?: { [key: number]: boolean };
+  translations?: {
+    [lang: string]: { title: string; anlage: string; }
+  };
 }
 
 export const isTaskPlanned = (task: PlanningTask, kw: number) => {
