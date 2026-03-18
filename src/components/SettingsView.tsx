@@ -27,7 +27,7 @@ interface SettingsViewProps {
 }
 
 const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, departments, setDepartments }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [activeTab, setActiveTab] = useState<'general' | 'ui' | 'depts' | 'export'>('general');
     const [confirmingId, setConfirmingId] = useState<string | null>(null);
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
@@ -174,12 +174,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                 body: JSON.stringify({
                     settings,
                     departments,
-                    // Optionally calculate summary stats here if needed, but let's assume backend/frontend agree
+                    lang: i18n.language || 'de',
                     stats: departments.reduce((acc: any, dept) => {
                         acc[dept.id] = {
-                            efficiency: dept.stats.efficiency || 0,
-                            late: dept.stats.offen || 0, // Fallback mapping if property names differ
-                            executed: dept.stats.erledigt || 0
+                            efficiency: dept.stats.erfüllungsquote || 0,
+                            'on-time': dept.stats.erledigtPuenktlich || 0,
+                            late: dept.stats.offen || 0,
+                            offen: dept.stats.offen || 0,
+                            erfüllungsquote: dept.stats.erfüllungsquote || 0
                         };
                         return acc;
                     }, {})

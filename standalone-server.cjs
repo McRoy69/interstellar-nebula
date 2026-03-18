@@ -84,64 +84,166 @@ async function sendEmailResend(options) {
 
 // SMTP is no longer used, we now use Resend API.
 
-const getReportHtml = (appData, isAutomated = false) => {
+const EMAIL_I18N = {
+    de: {
+        subject: 'Wartungsplan Statistik',
+        greeting: 'Hallo Michael,',
+        subtitle: 'hier ist die aktuelle Übersicht der Wartungs-Performance.',
+        colDept: 'Abteilung',
+        appTitle: 'Vollständiger Report in der App:',
+        appButton: 'System öffnen',
+        footer1: 'Bei Fragen stehen die Abteilungsleiter gerne zur Verfügung.',
+        footer2: 'Vielen Dank und eine erfolgreiche Woche!',
+        automated: '(Dies ist ein systemgenerierter automatischer Bericht, Versand jeden Montag um 03:00 Uhr)',
+        metrics: {
+            efficiency: 'Effizienz',
+            'on-time': 'Pünktlich',
+            late: 'Verzug',
+            offen: 'Offen',
+            erfüllungsquote: 'Quote'
+        }
+    },
+    es: {
+        subject: 'Estadísticas del Plan de Mantenimiento',
+        greeting: 'Hola Michael,',
+        subtitle: 'aquí tienes el resumen del rendimiento de mantenimiento.',
+        colDept: 'Departamento',
+        appTitle: 'Informe completo en la App:',
+        appButton: 'Abrir Sistema',
+        footer1: 'Si tiene preguntas, póngase en contacto con los jefes de departamento.',
+        footer2: '¡Muchas gracias y que tenga una excelente semana!',
+        automated: '(Informe automático generado por el sistema, enviado los lunes a las 03:00 AM)',
+        metrics: {
+            efficiency: 'Eficiencia',
+            'on-time': 'Puntual',
+            late: 'Retraso',
+            offen: 'Pendiente',
+            erfüllungsquote: 'Tasa %'
+        }
+    },
+    tr: {
+        subject: 'Bakım Planı İstatistikleri',
+        greeting: 'Merhaba Michael,',
+        subtitle: 'güncel bakım performans özetini burada bulabilirsiniz.',
+        colDept: 'Departman',
+        appTitle: 'Uygulamadaki tam rapor:',
+        appButton: 'Sistemi Aç',
+        footer1: 'Sorularınız için departman yöneticileriyle iletişime geçin.',
+        footer2: 'Teşekkür eder, iyi haftalar dileriz!',
+        automated: '(Otomatik sistem raporu, her Pazartesi saat 03:00\'te gönderilir)',
+        metrics: {
+            efficiency: 'Verimlilik',
+            'on-time': 'Zamanında',
+            late: 'Gecikme',
+            offen: 'Bekleyen',
+            erfüllungsquote: 'Uyum %'
+        }
+    },
+    pt: {
+        subject: 'Estatísticas do Plano de Manutenção',
+        greeting: 'Olá Michael,',
+        subtitle: 'aqui está o resumo do desempenho de manutenção.',
+        colDept: 'Departamento',
+        appTitle: 'Relatório completo na App:',
+        appButton: 'Abrir Sistema',
+        footer1: 'Dúvidas? Entre em contacto com os chefes de departamento.',
+        footer2: 'Muito obrigado e tenha uma excelente semana!',
+        automated: '(Relatório automático do sistema, enviado às segundas-feiras 03:00 AM)',
+        metrics: {
+            efficiency: 'Eficiência',
+            'on-time': 'Pontual',
+            late: 'Atraso',
+            offen: 'Aberto',
+            erfüllungsquote: 'Taxa %'
+        }
+    }
+};
+
+const getReportHtml = (appData, isAutomated = false, lang = 'de') => {
+    const t = EMAIL_I18N[lang] || EMAIL_I18N['de'];
     const kw = appData.settings?.currentKw || 12;
     const appUrl = process.env.APP_URL || 'https://wartungsplan.up.railway.app';
     const departments = appData.departments || [];
-    const stats = appData.stats || {}; // Assuming frontend sends stats or we use empty
+    const stats = appData.stats || {};
+    const reportMetrics = appData.settings?.notifications?.reportMetrics || {};
+
+    // Identify which columns are active (selected in ANY department or central)
+    const allPossibleMetrics = ['efficiency', 'on-time', 'late', 'offen', 'erfüllungsquote'];
+    const activeMetrics = allPossibleMetrics.filter(mId => {
+        if ((reportMetrics['central'] || []).includes(mId)) return true;
+        return departments.some(d => (reportMetrics[d.id] || []).includes(mId));
+    });
+
+    // Default to a fallback if none selected
+    const displayMetrics = activeMetrics.length > 0 ? activeMetrics : ['efficiency', 'on-time', 'late'];
+
+    let tableHead = `<th style="padding: 12px; text-align: left; border-radius: 10px 0 0 0;">${t.colDept}</th>`;
+    displayMetrics.forEach((mId, idx) => {
+        const isLast = idx === displayMetrics.length - 1;
+        tableHead += `<th style="padding: 12px; text-align: center; ${isLast ? 'border-radius: 0 10px 0 0;' : ''}">${t.metrics[mId] || mId}</th>`;
+    });
 
     let deptRows = '';
     if (departments.length > 0) {
         departments.forEach(dept => {
             if (dept.hidden) return;
-            const dStats = stats[dept.id] || { efficiency: 0, late: 0, executed: 0 };
-            const effColor = dStats.efficiency >= 90 ? '#10b981' : (dStats.efficiency >= 70 ? '#f59e0b' : '#ef4444');
+            const dStats = stats[dept.id] || {};
+            const dMetrics = reportMetrics[dept.id] || reportMetrics['central'] || displayMetrics;
 
-            deptRows += `
-                <tr>
-                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px;"><strong>${dept.name}</strong></td>
-                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7; text-align: center; font-weight: bold; color: ${effColor};">${Math.round(dStats.efficiency)}%</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7; text-align: center;">${dStats.executed || 0}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7; text-align: center; color: ${dStats.late > 0 ? '#e53e3e' : '#718096'};">${dStats.late || 0}</td>
-                </tr>
-            `;
+            deptRows += `<tr><td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px;"><strong>${dept.name}</strong></td>`;
+
+            displayMetrics.forEach(mId => {
+                let val = dStats[mId] !== undefined ? dStats[mId] : 0;
+                let style = 'padding: 12px; border-bottom: 1px solid #edf2f7; text-align: center;';
+                let displayVal = val;
+
+                if (mId === 'efficiency' || mId === 'erfüllungsquote') {
+                    displayVal = Math.round(val) + '%';
+                    const color = val >= 90 ? '#10b981' : (val >= 70 ? '#f59e0b' : '#ef4444');
+                    style += ` font-weight: bold; color: ${color};`;
+                } else if (mId === 'late' && val > 0) {
+                    style += ' color: #e53e3e; font-weight: bold;';
+                }
+
+                // If this specific department doesn't have this metric enabled, show it dimmed or as -
+                const isEnabled = dMetrics.includes(mId);
+                deptRows += `<td style="${style} ${isEnabled ? '' : 'opacity: 0.2;'}">${isEnabled ? displayVal : '-'}</td>`;
+            });
+            deptRows += `</tr>`;
         });
     }
 
     return `
     <html>
     <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #2d3748; background-color: #f7fafc; padding: 20px;">
-        <div style="max-width: 650px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+        <div style="max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
             <div style="text-align: center; margin-bottom: 30px;">
                 <h1 style="margin: 0; color: #1a365d; font-size: 24px; letter-spacing: -0.02em;">Zentrale Statistik - KW ${kw}</h1>
                 <p style="color: #718096; margin-top: 5px;">Härterei Blessing AG • Monitoring Report</p>
             </div>
 
-            <p>Hallo Michael,</p>
-            <p>hier ist die aktuelle Übersicht der Wartungs-Performance nach Abteilungen.</p>
+            <p>${t.greeting}</p>
+            <p>${t.subtitle}</p>
             
             <table style="width: 100%; border-collapse: collapse; margin: 25px 0; background: #ffffff;">
                 <thead>
                     <tr style="background: #edf2f7; color: #4a5568; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">
-                        <th style="padding: 12px; text-align: left; border-radius: 10px 0 0 0;">Abteilung</th>
-                        <th style="padding: 12px; text-align: center;">Effizienz</th>
-                        <th style="padding: 12px; text-align: center;">Erledigt</th>
-                        <th style="padding: 12px; text-align: center; border-radius: 0 10px 0 0;">Verzug</th>
+                        ${tableHead}
                     </tr>
                 </thead>
                 <tbody>
-                    ${deptRows || '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #a0aec0;">Keine Abteilungsdaten verfügbar</td></tr>'}
+                    ${deptRows || `<tr><td colspan="${displayMetrics.length + 1}" style="padding: 20px; text-align: center; color: #a0aec0;">Keine Abteilungsdaten verfügbar</td></tr>`}
                 </tbody>
             </table>
 
             <div style="background: #ebf8ff; padding: 25px; border-radius: 15px; margin: 30px 0; border: 1px solid #bee3f8; text-align: center;">
-                <p style="margin: 0 0 15px 0; font-weight: bold; color: #2b6cb0;">Vollständiger Report in der App:</p>
-                <a href="${appUrl}" style="display: inline-block; padding: 14px 28px; background: #3182ce; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px; shadow: 0 4px 14px rgba(49,130,206,0.4);">System öffnen</a>
+                <p style="margin: 0 0 15px 0; font-weight: bold; color: #2b6cb0;">${t.appTitle}</p>
+                <a href="${appUrl}" style="display: inline-block; padding: 14px 28px; background: #3182ce; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px; shadow: 0 4px 14px rgba(49,130,206,0.4);">${t.appButton}</a>
             </div>
 
             <p style="font-size: 0.9em; color: #4a5568;">
-                Bei Fragen zu den Metriken stehen die Abteilungsleiter gerne zur Verfügung.<br>
-                Vielen Dank und eine erfolgreiche Woche!
+                ${t.footer1}<br>
+                ${t.footer2}
             </p>
             
             <div style="margin-top: 40px; border-top: 1px solid #edf2f7; pt: 20px;">
@@ -151,7 +253,7 @@ const getReportHtml = (appData, isAutomated = false) => {
                     Härterei Blessing AG
                 </p>
             </div>
-            ${isAutomated ? '<p style="font-size: 10px; color: #a0aec0; text-align: center; margin-top: 30px; font-style: italic;">(Dies ist ein systemgenerierter automatischer Bericht, Versand jeden Montag um 03:00 Uhr)</p>' : ''}
+            ${isAutomated ? `<p style="font-size: 10px; color: #a0aec0; text-align: center; margin-top: 30px; font-style: italic;">${t.automated}</p>` : ''}
         </div>
     </body>
     </html>
@@ -172,11 +274,14 @@ const sendReport = async (isAutomated = false, providedData = null) => {
                 }
 
                 const kw = appData.settings?.currentKw || 13;
+                const lang = appData.lang || 'de';
+                const t = EMAIL_I18N[lang] || EMAIL_I18N['de'];
+
                 const mailOptions = {
                     from: 'Wartungsplan <onboarding@resend.dev>', // Use verified domain later
                     to: emails.join(', '),
-                    subject: `Zentrale_Statistik - KW ${kw}${isAutomated ? ' [Auto]' : ''}`,
-                    html: getReportHtml(appData, isAutomated)
+                    subject: `${t.subject} - KW ${kw}${isAutomated ? ' [Auto]' : ''}`,
+                    html: getReportHtml(appData, isAutomated, lang)
                 };
 
                 const result = await sendEmailResend(mailOptions);
