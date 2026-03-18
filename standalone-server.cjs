@@ -44,20 +44,21 @@ app.use(express.json({ limit: '50mb' }));
 
 // SMTP Configuration (Metanet)
 const transporter = nodemailer.createTransport({
-    host: '80.74.146.140', // Explicit IPv4 IP of futura.metanet.ch
-    port: 587,
-    secure: false, // STARTTLS
+    host: '80.74.146.140', // Explicit IPv4 to bypass DNS/IPv6 issues
+    port: 465,
+    secure: true, // Port 465 requires secure: true
     auth: {
         user: 'michael.jenni@blessing.ch',
         pass: '16MnCrS5?'
     },
     tls: {
         rejectUnauthorized: false,
-        servername: 'futura.metanet.ch' // Needed for SNI when using IP
+        servername: 'futura.metanet.ch'
     },
-    family: 4, // HEAVY FORCE IPv4 - Prevents Railway from trying IPv6 (ENETUNREACH)
-    connectionTimeout: 30000,
-    greetingTimeout: 30000,
+    family: 4,
+    connectionTimeout: 40000, // Even longer for slow handshakes
+    greetingTimeout: 40000,
+    socketTimeout: 40000,
     debug: true,
     logger: true
 });
