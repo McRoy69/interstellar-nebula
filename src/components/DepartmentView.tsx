@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     ClipboardList, Archive, BarChart3, Settings as Tools, Search,
     CheckCircle2, Clock, AlertTriangle, ChevronRight, Download,
-    Calendar, User, Plus, Info, Activity, X, Filter
+    Calendar, User, Plus, Info, Activity, X, Filter, Trash2
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } from 'recharts';
 import { useTranslation } from 'react-i18next';
@@ -642,7 +642,7 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                             >
                                 <div className="flex items-center gap-4">
                                     <button onClick={() => onDeleteTask(task.id)} className="transition-colors opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-orange-500/10" style={{ color: 'var(--color-text-dim)' }} title="Aufgabe löschen">
-                                        <Tools size={16} />
+                                        <Trash2 size={16} />
                                     </button>
                                     <div>
                                         <div className="text-sm font-bold leading-tight" style={{ color: 'var(--color-text-main)' }}>{task.title}</div>
