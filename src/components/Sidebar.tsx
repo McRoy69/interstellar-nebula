@@ -131,9 +131,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                         <button
                             key={l.lang}
                             onClick={() => i18n.changeLanguage(l.lang)}
-                            className={`${isCollapsed ? 'w-8 h-8' : 'w-9 h-9'} rounded-full overflow-hidden transition-all flex items-center justify-center p-0 outline-none ring-0 relative group ${i18n.language === l.lang
-                                ? 'scale-110 border-2 z-10'
-                                : 'opacity-40 hover:opacity-100 hover:scale-110 border'
+                            className={`${isCollapsed ? 'w-8 h-8' : 'w-7 h-7'} rounded-full overflow-hidden transition-all flex items-center justify-center p-0 outline-none ring-0 relative group shadow-sm ${i18n.language === l.lang
+                                ? 'scale-125 border-2 z-10'
+                                : 'opacity-40 hover:opacity-100 hover:scale-125 border'
                                 }`}
                             title={l.title}
                             style={{
@@ -165,9 +165,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                     {!isCollapsed && <span className="text-sm font-bold uppercase tracking-widest">{t('sidebar.settings')}</span>}
                 </div>
                 {!isCollapsed && (
-                    <div className="nav-item text-white/30 cursor-default hover:bg-transparent px-8">
-                        <Info size={22} className="text-white/40" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 transition-colors">Created by Michael Jenni 2026</span>
+                    <div className="nav-item text-white/30 cursor-default hover:bg-transparent px-8 whitespace-nowrap">
+                        <Info size={16} className="text-white/20 shrink-0" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/20 transition-colors">Created by Michael Jenni 2026</span>
                     </div>
                 )}
             </div>

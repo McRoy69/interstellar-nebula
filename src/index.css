@@ -8,32 +8,12 @@
 }
 
 :root {
-  font-size: 14px;
-  /* Tablet default */
+  /* Fluid font scaling: 14px on mobile/tablet -> 18px on 1920px+ */
+  font-size: clamp(14px, 1vw + 10px, 18px);
 }
 
-@media (min-width: 1024px) {
-  :root {
-    font-size: 15px;
-  }
-
-  /* Notebook */
-}
-
-@media (min-width: 1536px) {
-  :root {
-    font-size: 16px;
-  }
-
-  /* Desktop Large */
-}
-
-@media (min-width: 1920px) {
-  :root {
-    font-size: 18px;
-  }
-
-  /* Ultra Wide PC 19"+ */
+@theme {
+  --breakpoint-3xl: 1920px;
 }
 
 :root {
