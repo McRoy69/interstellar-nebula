@@ -158,7 +158,9 @@ function App() {
 
     const saveData = async () => {
       try {
-        // Save UI prefs locally only
+        // Save redundant copy to LocalStorage
+        localStorage.setItem('appSettings', JSON.stringify(settings));
+        localStorage.setItem('appDepartments', JSON.stringify(departments));
         localStorage.setItem('wartungsplan-ui-prefs', JSON.stringify(settings.ui));
 
         await fetch('/api/data', {
