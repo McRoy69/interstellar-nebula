@@ -151,6 +151,7 @@
             },
             "ui": {
                 "title": "Interface de Usuário",
+                "localHint": "As configurações de aparência são salvas apenas para este dispositivo.",
                 "displayMode": "Densidade de Tela",
                 "standard": "Padrão",
                 "standardDesc": "Equilíbrio entre dados e design",

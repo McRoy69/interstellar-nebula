@@ -42,11 +42,15 @@ function App() {
           if (savedDepts) finalDepts = JSON.parse(savedDepts);
         }
 
+        // Merge defaults, DB settings, and local UI overrides
+        const localUiPrefs = localStorage.getItem('wartungsplan-ui-prefs');
+        const parsedLocalUi = localUiPrefs ? JSON.parse(localUiPrefs) : {};
+
         const mergedSettings = {
           ...defaultSettings,
           ...finalSettings,
           thresholds: { ...defaultSettings.thresholds, ...(finalSettings.thresholds || {}) },
-          ui: { ...defaultSettings.ui, ...(finalSettings.ui || {}) },
+          ui: { ...defaultSettings.ui, ...(finalSettings.ui || {}), ...parsedLocalUi },
           notifications: { ...defaultSettings.notifications, ...(finalSettings.notifications || {}) }
         };
         finalSettings = mergedSettings;
@@ -130,6 +134,9 @@ function App() {
 
     const saveData = async () => {
       try {
+        // Save UI prefs locally only
+        localStorage.setItem('wartungsplan-ui-prefs', JSON.stringify(settings.ui));
+
         await fetch('/api/data', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

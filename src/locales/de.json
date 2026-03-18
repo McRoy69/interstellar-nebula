@@ -158,6 +158,7 @@
       },
       "ui": {
         "title": "Benutzeroberfläche",
+        "localHint": "Erscheinungsbild-Einstellungen werden nur für dieses Gerät gespeichert.",
         "displayMode": "Informationsdichte",
         "standard": "Standard",
         "standardDesc": "Optimales Verhältnis Design/Daten",
