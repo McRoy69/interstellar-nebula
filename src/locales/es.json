@@ -3,7 +3,7 @@
         "sidebar": {
             "maintenancePlan": "Plan de Mantenimiento v2.0",
             "centralStats": "Panel de Control",
-            "productionUnits": "UNIDADES DE PRODUCCIÓN",
+            "productionUnits": "ABTEILUNGEN",
             "settings": "Ajustes del Sistema",
             "build": "Versión 142 • Estable"
         },
@@ -44,7 +44,7 @@
                 "Anlagen": "Equipos / Maquinaria",
                 "Statistik": "Estadísticas"
             },
-            "productionUnit": "UNIDAD DE PRODUCCIÓN",
+            "productionUnit": "Abteilung",
             "operativeControl": "CONTROL OPERATIVO",
             "responsible": "Responsable",
             "status": "Estado",
@@ -174,7 +174,7 @@
                 }
             },
             "depts": {
-                "title": "Unidades de Producción",
+                "title": "Abteilungen",
                 "add": "Agregar Nuevo Departamento",
                 "placeholder": "Nombre del departamento...",
                 "confirmDelete": "¿Confirmas la eliminación del departamento? Esta acción es irreversible."

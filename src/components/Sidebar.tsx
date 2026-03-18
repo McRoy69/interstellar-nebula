@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
             {/* Desktop Collapse Toggle */}
             <button
                 onClick={onToggleCollapse}
-                className="hidden lg:flex absolute -right-3 top-24 w-6 h-6 bg-amber-500 rounded-full border border-white items-center justify-center z-[60] shadow-lg hover:scale-110 active:scale-90 transition-all"
+                className="hidden lg:flex absolute -right-2 top-24 w-7 h-7 bg-amber-500 rounded-full border-2 border-white items-center justify-center z-[60] shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:scale-110 active:scale-90 transition-all"
             >
                 <div className={`w-1.5 h-1.5 border-t-2 border-r-2 border-white transition-transform duration-300 ${isCollapsed ? 'rotate-45 translate-x-[-1px]' : '-rotate-135 translate-x-[1px]'}`} />
             </button>
@@ -111,9 +111,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                             className={`nav-item ${activeId === dept.id ? 'active' : ''} ${isCollapsed ? 'justify-center px-0' : ''}`}
                             title={isCollapsed ? dept.name : ''}
                         >
-                            <Factory size={24} className={isCollapsed ? 'shrink-0' : ''} />
-                            {!isCollapsed && <span className="text-base font-medium tracking-tight flex-1 notranslate" translate="no">{dept.name}</span>}
-                            {activeId === dept.id && !isCollapsed && <ChevronRight size={18} />}
+                            <Factory size={22} className="shrink-0" />
+                            {!isCollapsed && <span className="text-base font-medium tracking-tight flex-1 notranslate truncate" translate="no">{dept.name}</span>}
+                            {activeId === dept.id && !isCollapsed && <ChevronRight size={18} className="shrink-0" />}
                         </div>
                     ))}
             </nav>
@@ -155,13 +155,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                 </div>
                 <div
                     onClick={() => onSelect('settings')}
-                    className={`nav-item hover:opacity-100 ${isCollapsed ? 'justify-center px-0 scale-90' : 'scale-95 px-8'} hover:scale-100 border transition-all ${activeId === 'settings' ? 'active shadow-[0_0_15px_var(--color-accent-glow)]' : 'border-transparent'}`}
+                    className={`nav-item hover:opacity-100 ${isCollapsed ? 'justify-center px-0 scale-90' : 'scale-100 px-8'} border transition-all ${activeId === 'settings' ? 'active shadow-[0_0_15px_var(--color-accent-glow)]' : 'border-transparent'}`}
                     style={{
                         borderColor: activeId === 'settings' ? 'var(--color-accent)' : 'transparent'
                     }}
                     title={isCollapsed ? t('sidebar.settings') : ''}
                 >
-                    <Settings size={22} className={isCollapsed ? 'shrink-0' : ''} />
+                    <Settings size={22} className="shrink-0" />
                     {!isCollapsed && <span className="text-sm font-bold uppercase tracking-widest">{t('sidebar.settings')}</span>}
                 </div>
                 {!isCollapsed && (

@@ -3,7 +3,7 @@
     "sidebar": {
       "maintenancePlan": "Wartungsplan v2.0",
       "centralStats": "Zentrale Statistik",
-      "productionUnits": "PRODUKTIONSEINHEITEN",
+      "productionUnits": "ABTEILUNGEN",
       "settings": "Systemeinstellungen",
       "build": "Build 142 • Stabil"
     },
@@ -42,7 +42,7 @@
         "Anlagen": "Anlagenmanagement",
         "Statistik": "KPI-Analyse"
       },
-      "productionUnit": "PRODUKTIONSEINHEIT",
+      "productionUnit": "Abteilung",
       "operativeControl": "OPERATIVE KONTROLLE",
       "responsible": "Verantwortlich",
       "status": "Status",
@@ -172,7 +172,7 @@
         }
       },
       "depts": {
-        "title": "Produktionseinheiten",
+        "title": "Abteilungen",
         "add": "Abteilung hinzufügen",
         "placeholder": "Name der Abteilung...",
         "confirmDelete": "Abteilung wirklich löschen? Alle Verknüpfungen gehen unwiderruflich verloren."

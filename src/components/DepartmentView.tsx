@@ -320,7 +320,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             >
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 max-w-[2000px] mx-auto w-full">
                     <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] mb-2"
+                        <div className="flex items-center gap-2 text-xs font-black tracking-[0.2em] mb-2"
                             style={{ color: 'var(--color-accent)' }}
                         >
                             <span>{t('department.productionUnit')}</span>
@@ -351,8 +351,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                     </div>
 
                     {/* Quick Metrics */}
-                    <div className="flex gap-6">
-                        <div className="px-8 py-4 rounded-xl shadow-lg text-center relative overflow-hidden group border"
+                    <div className="flex flex-wrap gap-4 lg:gap-6">
+                        <div className="px-6 lg:px-8 py-3 lg:py-4 rounded-xl shadow-lg text-center relative overflow-hidden group border flex-1 min-w-[120px]"
                             style={{
                                 backgroundColor: 'var(--color-bg-card)',
                                 borderColor: 'var(--color-border)'
@@ -361,13 +361,13 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                                 style={{ backgroundColor: 'var(--color-accent-glow)' }}
                             />
-                            <div className="text-xs uppercase font-black tracking-[0.2em] mb-1 relative z-10"
+                            <div className="text-[10px] uppercase font-black tracking-[0.2em] mb-1 relative z-10"
                                 style={{ color: 'var(--color-accent)' }}
                             >
                                 {t('department.stats.currentKw')}
                             </div>
-                            <div className="flex items-center justify-center gap-3 mt-2 relative z-10">
-                                <span className="text-4xl font-mono font-black transition-colors"
+                            <div className="flex items-center justify-center gap-3 mt-1 lg:mt-2 relative z-10">
+                                <span className="text-3xl lg:text-4xl font-mono font-black transition-colors"
                                     style={{
                                         color: 'var(--color-text-main)',
                                         textShadow: '0 0 15px var(--color-accent-glow)'
@@ -376,23 +376,17 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                     {currentKw}
                                 </span>
                             </div>
-                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full animate-pulse"
-                                style={{
-                                    backgroundColor: 'var(--color-accent)',
-                                    boxShadow: '0 0 12px var(--color-accent-glow)'
-                                }}
-                            />
                         </div>
-                        <div className="px-8 py-4 rounded-xl shadow-lg text-center min-w-[160px] border"
+                        <div className="px-6 lg:px-8 py-3 lg:py-4 rounded-xl shadow-lg text-center min-w-[120px] flex-1 border"
                             style={{
                                 backgroundColor: 'var(--color-bg-card)',
                                 borderColor: 'var(--color-border)'
                             }}
                         >
-                            <div className="text-xs uppercase font-black tracking-[0.2em] mb-1"
+                            <div className="text-[10px] uppercase font-black tracking-[0.2em] mb-1"
                                 style={{ color: 'var(--color-text-dim)' }}
                             >{t('department.efficiency')}</div>
-                            <span className={`text-3xl font-mono font-black block leading-tight ${data.stats.erfüllungsquote >= settings.thresholds.efficiencyTarget ? 'text-emerald-500' : data.stats.erfüllungsquote >= settings.thresholds.efficiencyTarget * 0.85 ? 'text-amber-500' : 'text-rose-500'}`}>{data.stats.erfüllungsquote}%</span>
+                            <span className={`text-2xl lg:text-3xl font-mono font-black block leading-tight ${data.stats.erfüllungsquote >= settings.thresholds.efficiencyTarget ? 'text-emerald-500' : data.stats.erfüllungsquote >= settings.thresholds.efficiencyTarget * 0.85 ? 'text-amber-500' : 'text-rose-500'}`}>{data.stats.erfüllungsquote}%</span>
                         </div>
                     </div>
                 </div>
@@ -438,7 +432,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                             transition={{ duration: 0.2, ease: "easeOut" }}
                             className="flex-1 flex flex-col h-full overflow-hidden"
                         >
-                            <div className="panel flex flex-col flex-1 overflow-hidden min-h-[700px] shadow-lg">
+                            <div className="panel flex flex-col flex-1 overflow-hidden shadow-lg h-full">
                                 <div className={`panel-header glass-header sticky top-0 z-10 ${compact ? 'p-4' : 'p-8'} flex items-center justify-between transition-all`}
                                     style={{
                                         backgroundColor: 'var(--color-bg-header)',
@@ -574,7 +568,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                     </AnimatePresence>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
@@ -836,8 +830,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
                     <tr className="text-xs uppercase font-black tracking-[0.2em] border-b"
                         style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-dim)' }}
                     >
-                        <th className="py-6 pl-10">{t('department.journal.refId')}</th>
-                        <th className="py-6">{t('department.journal.task')}</th>
+                        <th className="py-6 pl-12">{t('department.journal.task')}</th>
                         <th className="py-6">{t('department.journal.machine')}</th>
                         <th className="py-6">{t('department.matrix.who')}</th>
                         <th className="py-6">{t('department.journal.dateReal')}</th>
@@ -851,10 +844,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
                         const status = getStatusInfo(task);
                         return (
                             <tr key={task.id} className="hover:bg-black/5 group transition-colors">
-                                <td className="py-6 pl-10 font-mono font-bold text-sm"
-                                    style={{ color: 'var(--color-accent)', opacity: 0.8 }}
-                                >{task.id}</td>
-                                <td className="py-6">
+                                <td className="py-6 pl-12">
                                     <div className="text-base font-bold" style={{ color: 'var(--color-text-main)' }}>{task.title}</div>
                                     <div className="text-xs font-black tracking-wider uppercase mt-1"
                                         style={{ color: 'var(--color-text-dim)' }}
