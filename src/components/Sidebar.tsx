@@ -125,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
 
             {/* Footer Settings */}
             <div className={`${isCollapsed ? 'p-2' : 'p-8'} bg-transparent space-y-2 pb-10 transition-all duration-500`}>
-                <div className={`flex ${isCollapsed ? 'flex-col items-center gap-2' : 'items-center gap-4 px-8'} py-2 mb-4`}>
+                <div className={`flex ${isCollapsed ? 'flex-col items-center gap-4' : 'items-center gap-6 px-8'} py-2 mb-4`}>
                     {[
                         { lang: 'de', flag: chFlag, title: 'Deutsch' },
                         { lang: 'es', flag: esFlag, title: 'Español' },
@@ -136,7 +136,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                         <button
                             key={l.lang}
                             onClick={() => i18n.changeLanguage(l.lang)}
-                            className={`${isCollapsed ? 'w-8 h-8' : 'w-7 h-7'} rounded-full overflow-hidden transition-all flex items-center justify-center p-0 outline-none ring-0 relative group shadow-sm aspect-square ${i18n.language === l.lang
+                            className={`${isCollapsed ? 'w-8 h-8' : 'w-7 h-7'} rounded-full overflow-hidden transition-all flex items-center justify-center p-0 outline-none ring-0 relative group shadow-sm ${i18n.language === l.lang
                                 ? 'scale-125 border-2 z-10'
                                 : 'opacity-40 hover:opacity-100 hover:scale-125 border'
                                 }`}
@@ -150,7 +150,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                             <img
                                 src={l.flag}
                                 alt={l.lang}
-                                className="w-full h-full object-cover rounded-full pointer-events-none transition-transform duration-300 group-hover:scale-110"
+                                className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-300 group-hover:scale-[1.7]"
+                                style={{
+                                    transform: 'scale(1.6)'
+                                }}
                             />
                         </button>
                     ))}
