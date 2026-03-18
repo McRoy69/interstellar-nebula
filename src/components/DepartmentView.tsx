@@ -26,7 +26,7 @@ type TabType = 'Plan' | 'Journal' | 'Archiv' | 'Anlagen' | 'Statistik';
 
 
 const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, settings, onUpdate }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [activeTab, setActiveTab] = useState<TabType>((initialTab as TabType) || 'Journal');
     const [verantwortlicher, setVerantwortlicher] = useState(data.verantwortlicher || 'MA');
     const [searchQuery, setSearchQuery] = useState('');
@@ -512,11 +512,11 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                                 .filter(t => {
                                                     if (!searchQuery) return true;
                                                     const q = searchQuery.toLowerCase();
-                                                    const title = tItem.translations?.[i18n.language]?.title || tItem.title;
-                                                    const anlage = tItem.translations?.[i18n.language]?.anlage || tItem.anlage;
+                                                    const title = t.translations?.[i18n.language]?.title || t.title;
+                                                    const anlage = t.translations?.[i18n.language]?.anlage || t.anlage;
                                                     return title.toLowerCase().includes(q) ||
                                                         anlage.toLowerCase().includes(q) ||
-                                                        tItem.id.toLowerCase().includes(q);
+                                                        t.id.toLowerCase().includes(q);
                                                 })
                                                 .sort((a, b) => {
                                                     // Calculate delay priority
@@ -590,7 +590,7 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
     onToggleWeek: (id: string, kw: number) => void,
     currentKw: number
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [newTitle, setNewTitle] = useState('');
     const [newAnlage, setNewAnlage] = useState('');
     const [newWer, setNewWer] = useState('MA');
@@ -829,7 +829,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
     getStatusInfo: (t: Task) => any,
     onAbschliessen: (id: string) => void
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     return (
         <div className="rounded-2xl shadow-xl overflow-y-auto flex-1 custom-scrollbar border"
             style={{
@@ -948,7 +948,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
 };
 
 const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings: AppSettings }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [timeFilter, setTimeFilter] = useState<'Letzte Woche' | 'Letzter Monat' | 'Dieses Jahr' | 'Alle'>('Alle');
     const [selectedMetric, setSelectedMetric] = useState<'Done' | 'Pending' | 'Late' | null>(null);
 
@@ -1076,8 +1076,12 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
                                 {modalConfig.tasks.map(task => (
                                     <div key={task.id} className={`p-4 rounded-xl border ${modalConfig.itemBorder} ${modalConfig.itemBg} flex justify-between items-center hover:opacity-80 transition-all`}>
                                         <div>
-                                            <div className="font-bold" style={{ color: 'var(--color-text-main)' }}>{task.title}</div>
-                                            <div className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">{task.anlage} • Verantw.: {task.wer}</div>
+                                            <div className="font-bold" style={{ color: 'var(--color-text-main)' }}>
+                                                {task.translations?.[i18n.language]?.title || task.title}
+                                            </div>
+                                            <div className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">
+                                                {task.translations?.[i18n.language]?.anlage || task.anlage} • Verantw.: {task.wer}
+                                            </div>
                                         </div>
                                         <div className="text-right">
                                             {selectedMetric === 'Late' ? (
@@ -1279,7 +1283,7 @@ const InstructionCard = ({ title, items }: { title: string, items: string[] }) =
 
 // --- AnlagenView Component ---
 const AnlagenView = ({ tasks, planningTasks, settings }: { tasks: Task[], planningTasks: PlanningTask[], settings: AppSettings }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [selectedAnlage, setSelectedAnlage] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -1295,7 +1299,10 @@ const AnlagenView = ({ tasks, planningTasks, settings }: { tasks: Task[], planni
         tasks.forEach(t => {
             const name = t.anlage;
             if (!name || GENERIC_NAMES.has(name.trim())) return;
-            if (!map[name]) map[name] = { name, totalTasks: 0, doneTasks: 0, openTasks: 0, lateTasks: 0, lastService: '-', nextTasks: [] };
+            if (!map[name]) {
+                const translatedName = t.translations?.[i18n.language]?.anlage || name;
+                map[name] = { name: translatedName, totalTasks: 0, doneTasks: 0, openTasks: 0, lateTasks: 0, lastService: '-', nextTasks: [] };
+            }
 
             map[name].totalTasks++;
             if (t.status === 'Done') {
@@ -1313,8 +1320,11 @@ const AnlagenView = ({ tasks, planningTasks, settings }: { tasks: Task[], planni
         // Populate nextTasks from planning tasks (by matching anlage name)
         planningTasks.forEach(t => {
             if (!t.anlage || GENERIC_NAMES.has(t.anlage.trim())) return;
-            if (map[t.anlage] && !map[t.anlage].nextTasks.includes(t.title)) {
-                map[t.anlage].nextTasks.push(t.title);
+            if (map[t.anlage]) {
+                const title = t.translations?.[i18n.language]?.title || t.title;
+                if (!map[t.anlage].nextTasks.includes(title)) {
+                    map[t.anlage].nextTasks.push(title);
+                }
             }
         });
 

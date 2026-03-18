@@ -72,6 +72,12 @@ export interface DepartmentData {
     count: number;
     avgDelay: number;
     maxDelay: number;
+    translations?: {
+      [lang: string]: {
+        title: string;
+        anlage: string;
+      }
+    };
   }[];
 }
 

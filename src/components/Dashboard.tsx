@@ -15,7 +15,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const compact = settings.ui.compactMode;
 
     // Stats calculated from departments state with extreme robustness
@@ -389,7 +389,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                                         <div className="flex justify-between gap-2">
                                                             <span className="text-[11px] font-bold flex-1 leading-tight"
                                                                 style={{ color: 'var(--color-text-main)' }}
-                                                            >{item.title}</span>
+                                                            >
+                                                                {item.translations?.[i18n.language]?.title || item.title}
+                                                            </span>
                                                             <span className="text-[10px] font-black px-2 py-0.5 rounded border whitespace-nowrap"
                                                                 style={{
                                                                     backgroundColor: 'var(--color-accent-glow)',

@@ -93,6 +93,28 @@ function App() {
           const spaetErledigt = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
           const rate = geplant > 0 ? Math.round((erledigtPuenktlich / geplant) * 100) : 100;
 
+          // Dynamic bottleneck calculation
+          const taskGroups: Record<string, { count: number; delays: number[]; translations?: any }> = {};
+          filteredTasks.forEach(t => {
+            if (t.status !== 'Done') {
+              const title = t.title;
+              if (!taskGroups[title]) taskGroups[title] = { count: 0, delays: [], translations: t.translations };
+              taskGroups[title].count++;
+              taskGroups[title].delays.push(Math.max(0, CURRENT_KW - (t.kw || CURRENT_KW)));
+            }
+          });
+
+          const dynamicBottlenecks = Object.entries(taskGroups)
+            .map(([title, data]) => ({
+              title,
+              count: data.count,
+              avgDelay: data.delays.length > 0 ? Math.round(data.delays.reduce((a, b) => a + b, 0) / data.delays.length) : 0,
+              maxDelay: data.delays.length > 0 ? Math.max(...data.delays) : 0,
+              translations: data.translations
+            }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
           return {
             ...dept,
             stats: {
@@ -104,7 +126,8 @@ function App() {
               offen: Number(filteredTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
               erfüllungsquote: rate
             },
-            tasks: filteredTasks
+            tasks: filteredTasks,
+            bottlenecks: dynamicBottlenecks
           };
         });
 
