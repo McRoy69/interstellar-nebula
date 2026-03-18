@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const { exec } = require('child_process');
 const fs = require('fs');
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer'); // Still used for type/compat if needed, but we pivot to fetch
 const cron = require('node-cron');
 
 const app = express();
@@ -48,43 +48,41 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 app.use(express.json({ limit: '50mb' }));
 
-// SMTP Configuration (Metanet) - Optimized for Cloud Environments (matches working VBA SSL setup)
-const transporter = nodemailer.createTransport({
-    host: '80.74.146.140', // Direct IPv4 for futura.metanet.ch to skip problematic IPv6
-    port: 465,             // Port 465 for SSL (matching user's VBA config)
-    secure: true,          // SSL/TLS (matching user's SMTP_USE_SSL = True)
-    auth: {
-        user: 'michael.jenni@blessing.ch',
-        pass: '16MnCrS5?'
-    },
-    tls: {
-        rejectUnauthorized: false, // Allow if cert hostname doesn't match IP (we use servername below)
-        servername: 'futura.metanet.ch', // CRITICAL for certificate validation with IP host
-        minVersion: 'TLSv1.2'
-    },
-    family: 4, // Force IPv4 explicitly
-    connectionTimeout: 20000,
-    greetingTimeout: 20000,
-    socketTimeout: 30000,
-    debug: true,
-    logger: true
-});
+// EMAIL CONFIGURATION: Resend API (HTTP/HTTPS - Bypasses Railway SMTP blocks)
+// Get your API Key at: https://resend.com/
+const RESEND_API_KEY = process.env.RESEND_API_KEY || 're_VRfnWquM_7vpRFGnNejCFQy318XN9QtW7';
 
-// Verify SMTP connection on startup with more logging
-console.log('Starting SMTP verification for futura.metanet.ch:465...');
-transporter.verify(function (error, success) {
-    if (error) {
-        console.error('CRITICAL: SMTP Verification Error DETAILS:', {
-            code: error.code,
-            command: error.command,
-            response: error.response,
-            responseCode: error.responseCode,
-            stack: error.stack
+async function sendEmailResend(options) {
+    console.log(`[Resend] Sending email to: ${options.to}`);
+    try {
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${RESEND_API_KEY}`
+            },
+            body: JSON.stringify({
+                from: options.from || 'Wartungsplan <onboarding@resend.dev>',
+                to: Array.isArray(options.to) ? options.to : options.to.split(',').map(e => e.trim()),
+                subject: options.subject,
+                html: options.html
+            })
         });
-    } else {
-        console.log('SUCCESS: SMTP Server is ready for futura.metanet.ch:465');
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`Resend API Error (${response.status}): ${JSON.stringify(data)}`);
+        }
+        console.log('[Resend] Success:', data.id);
+        return { success: true, message: 'Email sent via Resend API', id: data.id };
+    } catch (error) {
+        console.error('[Resend] Failure:', error.message);
+        throw error;
     }
-});
+}
+
+
+// SMTP is no longer used, we now use Resend API.
 
 const getReportHtml = (appData, isAutomated = false) => {
     const kw = appData.settings?.currentKw || 12;
@@ -191,15 +189,14 @@ const sendReport = async (isAutomated = false) => {
 
                 const kw = appData.settings?.currentKw || 13;
                 const mailOptions = {
-                    from: '"Michael Jenni | Blessing AG" <michael.jenni@blessing.ch>',
+                    from: 'Wartungsplan <onboarding@resend.dev>', // Use verified domain later
                     to: emails.join(', '),
                     subject: `Zentrale_Statistik - KW ${kw}${isAutomated ? ' [Auto]' : ''}`,
                     html: getReportHtml(appData, isAutomated)
                 };
 
-                const info = await transporter.sendMail(mailOptions);
-                console.log('Email sent: ' + info.response);
-                resolve({ success: true, info });
+                const result = await sendEmailResend(mailOptions);
+                resolve(result);
             } catch (e) {
                 console.error('Email processing error:', e);
                 reject(e);
