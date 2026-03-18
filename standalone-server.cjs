@@ -51,8 +51,8 @@ app.use(express.json({ limit: '50mb' }));
 // SMTP Configuration (Metanet)
 const transporter = nodemailer.createTransport({
     host: 'futura.metanet.ch',
-    port: 465,
-    secure: true, // SSL
+    port: 587,
+    secure: false, // STARTTLS
     auth: {
         user: 'michael.jenni@blessing.ch',
         pass: '16MnCrS5?'
@@ -61,6 +61,7 @@ const transporter = nodemailer.createTransport({
         rejectUnauthorized: false,
         servername: 'futura.metanet.ch'
     },
+    requireTLS: true,
     family: 4, // Force IPv4
     connectionTimeout: 60000,
     greetingTimeout: 60000,
@@ -88,32 +89,71 @@ transporter.verify(function (error, success) {
 const getReportHtml = (appData, isAutomated = false) => {
     const kw = appData.settings?.currentKw || 12;
     const appUrl = process.env.APP_URL || 'https://wartungsplan.up.railway.app';
+    const departments = appData.departments || [];
+    const stats = appData.stats || {}; // Assuming frontend sends stats or we use empty
+
+    let deptRows = '';
+    if (departments.length > 0) {
+        departments.forEach(dept => {
+            if (dept.hidden) return;
+            const dStats = stats[dept.id] || { efficiency: 0, late: 0, executed: 0 };
+            const effColor = dStats.efficiency >= 90 ? '#10b981' : (dStats.efficiency >= 70 ? '#f59e0b' : '#ef4444');
+
+            deptRows += `
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px;"><strong>${dept.name}</strong></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7; text-align: center; font-weight: bold; color: ${effColor};">${Math.round(dStats.efficiency)}%</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7; text-align: center;">${dStats.executed || 0}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #edf2f7; text-align: center; color: ${dStats.late > 0 ? '#e53e3e' : '#718096'};">${dStats.late || 0}</td>
+                </tr>
+            `;
+        });
+    }
 
     return `
     <html>
-    <body style="font-family: sans-serif; line-height: 1.6; color: #333;">
-        <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-            <h2 style="color: #2c3e50;">Zentrale Statistik - KW ${kw}</h2>
-            <p>Guten Morgen zusammen,</p>
-            <p>anbei sende ich euch die aktuelle Statistik aller Abteilungen (Flop-2 Verspätungen).</p>
-            
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <p style="margin: 0; font-weight: bold;">Direkter Link zur App:</p>
-                <a href="${appUrl}" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">Wartungsplan öffnen</a>
+    <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #2d3748; background-color: #f7fafc; padding: 20px;">
+        <div style="max-width: 650px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="margin: 0; color: #1a365d; font-size: 24px; letter-spacing: -0.02em;">Zentrale Statistik - KW ${kw}</h1>
+                <p style="color: #718096; margin-top: 5px;">Härterei Blessing AG • Monitoring Report</p>
             </div>
 
-            <p style="font-size: 0.9em; color: #666;">
-                Bei Fragen einfach kurz melden.<br>
-                Vielen Dank und einen erfolgreichen Tag!
+            <p>Guten Morgen,</p>
+            <p>anbei erhalten Sie die Übersicht der aktuellen Wartungs-Performance nach Abteilungen.</p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 25px 0; background: #ffffff;">
+                <thead>
+                    <tr style="background: #edf2f7; color: #4a5568; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em;">
+                        <th style="padding: 12px; text-align: left; border-radius: 10px 0 0 0;">Abteilung</th>
+                        <th style="padding: 12px; text-align: center;">Effizienz</th>
+                        <th style="padding: 12px; text-align: center;">Erledigt</th>
+                        <th style="padding: 12px; text-align: center; border-radius: 0 10px 0 0;">Verzug</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${deptRows || '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #a0aec0;">Keine Abteilungsdaten verfügbar</td></tr>'}
+                </tbody>
+            </table>
+
+            <div style="background: #ebf8ff; padding: 25px; border-radius: 15px; margin: 30px 0; border: 1px solid #bee3f8; text-align: center;">
+                <p style="margin: 0 0 15px 0; font-weight: bold; color: #2b6cb0;">Vollständiger Report in der App:</p>
+                <a href="${appUrl}" style="display: inline-block; padding: 14px 28px; background: #3182ce; color: white; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px; shadow: 0 4px 14px rgba(49,130,206,0.4);">System öffnen</a>
+            </div>
+
+            <p style="font-size: 0.9em; color: #4a5568;">
+                Bei Fragen zu den Metriken wenden Sie sich bitte an die Abteilungsleiter.<br>
+                Herzlichen Dank!
             </p>
             
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-            <p style="font-size: 0.8em; color: #999;">
-                Freundliche Grüsse<br>
-                <strong>Michael Jenni</strong><br>
-                Härterei Blessing AG
-            </p>
-            ${isAutomated ? '<p style="font-size: 0.7em; color: #ccc;">(Dies ist ein automatisch generierter Bericht, jeden Montag um 03:00)</p>' : ''}
+            <div style="margin-top: 40px; border-top: 1px solid #edf2f7; pt: 20px;">
+                <p style="font-size: 0.85em; color: #718096; line-height: 1.4;">
+                    Freundliche Grüsse<br>
+                    <strong style="color: #1a365d;">Michael Jenni</strong><br>
+                    Härterei Blessing AG
+                </p>
+            </div>
+            ${isAutomated ? '<p style="font-size: 10px; color: #a0aec0; text-align: center; margin-top: 30px; font-style: italic;">(Dies ist ein systemgenerierter automatischer Bericht, Versand jeden Montag um 03:00 Uhr)</p>' : ''}
         </div>
     </body>
     </html>
