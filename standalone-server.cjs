@@ -45,25 +45,36 @@ app.use(express.json({ limit: '50mb' }));
 // SMTP Configuration (Metanet)
 const transporter = nodemailer.createTransport({
     host: 'futura.metanet.ch',
-    port: 587,
-    secure: false, // Port 587 uses STARTTLS
+    port: 465,
+    secure: true, // SSL
     auth: {
         user: 'michael.jenni@blessing.ch',
         pass: '16MnCrS5?'
     },
     tls: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        servername: 'futura.metanet.ch'
     },
+    connectionTimeout: 60000,
+    greetingTimeout: 60000,
+    socketTimeout: 60000,
     debug: true,
     logger: true
 });
 
-// Verify SMTP connection on startup
+// Verify SMTP connection on startup with more logging
+console.log('Starting SMTP verification for futura.metanet.ch:465...');
 transporter.verify(function (error, success) {
     if (error) {
-        console.error('SMTP Verification Error:', error);
+        console.error('CRITICAL: SMTP Verification Error DETAILS:', {
+            code: error.code,
+            command: error.command,
+            response: error.response,
+            responseCode: error.responseCode,
+            stack: error.stack
+        });
     } else {
-        console.log('Server is ready to take our messages');
+        console.log('SUCCESS: SMTP Server is ready for futura.metanet.ch:465');
     }
 });
 

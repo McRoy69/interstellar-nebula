@@ -742,8 +742,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
             </div>
 
             {/* Global Footer - Global Save & Apply */}
-            <div className="mt-auto pt-10 flex justify-between items-center bg-white/50 backdrop-blur-lg p-8 rounded-3xl border shadow-xl shadow-black/5"
-                style={{ borderColor: 'var(--color-border)' }}
+            <div className="mt-auto pt-10 flex justify-between items-center p-8 rounded-3xl border-t shadow-2xl transition-all duration-500"
+                style={{
+                    borderColor: 'var(--color-border)',
+                    backgroundColor: 'var(--color-bg-card)'
+                }}
             >
                 <div className="flex items-center gap-4 px-4" style={{ color: 'var(--color-text-dim)' }}>
                     <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center">
