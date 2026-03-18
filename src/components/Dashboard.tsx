@@ -197,7 +197,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                 </div>
 
                 {/* KPI Overview */}
-                <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 ${compact ? 'gap-3 mb-4' : 'gap-4 mb-8'} transition-all`}>
+                <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-4 ${compact ? 'gap-3 mb-4' : 'gap-4 mb-8'} transition-all`}>
                     {[
                         {
                             label: t('department.efficiency'),

@@ -609,7 +609,7 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                 borderColor: 'var(--color-border)'
             }}
         >
-            <table className="w-full border-collapse table-fixed"
+            <table className="w-full border-collapse"
                 style={{ backgroundColor: 'var(--color-bg-card)' }}
             >
                 <thead>
