@@ -191,7 +191,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
             if (response.ok) {
                 const result = await response.json();
                 if (result.success) {
-                    alert('¡Informe enviado con éxito a los destinatarios configurados!');
+                    // Success alert removed as requested.
                 } else {
                     alert('Error del servidor: ' + (result.message || 'Error desconocido'));
                 }
