@@ -20,7 +20,7 @@ export interface AppSettings {
 export const defaultSettings: AppSettings = {
     thresholds: {
         criticalWeeks: 1,
-        efficiencyTarget: 80,
+        efficiencyTarget: 100,
     },
     ui: {
         compactMode: false,
