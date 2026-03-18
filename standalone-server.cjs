@@ -54,12 +54,17 @@ const transporter = nodemailer.createTransport({
     tls: {
         rejectUnauthorized: false
     },
-    family: 4,
-    connectionTimeout: 40000, // Even longer for slow handshakes
-    greetingTimeout: 40000,
-    socketTimeout: 40000,
     debug: true,
     logger: true
+});
+
+// Verify SMTP connection on startup
+transporter.verify(function (error, success) {
+    if (error) {
+        console.error('SMTP Verification Error:', error);
+    } else {
+        console.log('Server is ready to take our messages');
+    }
 });
 
 const getReportHtml = (appData, isAutomated = false) => {
