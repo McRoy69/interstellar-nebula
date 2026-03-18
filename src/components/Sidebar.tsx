@@ -113,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                         >
                             <Factory size={22} className="shrink-0" />
                             {isCollapsed && (
-                                <span className={`ml-1 text-[10px] font-black uppercase transition-colors duration-300 ${activeId === dept.id ? 'text-inherit' : 'text-white/40'}`}>
+                                <span className={`ml-2 text-[13px] font-black uppercase transition-colors duration-300 ${activeId === dept.id ? 'text-inherit' : 'text-white/70'}`}>
                                     {dept.name.charAt(0)}
                                 </span>
                             )}
@@ -136,7 +136,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                         <button
                             key={l.lang}
                             onClick={() => i18n.changeLanguage(l.lang)}
-                            className={`${isCollapsed ? 'w-8 h-8' : 'w-7 h-7'} rounded-full overflow-hidden transition-all flex items-center justify-center p-0 outline-none ring-0 relative group shadow-sm ${i18n.language === l.lang
+                            className={`${isCollapsed ? 'w-8 h-8' : 'w-7 h-7'} rounded-full overflow-hidden transition-all flex items-center justify-center p-0 outline-none ring-0 relative group shadow-sm shrink-0 aspect-square ${i18n.language === l.lang
                                 ? 'scale-125 border-2 z-10'
                                 : 'opacity-40 hover:opacity-100 hover:scale-125 border'
                                 }`}
@@ -144,13 +144,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                             style={{
                                 background: 'var(--color-bg-sidebar)',
                                 borderColor: i18n.language === l.lang ? 'var(--color-accent)' : 'var(--color-border)',
-                                boxShadow: i18n.language === l.lang ? '0 0 15px var(--color-accent-glow)' : 'none'
+                                boxShadow: i18n.language === l.lang ? '0 0 15px var(--color-accent-glow)' : 'none',
+                                flexShrink: 0
                             }}
                         >
                             <img
                                 src={l.flag}
                                 alt={l.lang}
-                                className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-300 group-hover:scale-[1.7]"
+                                className="w-full h-full object-cover rounded-full pointer-events-none transition-transform duration-300 group-hover:scale-[1.7]"
                                 style={{
                                     transform: 'scale(1.6)'
                                 }}
