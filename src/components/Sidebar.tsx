@@ -23,8 +23,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
     const { t, i18n } = useTranslation();
 
     return (
-        <aside className={`fixed inset-y-0 z-50 lg:static border-r flex flex-col overflow-hidden transition-all duration-500 ease-in-out 
-            ${isOpen ? 'left-0' : '-left-[320px] lg:left-0'} 
+        <aside className={`fixed inset-y-0 z-50 xl:static border-r flex flex-col overflow-hidden transition-all duration-500 ease-in-out 
+            ${isOpen ? 'left-0' : '-left-[320px] xl:left-0'} 
             ${isCollapsed
                 ? 'w-[70px] 3xl:w-[90px]'
                 : 'w-[280px] lg:w-[320px] 2xl:w-[360px] 3xl:w-[420px]'
@@ -37,14 +37,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
             {/* Desktop Collapse Toggle */}
             <button
                 onClick={onToggleCollapse}
-                className="hidden lg:flex absolute -right-2 top-24 w-7 h-7 bg-amber-500 rounded-full border-2 border-white items-center justify-center z-[60] shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:scale-110 active:scale-90 transition-all"
+                className="hidden xl:flex absolute -right-2 top-24 w-7 h-7 bg-amber-500 rounded-full border-2 border-white items-center justify-center z-[60] shadow-[0_0_15px_rgba(245,158,11,0.4)] hover:scale-110 active:scale-90 transition-all"
             >
                 <div className={`w-1.5 h-1.5 border-t-2 border-r-2 border-white transition-transform duration-300 ${isCollapsed ? 'rotate-45 translate-x-[-1px]' : '-rotate-135 translate-x-[1px]'}`} />
             </button>
             {/* Close button for mobile */}
             <button
                 onClick={onClose}
-                className="lg:hidden absolute top-6 right-6 p-2 rounded-xl text-white/40 hover:text-white"
+                className="xl:hidden absolute top-6 right-6 p-2 rounded-xl text-white/40 hover:text-white"
             >
                 <X size={24} />
             </button>

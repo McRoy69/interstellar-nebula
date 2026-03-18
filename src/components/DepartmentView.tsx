@@ -312,7 +312,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             />
 
             {/* Sub-Header */}
-            <div className={`backdrop-blur-xl border-b ${compact ? 'px-6 lg:px-8 py-4 lg:py-6' : 'px-6 lg:px-12 py-6 lg:py-10'} relative z-10 w-full shadow-lg transition-all`}
+            <div className={`backdrop-blur-xl border-b ${compact ? 'px-6 lg:px-8 py-3 lg:py-5' : 'px-6 lg:px-12 py-4 lg:py-8'} relative z-10 w-full shadow-lg transition-all`}
                 style={{
                     backgroundColor: 'var(--color-bg-header)',
                     borderColor: 'var(--color-border)'
@@ -327,8 +327,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                             <ChevronRight size={14} />
                             <span style={{ color: 'var(--color-text-dim)' }}>{t('department.operativeControl')}</span>
                         </div>
-                        <div className="flex items-center gap-6">
-                            <h1 className={`${compact ? 'text-4xl' : 'text-6xl'} font-black tracking-tight font-sans transition-all`}
+                        <div className="flex flex-wrap items-center gap-4 lg:gap-6">
+                            <h1 className={`${compact ? 'text-3xl lg:text-4xl' : 'text-4xl lg:text-6xl'} font-black tracking-tight font-sans transition-all`}
                                 style={{ color: 'var(--color-text-main)' }}
                             >{data.name}</h1>
                             <div className="flex items-center gap-3 px-4 py-2 rounded-lg group transition-all shadow-inner focus-within:ring-2 focus-within:ring-opacity-50"
@@ -421,8 +421,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             </div>
 
             {/* Content Area */}
-            <div className={`flex-1 ${compact ? 'px-4 lg:px-8 pt-4 pb-8' : 'px-6 lg:px-12 pt-6 lg:pt-8 pb-10 lg:pb-16'} overflow-y-auto overflow-x-hidden custom-scrollbar relative z-10 transition-all`}>
-                <div className="max-w-[2000px] w-full mx-auto h-full flex flex-col">
+            <div className={`flex-1 ${compact ? 'px-4 lg:px-8 pt-4 pb-6' : 'px-6 lg:px-12 pt-6 pb-12'} overflow-y-auto overflow-x-hidden custom-scrollbar relative z-10 transition-all`}>
+                <div className="max-w-[2000px] w-full mx-auto flex flex-col min-h-full">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab}
@@ -430,9 +430,9 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="flex-1 flex flex-col h-full overflow-hidden"
+                            className="flex-1 flex flex-col overflow-visible"
                         >
-                            <div className="panel flex flex-col flex-1 overflow-hidden shadow-lg h-full">
+                            <div className="panel flex flex-col flex-1 overflow-hidden shadow-lg h-full min-h-[500px]">
                                 <div className={`panel-header glass-header sticky top-0 z-10 ${compact ? 'p-4' : 'p-8'} flex items-center justify-between transition-all`}
                                     style={{
                                         backgroundColor: 'var(--color-bg-header)',

@@ -175,7 +175,7 @@ function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsSidebarOpen(false)}
-            className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            className="xl:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
           />
         )}
       </AnimatePresence>
@@ -193,7 +193,7 @@ function App() {
       {/* Mobile Menu Toggle Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed top-6 right-6 z-[60] w-12 h-12 rounded-xl shadow-2xl flex items-center justify-center border transition-all active:scale-95"
+        className="xl:hidden fixed top-6 right-6 z-[60] w-12 h-12 rounded-xl shadow-2xl flex items-center justify-center border transition-all active:scale-95"
         style={{
           backgroundColor: 'var(--color-accent)',
           borderColor: 'var(--color-border)',
