@@ -170,7 +170,20 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
         try {
             const response = await fetch('/api/send-report', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    settings,
+                    departments,
+                    // Optionally calculate summary stats here if needed, but let's assume backend/frontend agree
+                    stats: departments.reduce((acc: any, dept) => {
+                        acc[dept.id] = {
+                            efficiency: dept.stats.efficiency || 0,
+                            late: dept.stats.offen || 0, // Fallback mapping if property names differ
+                            executed: dept.stats.erledigt || 0
+                        };
+                        return acc;
+                    }, {})
+                })
             });
 
             if (response.ok) {

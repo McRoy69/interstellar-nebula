@@ -117,8 +117,8 @@ const getReportHtml = (appData, isAutomated = false) => {
                 <p style="color: #718096; margin-top: 5px;">Härterei Blessing AG • Monitoring Report</p>
             </div>
 
-            <p>Guten Morgen,</p>
-            <p>anbei erhalten Sie die Übersicht der aktuellen Wartungs-Performance nach Abteilungen.</p>
+            <p>Hallo Michael,</p>
+            <p>hier ist die aktuelle Übersicht der Wartungs-Performance nach Abteilungen.</p>
             
             <table style="width: 100%; border-collapse: collapse; margin: 25px 0; background: #ffffff;">
                 <thead>
@@ -140,8 +140,8 @@ const getReportHtml = (appData, isAutomated = false) => {
             </div>
 
             <p style="font-size: 0.9em; color: #4a5568;">
-                Bei Fragen zu den Metriken wenden Sie sich bitte an die Abteilungsleiter.<br>
-                Herzlichen Dank!
+                Bei Fragen zu den Metriken stehen die Abteilungsleiter gerne zur Verfügung.<br>
+                Vielen Dank und eine erfolgreiche Woche!
             </p>
             
             <div style="margin-top: 40px; border-top: 1px solid #edf2f7; pt: 20px;">
@@ -158,27 +158,11 @@ const getReportHtml = (appData, isAutomated = false) => {
     `;
 };
 
-const sendReport = async (isAutomated = false) => {
+const sendReport = async (isAutomated = false, providedData = null) => {
     return new Promise((resolve, reject) => {
-        db.get('SELECT data FROM app_state ORDER BY id DESC LIMIT 1', async (err, row) => {
-            if (err) {
-                console.error('Error fetching data for email:', err);
-                return reject(err);
-            }
-
+        const handleData = async (dataToUse) => {
             try {
-                let appData;
-                if (!row) {
-                    console.warn('No data found in DB, using fallback defaults for email');
-                    appData = {
-                        settings: {
-                            currentKw: 13,
-                            notifications: { emails: ['michael.jenni@blessing.ch'] }
-                        }
-                    };
-                } else {
-                    appData = JSON.parse(row.data);
-                }
+                const appData = providedData || JSON.parse(dataToUse);
 
                 const emails = appData.settings?.notifications?.emails || [];
 
@@ -201,7 +185,24 @@ const sendReport = async (isAutomated = false) => {
                 console.error('Email processing error:', e);
                 reject(e);
             }
-        });
+        };
+
+        if (providedData) {
+            handleData(null);
+        } else {
+            db.get('SELECT data FROM app_state ORDER BY id DESC LIMIT 1', (err, row) => {
+                if (err) return reject(err);
+                if (!row) {
+                    // Minimo fallback para evitar crash si no hay nada en DB
+                    handleData(JSON.stringify({
+                        settings: { currentKw: 13, notifications: { emails: ['michael.jenni@blessing.ch'] } },
+                        departments: []
+                    }));
+                } else {
+                    handleData(row.data);
+                }
+            });
+        }
     });
 };
 
@@ -252,7 +253,8 @@ app.post('/api/data', (req, res) => {
 
 app.post('/api/send-report', async (req, res) => {
     try {
-        const result = await sendReport(false);
+        const providedData = req.body && Object.keys(req.body).length > 0 ? req.body : null;
+        const result = await sendReport(false, providedData);
         if (result.success) {
             res.json(result);
         } else {
