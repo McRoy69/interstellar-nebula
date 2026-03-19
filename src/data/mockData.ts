@@ -34,14 +34,23 @@ export interface PlanningTask {
 }
 
 export const isTaskPlanned = (task: PlanningTask, kw: number) => {
-  // 1. First check explicit weeks (from Matrix View clicks)
-  if (task.weeks && task.weeks[kw] !== undefined) return task.weeks[kw];
-
-  // 2. Fallback to manual overrides
+  // 1. Overrides from MatrixView clicks (can be true or false)
   if (task.overrides && task.overrides[kw] !== undefined) return task.overrides[kw];
 
+  // 2. Explicit manual weeks (source of truth from data or matrix)
+  if (task.weeks && task.weeks[kw] !== undefined) return task.weeks[kw];
+
   // 3. Fallback to algorithm based on start week and frequency
-  const startKw = task.abKw || 1;
+  // Derive startKw from weeks if not explicitly provided
+  let startKw = task.abKw;
+  if (!startKw && task.weeks) {
+    const plannedWeeks = Object.keys(task.weeks)
+      .map(Number)
+      .filter(k => task.weeks[k] === true);
+    if (plannedWeeks.length > 0) startKw = Math.min(...plannedWeeks);
+  }
+  if (!startKw) startKw = 1;
+
   const freq = task.frequenz;
   if (kw < startKw) return false;
   let step = 1;

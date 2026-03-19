@@ -593,19 +593,19 @@
       {
         "id": "T-1-112",
         "title": "Entschlammen Brünieren Lang",
-        "kw": 1,
-        "plannedKw": 1,
+        "kw": 4,
+        "plannedKw": 4,
         "plannedYear": 2026,
         "year": 2026,
         "anlage": "Brünierbad Lang",
-        "status": "Open",
+        "status": "Late",
         "visum": "",
         "datum": "",
         "doneKw": null,
         "doneYear": null,
         "wer": "MA",
-        "isLate": false,
-        "delayWeeks": 0
+        "isLate": true,
+        "delayWeeks": 8
       },
       {
         "id": "T-1-144",
@@ -1499,12 +1499,11 @@
         "title": "Entschlammen Brünieren Lang",
         "wer": "MA",
         "frequenz": "Vierteljährlich",
-        "abKw": 1,
         "weeks": {
-          "1": true,
-          "14": true,
-          "27": true,
-          "40": true
+          "4": true,
+          "17": true,
+          "30": true,
+          "43": true
         }
       },
       {
@@ -1513,12 +1512,11 @@
         "title": "Mangan entschlammen",
         "wer": "MA",
         "frequenz": "Vierteljährlich",
-        "abKw": 1,
         "weeks": {
-          "1": true,
-          "14": true,
-          "27": true,
-          "40": true
+          "8": true,
+          "21": true,
+          "34": true,
+          "47": true
         }
       },
       {
@@ -1527,12 +1525,11 @@
         "title": "Zitronensäure neu",
         "wer": "MA",
         "frequenz": "Vierteljährlich",
-        "abKw": 1,
         "weeks": {
-          "1": true,
-          "14": true,
-          "27": true,
-          "40": true
+          "2": true,
+          "15": true,
+          "28": true,
+          "41": true
         }
       },
       {
