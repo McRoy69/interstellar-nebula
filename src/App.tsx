@@ -113,12 +113,19 @@ function App() {
           const mergedTasks = [...(dept.tasks || []), ...missingTasks];
           const filteredTasks = mergedTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || 2026) >= 2026);
 
-          const geplant = Number(filteredTasks.length) || 0;
-          const erledigtPuenktlich = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
-          const spaetErledigt = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
-          const rate = geplant > 0 ? Math.round((erledigtPuenktlich / geplant) * 100) : 100;
+          // Statistics Logic: YTD (Year-To-Date)
+          // To match Excel "Zentrale Statistik", we only count tasks up to the CURRENT week.
+          const ytdTasks = filteredTasks.filter((ti: any) => ti.kw <= CURRENT_KW);
 
-          // Dynamic bottleneck calculation
+          const geplant = Number(ytdTasks.length) || 0;
+          const erledigtPuenktlich = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
+          const spaetErledigt = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
+          const erledigtTotal = erledigtPuenktlich + spaetErledigt;
+
+          // Efficiency = Total Done / Total Planned for life-to-date
+          const rate = geplant > 0 ? Math.round((erledigtTotal / geplant) * 100) : 100;
+
+          // Dynamic bottleneck calculation (uses all currently open tasks, even if not yet due, for foresight)
           const taskGroups: Record<string, { count: number; delays: number[]; translations?: any }> = {};
           filteredTasks.forEach(t => {
             if (t.status !== 'Done') {
@@ -145,13 +152,13 @@ function App() {
             stats: {
               ...dept.stats,
               geplant,
-              erledigt: Number(filteredTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
+              erledigt: Number(ytdTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
               erledigtPuenktlich,
               spaetErledigt,
-              offen: Number(filteredTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
+              offen: Number(ytdTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
               erfüllungsquote: rate
             },
-            tasks: filteredTasks,
+            tasks: filteredTasks, // Keep all tasks for display in views
             bottlenecks: dynamicBottlenecks
           };
         });
