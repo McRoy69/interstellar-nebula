@@ -74,8 +74,10 @@ const deptMapping = {
 };
 
 const allData = [];
-// Current mock date in the app is ~ March 2026 (KW 10-11 roughly)
-const CURRENT_KW = 11;
+// Track unique tasks across Journal and Archiv for each department to prevent duplicates
+const processedTaskKeys = new Set();
+// Current mock date in the app is ~ March 19, 2026 (KW 12)
+const CURRENT_KW = 12;
 
 console.log(`Found ${files.length} files in ${excelDir}`);
 
@@ -108,6 +110,8 @@ files.forEach(file => {
             tasks: [],
             planningTasks: []
         };
+        let duplicateCount = 0;
+        processedTaskKeys.clear();
 
         // 1. EXTRACT PLANNING MATRIX
         const matrizSheetName = workbook.SheetNames.find(s => s.toLowerCase().includes('matriz') || s.toLowerCase().includes('matrix') || s.toLowerCase().includes('lista'));
@@ -218,7 +222,7 @@ files.forEach(file => {
                         }
                     }
 
-                    deptBlock.tasks.push({
+                    const taskObj = {
                         id: `T-${id}-${deptBlock.tasks.length + 100}`,
                         title: aufgabe.toString(),
                         kw: plannedKw,
@@ -234,7 +238,15 @@ files.forEach(file => {
                         wer: wer ? wer.toString() : 'MA',
                         isLate,
                         delayWeeks
-                    });
+                    };
+
+                    const taskKey = `${taskObj.title.toLowerCase()}|${taskObj.anlage.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
+                    if (!processedTaskKeys.has(taskKey)) {
+                        processedTaskKeys.add(taskKey);
+                        deptBlock.tasks.push(taskObj);
+                    } else {
+                        duplicateCount++;
+                    }
                 }
             }
         }
@@ -301,7 +313,7 @@ files.forEach(file => {
                         delayWeeks = delayVal;
                     }
 
-                    deptBlock.tasks.push({
+                    const taskObj = {
                         id: `T-${id}-${deptBlock.tasks.length + 100}`,
                         title: aufgabe.toString(),
                         kw: plannedKw,
@@ -317,7 +329,16 @@ files.forEach(file => {
                         wer: wer ? wer.toString() : 'MA',
                         isLate,
                         delayWeeks
-                    });
+                    };
+
+                    const taskKey = `${taskObj.title.toLowerCase()}|${taskObj.anlage.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
+                    // Archiv entries take precedence over live journal if they exist in both
+                    if (!processedTaskKeys.has(taskKey)) {
+                        processedTaskKeys.add(taskKey);
+                        deptBlock.tasks.push(taskObj);
+                    } else {
+                        duplicateCount++;
+                    }
                 }
             }
         }
@@ -382,7 +403,7 @@ files.forEach(file => {
         deptBlock.stats.spaetErledigt = deptBlock.tasks.filter(t => t.status === 'Done' && t.isLate).length;
 
         allData.push(deptBlock);
-        console.log(`Parsed ${file} -> ${deptBlock.planningTasks.length} plan tasks, ${deptBlock.tasks.length} journal tasks.`);
+        console.log(`Parsed ${file} -> ${deptBlock.planningTasks.length} plan tasks, ${deptBlock.tasks.length} journal tasks. (Skipped ${duplicateCount} duplicates)`);
     } catch (e) {
         console.error(`Error processing ${file}:`, e);
     }
