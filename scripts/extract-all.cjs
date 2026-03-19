@@ -49,7 +49,9 @@ function getWeek(date) {
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 
-const excelDir = 'C:\\Users\\Michael.Jenni\\Wartungsplan';
+const excelDir = fs.existsSync('m:\\SERVER_MANAGEMENT\\04 ISO\\ISO 9001\\9.  Bewertung der Leistung\\Wartungsplaene')
+    ? 'm:\\SERVER_MANAGEMENT\\04 ISO\\ISO 9001\\9.  Bewertung der Leistung\\Wartungsplaene'
+    : 'C:\\Users\\Michael.Jenni\\Wartungsplan';
 const files = fs.readdirSync(excelDir).filter(f => f.endsWith('.xlsm') && !f.startsWith('~$') && !f.startsWith('Zentrale_Statistik'));
 
 // Operator names per department (provided by user)
@@ -114,6 +116,9 @@ files.forEach(file => {
         processedTaskKeys.clear();
         const looseTaskKeys = new Set();
 
+        // title -> anlage map for missing anlage in archive
+        const journalAnlageMap = new Map();
+
         // 1. EXTRACT PLANNING MATRIX
         const matrizSheetName = workbook.SheetNames.find(s => s.toLowerCase().includes('matriz') || s.toLowerCase().includes('matrix') || s.toLowerCase().includes('lista'));
         if (matrizSheetName) {
@@ -153,101 +158,7 @@ files.forEach(file => {
         }
 
 
-        // 2. EXTRACT ARCHIVE (Journal_Archiv) - Process FIRST to set Done status as priority
-        const archiveSheetName = workbook.SheetNames.find(s => s.toLowerCase().includes('journal_archiv') || s.toLowerCase().includes('journal archiv'));
-        if (archiveSheetName) {
-            const sheet = workbook.Sheets[archiveSheetName];
-            const rows = xlsx.utils.sheet_to_json(sheet, { header: 1 }); // Header 1 to get raw objects or arrays
-
-            let headerIdx = -1;
-            for (let i = 0; i < rows.length; i++) {
-                if (rows[i] && rows[i].includes('Aufgabe')) { headerIdx = i; break; }
-            }
-
-            if (headerIdx !== -1) {
-                const headers = rows[headerIdx];
-                const idxAufgabe = headers.indexOf('Aufgabe');
-                const idxAnlage = headers.indexOf('Anlage');
-                const idxJahr = headers.indexOf('Jahr');
-                const idxKw = headers.indexOf('KW');
-                const idxWer = headers.indexOf('Wer');
-                const idxDatumDone = headers.indexOf('Abschluss_Datum');
-                const idxVisum = headers.indexOf('Visum');
-
-                // Punctuality columns (header might vary due to encoding)
-                const idxLate = headers.findIndex(h => h && (h.toString().includes('Verspätet') || h.toString().includes('VerspŠtet') || h.toString().includes('Versp_tet')));
-
-                for (let i = headerIdx + 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (!row || row.length === 0) continue;
-
-                    const aufgabe = row[idxAufgabe];
-                    const anlage = idxAnlage !== -1 ? row[idxAnlage] : 'System';
-                    const plannedYear = idxJahr !== -1 ? parseInt(row[idxJahr]) : 2026;
-                    const plannedKw = idxKw !== -1 ? parseInt(row[idxKw]) : 1;
-                    const wer = idxWer !== -1 ? row[idxWer] : 'MA';
-                    const datumRaw = idxDatumDone !== -1 ? row[idxDatumDone] : null;
-                    const visum = idxVisum !== -1 ? row[idxVisum] : '';
-                    const delayVal = idxLate !== -1 ? parseInt(row[idxLate]) : 0;
-
-                    if (!aufgabe) continue;
-
-                    const datumStr = formatToInputDate(datumRaw);
-                    let doneKw = null;
-                    let doneYear = null;
-                    let isLate = false;
-                    let delayWeeks = 0;
-
-                    const d = parseToDateObj(datumRaw);
-                    if (d) {
-                        doneKw = getWeek(d);
-                        doneYear = d.getFullYear();
-                        // Real delay calculation
-                        if (doneYear > plannedYear || (doneYear === plannedYear && doneKw > plannedKw)) {
-                            isLate = true;
-                            delayWeeks = (doneYear - plannedYear) * 52 + (doneKw - plannedKw);
-                        }
-                    }
-
-                    // Fallback to Excel's Verspätet flag if our calculation didn't find delay but Excel says there is one
-                    if (!isLate && delayVal > 0) {
-                        isLate = true;
-                        delayWeeks = delayVal;
-                    }
-
-                    const taskObj = {
-                        id: `T-${id}-${deptBlock.tasks.length + 100}`,
-                        title: aufgabe.toString().trim(),
-                        kw: plannedKw,
-                        plannedKw,
-                        plannedYear,
-                        year: plannedYear,
-                        anlage: anlage ? anlage.toString().trim() : 'N/A',
-                        status: 'Done',
-                        visum: visum ? visum.toString() : "",
-                        datum: datumStr,
-                        doneKw,
-                        doneYear,
-                        wer: wer ? wer.toString() : 'MA',
-                        isLate,
-                        delayWeeks
-                    };
-
-                    const taskKey = `${taskObj.title.toLowerCase()}|${taskObj.anlage.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
-                    const looseKey = `loose|${taskObj.title.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
-
-                    if (!processedTaskKeys.has(taskKey)) {
-                        processedTaskKeys.add(taskKey);
-                        looseTaskKeys.add(looseKey);
-                        deptBlock.tasks.push(taskObj);
-                    } else {
-                        duplicateCount++;
-                    }
-                }
-            }
-        }
-
-        // 3. EXTRACT OPERATIVE JOURNAL - Process SECOND, skip if already in Archive
+        // 2. EXTRACT OPERATIVE JOURNAL - Process FIRST to collect Anlage info
         const journalSheetName = workbook.SheetNames.find(s => s === 'Journal' || (s.toLowerCase().includes('journal') && !s.toLowerCase().includes('archiv')));
         if (journalSheetName) {
             const sheet = workbook.Sheets[journalSheetName];
@@ -325,8 +236,110 @@ files.forEach(file => {
                         plannedKw,
                         plannedYear,
                         year: plannedYear,
-                        anlage: anlage ? anlage.toString().trim() : 'N/A',
+                        anlage: anlage ? anlage.toString().trim() : 'System',
                         status: status,
+                        visum: visum ? visum.toString() : "",
+                        datum: datumStr,
+                        doneKw,
+                        doneYear,
+                        wer: wer ? wer.toString() : 'MA',
+                        isLate,
+                        delayWeeks
+                    };
+
+                    // Store anlage for archive lookup
+                    if (taskObj.anlage && taskObj.anlage !== 'System' && taskObj.anlage !== 'N/A') {
+                        journalAnlageMap.set(taskObj.title.toLowerCase().trim(), taskObj.anlage);
+                    }
+
+                    const taskKey = `${taskObj.title.toLowerCase()}|${taskObj.anlage.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
+                    const looseKey = `loose|${taskObj.title.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
+
+                    if (!processedTaskKeys.has(taskKey) && !looseTaskKeys.has(looseKey)) {
+                        processedTaskKeys.add(taskKey);
+                        looseTaskKeys.add(looseKey);
+                        deptBlock.tasks.push(taskObj);
+                    } else {
+                        duplicateCount++;
+                    }
+                }
+            }
+        }
+
+        // 3. EXTRACT ARCHIVE (Journal_Archiv) - Use Anlage info from Journal if missing
+        const archiveSheetName = workbook.SheetNames.find(s => s.toLowerCase().includes('journal_archiv') || s.toLowerCase().includes('journal archiv'));
+        if (archiveSheetName) {
+            const sheet = workbook.Sheets[archiveSheetName];
+            const rows = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+
+            let headerIdx = -1;
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i] && rows[i].includes('Aufgabe')) { headerIdx = i; break; }
+            }
+
+            if (headerIdx !== -1) {
+                const headers = rows[headerIdx];
+                const idxAufgabe = headers.indexOf('Aufgabe');
+                const idxAnlage = headers.indexOf('Anlage');
+                const idxJahr = headers.indexOf('Jahr');
+                const idxKw = headers.indexOf('KW');
+                const idxWer = headers.indexOf('Wer');
+                const idxDatumDone = headers.indexOf('Abschluss_Datum');
+                const idxVisum = headers.indexOf('Visum');
+                const idxLate = headers.findIndex(h => h && (h.toString().includes('Verspätet') || h.toString().includes('VerspŠtet') || h.toString().includes('Versp_tet')));
+
+                for (let i = headerIdx + 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || row.length === 0) continue;
+
+                    const aufgabe = row[idxAufgabe];
+                    let anlage = idxAnlage !== -1 ? row[idxAnlage] : null;
+
+                    // Smart lookup for missing anlage in Archive
+                    if (!anlage || anlage === 'System') {
+                        const lookupTitle = aufgabe ? aufgabe.toString().toLowerCase().trim() : '';
+                        anlage = journalAnlageMap.get(lookupTitle) || 'System';
+                    }
+
+                    const plannedYear = idxJahr !== -1 ? parseInt(row[idxJahr]) : 2026;
+                    const plannedKw = idxKw !== -1 ? parseInt(row[idxKw]) : 1;
+                    const wer = idxWer !== -1 ? row[idxWer] : 'MA';
+                    const datumRaw = idxDatumDone !== -1 ? row[idxDatumDone] : null;
+                    const visum = idxVisum !== -1 ? row[idxVisum] : '';
+                    const delayVal = idxLate !== -1 ? parseInt(row[idxLate]) : 0;
+
+                    if (!aufgabe) continue;
+
+                    const datumStr = formatToInputDate(datumRaw);
+                    let doneKw = null;
+                    let doneYear = null;
+                    let isLate = false;
+                    let delayWeeks = 0;
+
+                    const d = parseToDateObj(datumRaw);
+                    if (d) {
+                        doneKw = getWeek(d);
+                        doneYear = d.getFullYear();
+                        if (doneYear > plannedYear || (doneYear === plannedYear && doneKw > plannedKw)) {
+                            isLate = true;
+                            delayWeeks = (doneYear - plannedYear) * 52 + (doneKw - plannedKw);
+                        }
+                    }
+
+                    if (!isLate && delayVal > 0) {
+                        isLate = true;
+                        delayWeeks = delayVal;
+                    }
+
+                    const taskObj = {
+                        id: `T-${id}-${deptBlock.tasks.length + 500}`, // Distinct ID range for archive
+                        title: aufgabe.toString().trim(),
+                        kw: plannedKw,
+                        plannedKw,
+                        plannedYear,
+                        year: plannedYear,
+                        anlage: anlage ? anlage.toString().trim() : 'System',
+                        status: 'Done',
                         visum: visum ? visum.toString() : "",
                         datum: datumStr,
                         doneKw,
@@ -339,13 +352,27 @@ files.forEach(file => {
                     const taskKey = `${taskObj.title.toLowerCase()}|${taskObj.anlage.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
                     const looseKey = `loose|${taskObj.title.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
 
-                    // Skip if already in Archive (match by exact key or loose key)
+                    // In Archive section, we overwrite duplicates if they were only partial matches before?
+                    // Actually, if it's in the archive, it's DONE. Priority over Journal.
                     if (!processedTaskKeys.has(taskKey) && !looseTaskKeys.has(looseKey)) {
                         processedTaskKeys.add(taskKey);
                         looseTaskKeys.add(looseKey);
                         deptBlock.tasks.push(taskObj);
                     } else {
-                        duplicateCount++;
+                        // If it's a duplicate but from ARCHIVE, it might be more accurate status: Done.
+                        // But since we process Journal first now, we need to check if the existing task is 'Open'
+                        const existingIdx = deptBlock.tasks.findIndex(t =>
+                            (t.title.toLowerCase() === taskObj.title.toLowerCase() &&
+                                t.anlage.toLowerCase() === taskObj.anlage.toLowerCase() &&
+                                t.plannedKw === taskObj.plannedKw) ||
+                            (t.title.toLowerCase() === taskObj.title.toLowerCase() && t.plannedKw === taskObj.plannedKw && (t.anlage === 'System' || taskObj.anlage === 'System'))
+                        );
+
+                        if (existingIdx !== -1 && deptBlock.tasks[existingIdx].status !== 'Done') {
+                            deptBlock.tasks[existingIdx] = taskObj; // Replace Open with Done from Archive
+                        } else {
+                            duplicateCount++;
+                        }
                     }
                 }
             }
