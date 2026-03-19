@@ -58,29 +58,47 @@ function App() {
         // Apply Global Sync Logic (Injection of missing KW tasks)
         const CURRENT_KW = APP_CONFIG.CURRENT_KW;
         let syncedDepts = finalDepts.map((dept: any) => {
-          // Hardcore fix for "Armoloy" name
+          // Hardcore fix for "Armoloy" name - prevent any accidental translation or renaming
           if (String(dept.id) === '3' || dept.name.toLowerCase().includes('waffe') || dept.name.toLowerCase().includes('armo')) {
             dept.name = 'Armoloy';
           }
 
+          // 1. Map existing tasks by a unique key to identify duplicates and facilitate matching
           const existingTaskKeys = new Set();
-          (dept.tasks || []).forEach((ti: any) => {
+          const cleanExistingTasks = (dept.tasks || []).filter((ti: any) => {
             const t = (ti.title || "").toLowerCase().trim();
             const a = (ti.anlage || "").toLowerCase().trim();
             const y = ti.year || 2026;
             const kw = ti.kw;
+            const pkw = ti.plannedKw;
+
+            // Cleanup Logic: If it's an auto-injected task for 2026, verify if it's still planned
+            if (ti.id?.startsWith('auto-') && y === 2026) {
+              const pt = (dept.planningTasks || []).find((p: any) => p.title === ti.title && p.anlage === ti.anlage);
+              if (!pt || !isTaskPlanned(pt, kw)) {
+                console.log(`Cleaning up obsolete auto-task: ${ti.title} KW${kw}`);
+                return false; // Remove it
+              }
+            }
+
             existingTaskKeys.add(`${a}-${t}-${kw}-${y}`);
+            if (pkw) existingTaskKeys.add(`${a}-${t}-${pkw}-${y}`);
+            existingTaskKeys.add(`loose-${t}-${kw}-${y}`);
+            if (pkw) existingTaskKeys.add(`loose-${t}-${pkw}-${y}`);
+            return true;
           });
 
           const missingTasks: Task[] = [];
+
           (dept.planningTasks || []).forEach((pt: any) => {
             for (let kw = 1; kw <= CURRENT_KW; kw++) {
               if (isTaskPlanned(pt, kw)) {
                 const t = (pt.title || "").toLowerCase().trim();
                 const a = (pt.anlage || "").toLowerCase().trim();
                 const key = `${a}-${t}-${kw}-2026`;
+                const looseKey = `loose-${t}-${kw}-2026`;
 
-                if (!existingTaskKeys.has(key)) {
+                if (!existingTaskKeys.has(key) && !existingTaskKeys.has(looseKey)) {
                   missingTasks.push({
                     id: `auto-${Date.now()}-${pt.id}-${kw}`,
                     title: pt.title,
@@ -93,21 +111,26 @@ function App() {
                     translations: pt.translations
                   });
                   existingTaskKeys.add(key);
+                  existingTaskKeys.add(looseKey);
                 }
               }
             }
           });
 
-          const mergedTasks = [...(dept.tasks || []), ...missingTasks];
+          const mergedTasks = [...cleanExistingTasks, ...missingTasks];
           const filteredTasks = mergedTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || 2026) >= 2026);
 
-          const geplant = Number(filteredTasks.length) || 0;
-          const erledigtPuenktlich = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
-          const spaetErledigt = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
+          // Statistics Logic: YTD (Year-To-Date)
+          const ytdTasks = filteredTasks.filter((ti: any) => ti.kw <= CURRENT_KW);
+
+          const geplant = Number(ytdTasks.length) || 0;
+          const erledigtPuenktlich = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
+          const spaetErledigt = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
           const erledigtTotal = erledigtPuenktlich + spaetErledigt;
+
           const rate = geplant > 0 ? Math.round((erledigtTotal / geplant) * 100) : 100;
 
-          // Bottleneck calculation
+          // Dynamic bottleneck calculation
           const taskGroups: Record<string, { count: number; delays: number[]; translations?: any }> = {};
           filteredTasks.forEach(t => {
             if (t.status !== 'Done') {
@@ -134,10 +157,10 @@ function App() {
             stats: {
               ...dept.stats,
               geplant,
-              erledigt: Number(filteredTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
+              erledigt: Number(ytdTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
               erledigtPuenktlich,
               spaetErledigt,
-              offen: Number(filteredTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
+              offen: Number(ytdTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
               erfüllungsquote: rate
             },
             tasks: filteredTasks,

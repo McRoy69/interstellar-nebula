@@ -28,9 +28,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     const totalGeplant = safeSum(departments, 'geplant');
     const totalPuenktlich = safeSum(departments, 'erledigtPuenktlich');
     const totalVerspaetet = safeSum(departments, 'spaetErledigt');
+    const totalErledigt = totalPuenktlich + totalVerspaetet;
 
-    // Final defensive calculation for global efficiency
-    const globalEfficiencyRaw = totalGeplant > 0 ? (totalPuenktlich / totalGeplant) * 100 : 0;
+    // Final defensive calculation for global efficiency (YTD: Total Done / Total Due)
+    const globalEfficiencyRaw = totalGeplant > 0 ? (totalErledigt / totalGeplant) * 100 : 0;
     const globalEfficiency = isNaN(globalEfficiencyRaw) ? 0 : Math.round(globalEfficiencyRaw);
 
     const CURRENT_KW = APP_CONFIG.CURRENT_KW;
@@ -179,7 +180,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                 color: 'var(--color-accent)'
                             }}
                         >
-                            {t('dashboard.period')}
+                            {t('dashboard.period')} (YTD)
                         </div>
                         <button
                             onClick={handleExportPDF}

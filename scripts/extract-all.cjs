@@ -152,6 +152,19 @@ files.forEach(file => {
                 const kwNum = parseInt(kw);
                 if (!isNaN(kwNum)) {
                     planningMap[key].weeks[kwNum] = !!geplant;
+
+                    // Track the earliest week as fallback abKw
+                    if (!planningMap[key].abKw || kwNum < (planningMap[key].abKw || 53)) {
+                        planningMap[key].abKw = kwNum;
+                    }
+
+                    // Priority: Explicit abKw from column J (index 9)
+                    if (row[9] !== undefined && row[9] !== null) {
+                        const explicitAbKw = parseInt(row[9]);
+                        if (!isNaN(explicitAbKw)) {
+                            planningMap[key].abKw = explicitAbKw;
+                        }
+                    }
                 }
             }
             deptBlock.planningTasks = Object.values(planningMap);

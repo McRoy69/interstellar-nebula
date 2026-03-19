@@ -90,10 +90,16 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         if (!onUpdate) return;
 
         const filteredTasks = localTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || 2026) >= 2026);
-        const geplant = Number(filteredTasks.length) || 0;
-        const erledigtPuenktlich = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
-        const spaetErledigt = Number(filteredTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
-        const rate = geplant > 0 ? Math.round((erledigtPuenktlich / geplant) * 100) : 100;
+
+        // Statistics Logic: YTD (Year-To-Date) up to current week
+        const ytdTasks = filteredTasks.filter((ti: any) => ti.kw <= currentKw);
+
+        const geplant = Number(ytdTasks.length) || 0;
+        const erledigtPuenktlich = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
+        const spaetErledigt = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
+        const erledigtTotal = erledigtPuenktlich + spaetErledigt;
+
+        const rate = geplant > 0 ? Math.round((erledigtTotal / geplant) * 100) : 100;
 
         const updated: DepartmentData = {
             ...data,
@@ -103,10 +109,10 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             stats: {
                 ...data.stats,
                 geplant,
-                erledigt: Number(filteredTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
+                erledigt: Number(ytdTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
                 erledigtPuenktlich,
                 spaetErledigt,
-                offen: Number(filteredTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
+                offen: Number(ytdTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
                 erfüllungsquote: rate
             }
         };
