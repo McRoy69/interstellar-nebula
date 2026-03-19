@@ -63,15 +63,34 @@ function App() {
             dept.name = 'Armoloy';
           }
 
-          const existingTaskKeys = new Set((dept.tasks || []).map((ti: any) => `${ti.anlage}-${ti.title}-${ti.kw}-${ti.year}`));
+          const existingTaskKeys = new Set();
+          (dept.tasks || []).forEach((ti: any) => {
+            const t = (ti.title || "").toLowerCase().trim();
+            const a = (ti.anlage || "").toLowerCase().trim();
+            const y = ti.year || 2026;
+            const kw = ti.kw;
+            const pkw = ti.plannedKw;
+
+            // Standard keys
+            existingTaskKeys.add(`${a}-${t}-${kw}-${y}`);
+            if (pkw) existingTaskKeys.add(`${a}-${t}-${pkw}-${y}`);
+
+            // Loose keys (ignore anlage if it's "system" or empty, or for general matching)
+            existingTaskKeys.add(`loose-${t}-${kw}-${y}`);
+            if (pkw) existingTaskKeys.add(`loose-${t}-${pkw}-${y}`);
+          });
+
           const missingTasks: Task[] = [];
 
           (dept.planningTasks || []).forEach((pt: any) => {
-            // Check all weeks from 1 up to CURRENT_KW to ensure past planned tasks are not lost
             for (let kw = 1; kw <= CURRENT_KW; kw++) {
               if (isTaskPlanned(pt, kw)) {
-                const key = `${pt.anlage}-${pt.title}-${kw}-2026`;
-                if (!existingTaskKeys.has(key)) {
+                const t = (pt.title || "").toLowerCase().trim();
+                const a = (pt.anlage || "").toLowerCase().trim();
+                const key = `${a}-${t}-${kw}-2026`;
+                const looseKey = `loose-${t}-${kw}-2026`;
+
+                if (!existingTaskKeys.has(key) && !existingTaskKeys.has(looseKey)) {
                   missingTasks.push({
                     id: `auto-${Date.now()}-${pt.id}-${kw}`,
                     title: pt.title,
@@ -83,8 +102,9 @@ function App() {
                     isLate: kw < CURRENT_KW,
                     translations: pt.translations
                   });
-                  // Add to set to prevent double injection in same run
+                  // Mark as seen to avoid double injection
                   existingTaskKeys.add(key);
+                  existingTaskKeys.add(looseKey);
                 }
               }
             }
