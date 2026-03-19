@@ -112,6 +112,7 @@ files.forEach(file => {
         };
         let duplicateCount = 0;
         processedTaskKeys.clear();
+        const looseTaskKeys = new Set();
 
         // 1. EXTRACT PLANNING MATRIX
         const matrizSheetName = workbook.SheetNames.find(s => s.toLowerCase().includes('matriz') || s.toLowerCase().includes('matrix') || s.toLowerCase().includes('lista'));
@@ -151,7 +152,102 @@ files.forEach(file => {
             deptBlock.planningTasks = Object.values(planningMap);
         }
 
-        // 2. EXTRACT OPERATIVE JOURNAL
+
+        // 2. EXTRACT ARCHIVE (Journal_Archiv) - Process FIRST to set Done status as priority
+        const archiveSheetName = workbook.SheetNames.find(s => s.toLowerCase().includes('journal_archiv') || s.toLowerCase().includes('journal archiv'));
+        if (archiveSheetName) {
+            const sheet = workbook.Sheets[archiveSheetName];
+            const rows = xlsx.utils.sheet_to_json(sheet, { header: 1 }); // Header 1 to get raw objects or arrays
+
+            let headerIdx = -1;
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i] && rows[i].includes('Aufgabe')) { headerIdx = i; break; }
+            }
+
+            if (headerIdx !== -1) {
+                const headers = rows[headerIdx];
+                const idxAufgabe = headers.indexOf('Aufgabe');
+                const idxAnlage = headers.indexOf('Anlage');
+                const idxJahr = headers.indexOf('Jahr');
+                const idxKw = headers.indexOf('KW');
+                const idxWer = headers.indexOf('Wer');
+                const idxDatumDone = headers.indexOf('Abschluss_Datum');
+                const idxVisum = headers.indexOf('Visum');
+
+                // Punctuality columns (header might vary due to encoding)
+                const idxLate = headers.findIndex(h => h && (h.toString().includes('Verspätet') || h.toString().includes('VerspŠtet') || h.toString().includes('Versp_tet')));
+
+                for (let i = headerIdx + 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || row.length === 0) continue;
+
+                    const aufgabe = row[idxAufgabe];
+                    const anlage = idxAnlage !== -1 ? row[idxAnlage] : 'System';
+                    const plannedYear = idxJahr !== -1 ? parseInt(row[idxJahr]) : 2026;
+                    const plannedKw = idxKw !== -1 ? parseInt(row[idxKw]) : 1;
+                    const wer = idxWer !== -1 ? row[idxWer] : 'MA';
+                    const datumRaw = idxDatumDone !== -1 ? row[idxDatumDone] : null;
+                    const visum = idxVisum !== -1 ? row[idxVisum] : '';
+                    const delayVal = idxLate !== -1 ? parseInt(row[idxLate]) : 0;
+
+                    if (!aufgabe) continue;
+
+                    const datumStr = formatToInputDate(datumRaw);
+                    let doneKw = null;
+                    let doneYear = null;
+                    let isLate = false;
+                    let delayWeeks = 0;
+
+                    const d = parseToDateObj(datumRaw);
+                    if (d) {
+                        doneKw = getWeek(d);
+                        doneYear = d.getFullYear();
+                        // Real delay calculation
+                        if (doneYear > plannedYear || (doneYear === plannedYear && doneKw > plannedKw)) {
+                            isLate = true;
+                            delayWeeks = (doneYear - plannedYear) * 52 + (doneKw - plannedKw);
+                        }
+                    }
+
+                    // Fallback to Excel's Verspätet flag if our calculation didn't find delay but Excel says there is one
+                    if (!isLate && delayVal > 0) {
+                        isLate = true;
+                        delayWeeks = delayVal;
+                    }
+
+                    const taskObj = {
+                        id: `T-${id}-${deptBlock.tasks.length + 100}`,
+                        title: aufgabe.toString().trim(),
+                        kw: plannedKw,
+                        plannedKw,
+                        plannedYear,
+                        year: plannedYear,
+                        anlage: anlage ? anlage.toString().trim() : 'N/A',
+                        status: 'Done',
+                        visum: visum ? visum.toString() : "",
+                        datum: datumStr,
+                        doneKw,
+                        doneYear,
+                        wer: wer ? wer.toString() : 'MA',
+                        isLate,
+                        delayWeeks
+                    };
+
+                    const taskKey = `${taskObj.title.toLowerCase()}|${taskObj.anlage.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
+                    const looseKey = `loose|${taskObj.title.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
+
+                    if (!processedTaskKeys.has(taskKey)) {
+                        processedTaskKeys.add(taskKey);
+                        looseTaskKeys.add(looseKey);
+                        deptBlock.tasks.push(taskObj);
+                    } else {
+                        duplicateCount++;
+                    }
+                }
+            }
+        }
+
+        // 3. EXTRACT OPERATIVE JOURNAL - Process SECOND, skip if already in Archive
         const journalSheetName = workbook.SheetNames.find(s => s === 'Journal' || (s.toLowerCase().includes('journal') && !s.toLowerCase().includes('archiv')));
         if (journalSheetName) {
             const sheet = workbook.Sheets[journalSheetName];
@@ -224,12 +320,12 @@ files.forEach(file => {
 
                     const taskObj = {
                         id: `T-${id}-${deptBlock.tasks.length + 100}`,
-                        title: aufgabe.toString(),
+                        title: aufgabe.toString().trim(),
                         kw: plannedKw,
                         plannedKw,
                         plannedYear,
                         year: plannedYear,
-                        anlage: anlage ? anlage.toString() : 'N/A',
+                        anlage: anlage ? anlage.toString().trim() : 'N/A',
                         status: status,
                         visum: visum ? visum.toString() : "",
                         datum: datumStr,
@@ -241,100 +337,12 @@ files.forEach(file => {
                     };
 
                     const taskKey = `${taskObj.title.toLowerCase()}|${taskObj.anlage.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
-                    if (!processedTaskKeys.has(taskKey)) {
+                    const looseKey = `loose|${taskObj.title.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
+
+                    // Skip if already in Archive (match by exact key or loose key)
+                    if (!processedTaskKeys.has(taskKey) && !looseTaskKeys.has(looseKey)) {
                         processedTaskKeys.add(taskKey);
-                        deptBlock.tasks.push(taskObj);
-                    } else {
-                        duplicateCount++;
-                    }
-                }
-            }
-        }
-
-        // 3. EXTRACT ARCHIVE (Journal_Archiv)
-        const archiveSheetName = workbook.SheetNames.find(s => s.toLowerCase().includes('journal_archiv') || s.toLowerCase().includes('journal archiv'));
-        if (archiveSheetName) {
-            const sheet = workbook.Sheets[archiveSheetName];
-            const rows = xlsx.utils.sheet_to_json(sheet, { header: 1 }); // Header 1 to get raw objects or arrays
-
-            let headerIdx = -1;
-            for (let i = 0; i < rows.length; i++) {
-                if (rows[i] && rows[i].includes('Aufgabe')) { headerIdx = i; break; }
-            }
-
-            if (headerIdx !== -1) {
-                const headers = rows[headerIdx];
-                const idxAufgabe = headers.indexOf('Aufgabe');
-                const idxAnlage = headers.indexOf('Anlage');
-                const idxJahr = headers.indexOf('Jahr');
-                const idxKw = headers.indexOf('KW');
-                const idxWer = headers.indexOf('Wer');
-                const idxDatumDone = headers.indexOf('Abschluss_Datum');
-                const idxVisum = headers.indexOf('Visum');
-
-                // Punctuality columns (header might vary due to encoding)
-                const idxLate = headers.findIndex(h => h && (h.toString().includes('Verspätet') || h.toString().includes('VerspŠtet') || h.toString().includes('Versp_tet')));
-
-                for (let i = headerIdx + 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (!row || row.length === 0) continue;
-
-                    const aufgabe = row[idxAufgabe];
-                    const anlage = idxAnlage !== -1 ? row[idxAnlage] : 'System';
-                    const plannedYear = idxJahr !== -1 ? parseInt(row[idxJahr]) : 2025;
-                    const plannedKw = idxKw !== -1 ? parseInt(row[idxKw]) : 1;
-                    const wer = idxWer !== -1 ? row[idxWer] : 'MA';
-                    const datumRaw = idxDatumDone !== -1 ? row[idxDatumDone] : null;
-                    const visum = idxVisum !== -1 ? row[idxVisum] : '';
-                    const delayVal = idxLate !== -1 ? parseInt(row[idxLate]) : 0;
-
-                    if (!aufgabe) continue;
-
-                    const datumStr = formatToInputDate(datumRaw);
-                    let doneKw = null;
-                    let doneYear = null;
-                    let isLate = false;
-                    let delayWeeks = 0;
-
-                    const d = parseToDateObj(datumRaw);
-                    if (d) {
-                        doneKw = getWeek(d);
-                        doneYear = d.getFullYear();
-                        // Real delay calculation
-                        if (doneYear > plannedYear || (doneYear === plannedYear && doneKw > plannedKw)) {
-                            isLate = true;
-                            delayWeeks = (doneYear - plannedYear) * 52 + (doneKw - plannedKw);
-                        }
-                    }
-
-                    // Fallback to Excel's Verspätet flag if our calculation didn't find delay but Excel says there is one
-                    if (!isLate && delayVal > 0) {
-                        isLate = true;
-                        delayWeeks = delayVal;
-                    }
-
-                    const taskObj = {
-                        id: `T-${id}-${deptBlock.tasks.length + 100}`,
-                        title: aufgabe.toString(),
-                        kw: plannedKw,
-                        plannedKw,
-                        plannedYear,
-                        year: plannedYear,
-                        anlage: anlage ? anlage.toString() : 'N/A',
-                        status: 'Done',
-                        visum: visum ? visum.toString() : "",
-                        datum: datumStr,
-                        doneKw,
-                        doneYear,
-                        wer: wer ? wer.toString() : 'MA',
-                        isLate,
-                        delayWeeks
-                    };
-
-                    const taskKey = `${taskObj.title.toLowerCase()}|${taskObj.anlage.toLowerCase()}|${taskObj.plannedKw}|${taskObj.plannedYear}`;
-                    // Archiv entries take precedence over live journal if they exist in both
-                    if (!processedTaskKeys.has(taskKey)) {
-                        processedTaskKeys.add(taskKey);
+                        looseTaskKeys.add(looseKey);
                         deptBlock.tasks.push(taskObj);
                     } else {
                         duplicateCount++;

@@ -19,11 +19,19 @@ try {
         let start = false;
         for (let i = 0; i < rows.length; i++) {
             if (rows[i] && rows[i].includes('Aufgabe')) { start = true; continue; }
-            if (start && rows[i] && rows[i][1]) { // Aufgabe is index 1 usually
+            if (start && rows[i] && rows[i][1]) {
                 contentRows++;
-                const datum = rows[i][4]; // Datum is index 4 usually
-                const visum = rows[i][5]; // Visum is index 5 usually
+                const aufgabe = rows[i][1];
+                const datum = rows[i][4];
+                const visum = rows[i][5];
+                const kwStr = rows[i][2]; // Check if KW is here
                 if (datum || visum) doneRows++;
+
+                // Inspect KW 3 and 4 specifically
+                if (kwStr && (kwStr.toString().includes('.03.2026') || kwStr.toString().includes('.01.2026'))) {
+                    // Wait, KW 3 is Jan, KW 10 is March.
+                }
+                console.log(`Row: ${aufgabe} | KW: ${kwStr} | Datum: ${datum} | Visum: ${visum}`);
             }
         }
         console.log(`[Journal] Total: ${contentRows}, Done: ${doneRows}`);
