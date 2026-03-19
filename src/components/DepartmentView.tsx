@@ -154,6 +154,10 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         return { label: t('department.statusLabels.current'), color: 'text-emerald-500', bg: 'bg-emerald-500' };
     };
 
+    const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
+        setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
+    };
+
     const handleAbschliessen = (taskId: string) => {
         setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'Done' } : t));
     };
@@ -266,7 +270,26 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             const title = activeTab === 'Journal' ? t('pdf.productiveJournal') : t('pdf.historicalArchive');
             drawHeader(`${title}: ${data.name}`, `${t('pdf.executionReport')} - ${new Date().toLocaleDateString()}`);
 
-            const currentTasks = localTasks.filter(t => (activeTab === 'Archiv' ? t.status === 'Done' : t.status !== 'Done'));
+            const currentTasks = localTasks
+                .filter(t => (activeTab === 'Archiv' ? t.status === 'Done' : t.status !== 'Done'))
+                .sort((a, b) => {
+                    if (activeTab === 'Archiv') {
+                        if (a.datum && b.datum) {
+                            const timeA = new Date(a.datum).getTime();
+                            const timeB = new Date(b.datum).getTime();
+                            if (timeB !== timeA) return timeB - timeA;
+                        }
+                        if (b.year !== a.year) return b.year - a.year;
+                        return b.kw - a.kw;
+                    }
+                    // Journal
+                    const delayA = currentKw - a.kw;
+                    const delayB = currentKw - b.kw;
+                    if (delayB !== delayA) return delayB - delayA;
+                    if (b.year !== a.year) return b.year - a.year;
+                    return b.kw - a.kw;
+                });
+
             const headers = ['ID', t('pdf.task'), t('pdf.anlage'), t('pdf.who'), t('pdf.planned'), t('department.journal.dateReal').split('(')[0].trim(), t('department.journal.visa'), t('department.journal.status')];
             const tableData = currentTasks.map(t => [
                 t.id, t.title, t.anlage, t.wer || 'MA', `KW ${t.kw}`, t.datum || '-', t.visum || '-', getStatusInfo(t).label
@@ -563,20 +586,28 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                                         t.id.toLowerCase().includes(q);
                                                 })
                                                 .sort((a, b) => {
-                                                    // Calculate delay priority
+                                                    if (activeTab === 'Archiv') {
+                                                        // First check actual completion dates
+                                                        if (a.datum && b.datum) {
+                                                            const timeA = new Date(a.datum).getTime();
+                                                            const timeB = new Date(b.datum).getTime();
+                                                            if (timeB !== timeA) return timeB - timeA;
+                                                        }
+                                                        if (b.year !== a.year) return b.year - a.year;
+                                                        return b.kw - a.kw;
+                                                    }
+
+                                                    // Operational Journal: Delay priority (most urgent first)
                                                     const delayA = currentKw - a.kw;
                                                     const delayB = currentKw - b.kw;
-
-                                                    // Sort by delay (descending) - most delayed first
                                                     if (delayB !== delayA) return delayB - delayA;
-
-                                                    // Then by Year (desc) then KW (desc)
                                                     if (b.year !== a.year) return b.year - a.year;
                                                     return b.kw - a.kw;
                                                 })
                                             }
                                             getStatusInfo={getStatusInfo}
                                             onAbschliessen={handleAbschliessen}
+                                            onUpdateTask={handleUpdateTask}
                                         />
                                     ) : activeTab === 'Statistik' ? (
                                         <StatisticsView localTasks={localTasks} settings={settings} />
@@ -868,10 +899,11 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
     );
 };
 
-const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
+const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask }: {
     tasks: Task[],
     getStatusInfo: (t: Task) => any,
-    onAbschliessen: (id: string) => void
+    onAbschliessen: (id: string) => void,
+    onUpdateTask: (id: string, updates: Partial<Task>) => void
 }) => {
     const { t, i18n } = useTranslation();
     return (
@@ -931,7 +963,8 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
                                 <td className="py-6">
                                     <input
                                         type="date"
-                                        defaultValue={task.datum}
+                                        value={task.datum || ''}
+                                        onChange={(e) => onUpdateTask(task.id, { datum: e.target.value })}
                                         className="rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-opacity-20 transition-all outline-none font-medium shadow-inner w-44 border"
                                         style={{
                                             backgroundColor: 'var(--color-field-bg)',
@@ -944,7 +977,8 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen }: {
                                 <td className="py-6">
                                     <input
                                         placeholder={t('department.journal.visa')}
-                                        defaultValue={task.visum}
+                                        value={task.visum || ''}
+                                        onChange={(e) => onUpdateTask(task.id, { visum: e.target.value })}
                                         className="rounded-lg px-4 py-2.5 text-sm w-28 focus:ring-2 focus:ring-opacity-20 transition-all outline-none font-bold uppercase shadow-inner border"
                                         style={{
                                             backgroundColor: 'var(--color-field-bg)',
