@@ -67,20 +67,25 @@ function App() {
           const missingTasks: Task[] = [];
 
           (dept.planningTasks || []).forEach((pt: any) => {
-            if (isTaskPlanned(pt, CURRENT_KW)) {
-              const key = `${pt.anlage}-${pt.title}-${CURRENT_KW}-2026`;
-              if (!existingTaskKeys.has(key)) {
-                missingTasks.push({
-                  id: `auto-${Date.now()}-${pt.id}`,
-                  title: pt.title,
-                  anlage: pt.anlage,
-                  kw: CURRENT_KW,
-                  year: 2026,
-                  status: 'Open',
-                  wer: pt.wer,
-                  isLate: false,
-                  translations: pt.translations
-                });
+            // Check all weeks from 1 up to CURRENT_KW to ensure past planned tasks are not lost
+            for (let kw = 1; kw <= CURRENT_KW; kw++) {
+              if (isTaskPlanned(pt, kw)) {
+                const key = `${pt.anlage}-${pt.title}-${kw}-2026`;
+                if (!existingTaskKeys.has(key)) {
+                  missingTasks.push({
+                    id: `auto-${Date.now()}-${pt.id}-${kw}`,
+                    title: pt.title,
+                    anlage: pt.anlage,
+                    kw: kw,
+                    year: 2026,
+                    status: 'Open',
+                    wer: pt.wer,
+                    isLate: kw < CURRENT_KW,
+                    translations: pt.translations
+                  });
+                  // Add to set to prevent double injection in same run
+                  existingTaskKeys.add(key);
+                }
               }
             }
           });

@@ -34,13 +34,18 @@ export interface PlanningTask {
 }
 
 export const isTaskPlanned = (task: PlanningTask, kw: number) => {
+  // 1. First check explicit weeks (from Matrix View clicks)
+  if (task.weeks && task.weeks[kw] !== undefined) return task.weeks[kw];
+
+  // 2. Fallback to manual overrides
+  if (task.overrides && task.overrides[kw] !== undefined) return task.overrides[kw];
+
+  // 3. Fallback to algorithm based on start week and frequency
   const startKw = task.abKw || 1;
   const freq = task.frequenz;
-  if (task.overrides && task.overrides[kw] !== undefined) return task.overrides[kw];
   if (kw < startKw) return false;
   let step = 1;
 
-  // Use the standard German values that are currently used as 'value' in the select
   const f = freq.toLowerCase();
   if (f.includes('wöchentlich')) step = 1;
   else if (f.includes('alle 2 wochen')) step = 2;
