@@ -63,21 +63,29 @@ function App() {
             dept.name = 'Armoloy';
           }
 
+          // 1. Map existing tasks by a unique key to identify duplicates and facilitate matching
           const existingTaskKeys = new Set();
-          (dept.tasks || []).forEach((ti: any) => {
+          const cleanExistingTasks = (dept.tasks || []).filter((ti: any) => {
             const t = (ti.title || "").toLowerCase().trim();
             const a = (ti.anlage || "").toLowerCase().trim();
             const y = ti.year || 2026;
             const kw = ti.kw;
             const pkw = ti.plannedKw;
 
-            // Standard keys
+            // Cleanup Logic: If it's an auto-injected task for 2026, verify if it's still planned
+            if (ti.id?.startsWith('auto-') && y === 2026) {
+              const pt = (dept.planningTasks || []).find((p: any) => p.title === ti.title && p.anlage === ti.anlage);
+              if (!pt || !isTaskPlanned(pt, kw)) {
+                console.log(`Cleaning up obsolete auto-task: ${ti.title} KW${kw}`);
+                return false; // Remove it
+              }
+            }
+
             existingTaskKeys.add(`${a}-${t}-${kw}-${y}`);
             if (pkw) existingTaskKeys.add(`${a}-${t}-${pkw}-${y}`);
-
-            // Loose keys (ignore anlage if it's "system" or empty, or for general matching)
             existingTaskKeys.add(`loose-${t}-${kw}-${y}`);
             if (pkw) existingTaskKeys.add(`loose-${t}-${pkw}-${y}`);
+            return true;
           });
 
           const missingTasks: Task[] = [];
@@ -102,7 +110,6 @@ function App() {
                     isLate: kw < CURRENT_KW,
                     translations: pt.translations
                   });
-                  // Mark as seen to avoid double injection
                   existingTaskKeys.add(key);
                   existingTaskKeys.add(looseKey);
                 }
@@ -110,11 +117,10 @@ function App() {
             }
           });
 
-          const mergedTasks = [...(dept.tasks || []), ...missingTasks];
+          const mergedTasks = [...cleanExistingTasks, ...missingTasks];
           const filteredTasks = mergedTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || 2026) >= 2026);
 
           // Statistics Logic: YTD (Year-To-Date)
-          // To match Excel "Zentrale Statistik", we only count tasks up to the CURRENT week.
           const ytdTasks = filteredTasks.filter((ti: any) => ti.kw <= CURRENT_KW);
 
           const geplant = Number(ytdTasks.length) || 0;
@@ -122,10 +128,9 @@ function App() {
           const spaetErledigt = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
           const erledigtTotal = erledigtPuenktlich + spaetErledigt;
 
-          // Efficiency = Total Done / Total Planned for life-to-date
           const rate = geplant > 0 ? Math.round((erledigtTotal / geplant) * 100) : 100;
 
-          // Dynamic bottleneck calculation (uses all currently open tasks, even if not yet due, for foresight)
+          // Dynamic bottleneck calculation
           const taskGroups: Record<string, { count: number; delays: number[]; translations?: any }> = {};
           filteredTasks.forEach(t => {
             if (t.status !== 'Done') {
@@ -158,7 +163,7 @@ function App() {
               offen: Number(ytdTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
               erfüllungsquote: rate
             },
-            tasks: filteredTasks, // Keep all tasks for display in views
+            tasks: filteredTasks,
             bottlenecks: dynamicBottlenecks
           };
         });
