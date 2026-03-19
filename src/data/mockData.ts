@@ -37,34 +37,30 @@ export const isTaskPlanned = (task: PlanningTask, kw: number) => {
   // 1. Overrides from MatrixView clicks (can be true or false)
   if (task.overrides && task.overrides[kw] !== undefined) return task.overrides[kw];
 
-  // 2. Explicit manual weeks (source of truth from data or matrix)
+  // 2. Algorithm priority: If frequency and abKw are explicitly set, use them
+  const freq = task.frequenz;
+  const startKw = task.abKw;
+
+  if (freq && freq.toLowerCase() !== 'einmalig' && startKw !== undefined) {
+    if (kw < startKw) return false;
+
+    let step = 1;
+    const f = freq.toLowerCase();
+    if (f.includes('wöchentlich')) step = 1;
+    else if (f.includes('alle 2 wochen')) step = 2;
+    else if (f.includes('monatlich')) step = 4;
+    else if (f.includes('vierteljährlich')) step = 13;
+    else if (f.includes('halbjährlich')) step = 26;
+    else if (f.includes('jährlich')) step = 52;
+    else if (f.includes('täglich')) step = 1;
+
+    return (kw - startKw) % step === 0;
+  }
+
+  // 3. Fallback to explicit manual weeks (from Excel source)
   if (task.weeks && task.weeks[kw] !== undefined) return task.weeks[kw];
 
-  // 3. Fallback to algorithm based on start week and frequency
-  // Derive startKw from weeks if not explicitly provided
-  let startKw = task.abKw;
-  if (!startKw && task.weeks) {
-    const plannedWeeks = Object.keys(task.weeks)
-      .map(Number)
-      .filter(k => task.weeks[k] === true);
-    if (plannedWeeks.length > 0) startKw = Math.min(...plannedWeeks);
-  }
-  if (!startKw) startKw = 1;
-
-  const freq = task.frequenz;
-  if (kw < startKw) return false;
-  let step = 1;
-
-  const f = freq.toLowerCase();
-  if (f.includes('wöchentlich')) step = 1;
-  else if (f.includes('alle 2 wochen')) step = 2;
-  else if (f.includes('monatlich')) step = 4;
-  else if (f.includes('vierteljährlich')) step = 13;
-  else if (f.includes('halbjährlich')) step = 26;
-  else if (f.includes('jährlich')) step = 52;
-  else if (f.includes('täglich')) step = 1;
-
-  return (kw - startKw) % step === 0;
+  return false;
 };
 
 export interface DepartmentData {

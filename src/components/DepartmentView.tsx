@@ -183,7 +183,19 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     };
 
     const handleUpdatePlanningTask = (taskId: string, updates: Partial<PlanningTask>) => {
-        setLocalPlanningTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
+        setLocalPlanningTasks(prev => prev.map(t => {
+            if (t.id === taskId) {
+                // If user changes start week or frequency, clear the explicit weeks map
+                // to force the algorithm to take over.
+                const shouldClearWeeks = updates.abKw !== undefined || updates.frequenz !== undefined;
+                return {
+                    ...t,
+                    ...updates,
+                    weeks: shouldClearWeeks ? {} : (t.weeks || {})
+                };
+            }
+            return t;
+        }));
     };
 
     const handleToggleWeek = (taskId: string, kw: number) => {
