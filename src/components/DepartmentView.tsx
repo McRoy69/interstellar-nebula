@@ -208,28 +208,15 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         setLocalPlanningTasks(prev => prev.map(task => {
             if (task.id !== taskId) return task;
 
-            // Logic for toggling: 
-            // 1. Calculate if it WAS planned by default
-            const startKw = task.abKw || 1;
-            const freq = task.frequenz;
-            let step = 1;
-            const f = freq.toLowerCase();
-            if (f.includes('alle 2 wochen')) step = 2;
-            else if (f.includes('monatlich')) step = 4;
-            else if (f.includes('vierteljährlich')) step = 13;
-            else if (f.includes('halbjährlich')) step = 26;
-            else if (f.includes('jährlich')) step = 52;
-
-            const isDefaultPlanned = kw >= startKw && (kw - startKw) % step === 0;
-
-            // 2. Toggle the override
-            const currentOverrides = task.overrides || {};
-            const isCurrentlyActive = currentOverrides[kw] !== undefined ? currentOverrides[kw] : isDefaultPlanned;
+            // 1. Calculate the current effective status (Algorithm + Manual Overrides)
+            // Note: isTaskPlanned ALREADY handles overrides, but here we want to know
+            // what the status IS right now to flip it.
+            const isCurrentlyActive = isTaskPlanned(task, kw);
 
             return {
                 ...task,
                 overrides: {
-                    ...currentOverrides,
+                    ...(task.overrides || {}),
                     [kw]: !isCurrentlyActive
                 }
             };
