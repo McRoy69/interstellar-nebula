@@ -69,12 +69,12 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             const updatedPlanningTasks = [...localPlanningTasks];
             for (let i = 0; i < updatedPlanningTasks.length; i++) {
                 const task = updatedPlanningTasks[i];
-                if (!task.translations || Object.keys(task.translations).length === 0) {
-                    const trans = await getTaskTranslations(task.title, task.anlage);
+                // Check if title is untranslated (ignore anlage now)
+                if (!task.translations || !task.translations[i18n.language.split('-')[0]]?.title) {
+                    const trans = await getTaskTranslations(task.title, '');
                     if (trans && Object.keys(trans).length > 0) {
                         updatedPlanningTasks[i] = { ...task, translations: trans };
                         changed = true;
-                        // Sequential update with tiny delay to avoid rate limit
                         if (i % 3 === 0) setLocalPlanningTasks([...updatedPlanningTasks]);
                         await new Promise(r => setTimeout(r, 100));
                     }
@@ -84,8 +84,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             const updatedTasks = [...localTasks];
             for (let i = 0; i < updatedTasks.length; i++) {
                 const task = updatedTasks[i];
-                if (!task.translations || Object.keys(task.translations).length === 0) {
-                    const trans = await getTaskTranslations(task.title, task.anlage);
+                if (!task.translations || !task.translations[i18n.language.split('-')[0]]?.title) {
+                    const trans = await getTaskTranslations(task.title, '');
                     if (trans && Object.keys(trans).length > 0) {
                         updatedTasks[i] = { ...task, translations: trans };
                         changed = true;
@@ -103,7 +103,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
 
         const timer = setTimeout(translateMissing, 2000);
         return () => clearTimeout(timer);
-    }, [data.id]);
+    }, [data.id, localPlanningTasks.length, localTasks.length, i18n.language]);
 
     // Bubble up changes to parent
     React.useEffect(() => {
@@ -197,7 +197,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     const handleAddTask = async (title: string, anlage: string, wer: string, frequenz: string, abKw: number) => {
         // Optimistic UI update or wait for translations?
         // Let's do it properly and wait for translations to avoid jumping.
-        const translations = await getTaskTranslations(title, anlage);
+        const translations = await getTaskTranslations(title, ''); // Only translate title
 
         const newPlanningTask: PlanningTask = {
             id: `p-${Date.now()}`,
@@ -285,7 +285,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
 
             const headers = [t('pdf.anlage'), t('department.matrix.taskMachine').split('/')[0].trim(), t('pdf.who'), t('department.matrix.freq'), t('pdf.planned'), ...Array.from({ length: 52 }, (_, i) => (i + 1).toString())];
             const tableData = sortedPlanningTasks.map(task => {
-                const row = [task.anlage, task.title, task.wer, task.frequenz, (task.abKw || 1).toString()];
+                const translatedTitle = task.translations?.[i18n.language.split('-')[0]]?.title || task.translations?.[i18n.language]?.title || task.title;
+                const row = [task.anlage, translatedTitle, task.wer, task.frequenz, (task.abKw || 1).toString()];
                 for (let kw = 1; kw <= 52; kw++) {
                     const status = isTaskPlanned(task, kw);
                     row.push(status ? 'X' : '');
@@ -334,7 +335,14 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
 
             const headers = ['ID', t('pdf.task'), t('pdf.anlage'), t('pdf.who'), t('pdf.planned'), t('department.journal.dateReal').split('(')[0].trim(), t('department.journal.visa'), t('department.journal.status')];
             const tableData = currentTasks.map(t => [
-                t.id, t.title, t.anlage, t.wer || 'MA', `KW ${t.kw}`, t.datum || '-', t.visum || '-', getStatusInfo(t).label
+                t.id,
+                t.translations?.[i18n.language.split('-')[0]]?.title || t.translations?.[i18n.language]?.title || t.title,
+                t.anlage,
+                t.wer || 'MA',
+                `KW ${t.kw}`,
+                t.datum || '-',
+                t.visum || '-',
+                getStatusInfo(t).label
             ]);
 
             autoTable(doc, {
@@ -388,7 +396,13 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                 doc.text(t('pdf.lateDetail'), 20, 110);
 
                 const lateHeaders = ['ID', t('pdf.task'), t('pdf.anlage'), t('pdf.who'), t('pdf.delayWeeks')];
-                const lateData = lateTasks.map(t => [t.id, t.title, t.anlage, t.wer, currentKw - t.kw]);
+                const lateData = lateTasks.map(t => [
+                    t.id,
+                    t.translations?.[i18n.language.split('-')[0]]?.title || t.translations?.[i18n.language]?.title || t.title,
+                    t.anlage,
+                    t.wer,
+                    currentKw - t.kw
+                ]);
 
                 autoTable(doc, {
                     head: [lateHeaders],
@@ -860,7 +874,12 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
 
     const handleSaveEdit = () => {
         if (!editingTask) return;
-        onUpdateTask(editingTask.id, { title: editTitle, anlage: editAnlage });
+        // Update title and anlage, and CLEAR translations for the title so it gets re-translated
+        onUpdateTask(editingTask.id, {
+            title: editTitle,
+            anlage: editAnlage,
+            translations: {} // Reset translations to force re-translate of the new title
+        });
         setEditingTask(null);
     };
 
@@ -885,8 +904,8 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                         <th className="p-4 text-center text-[11px] font-black uppercase tracking-widest border-l w-[110px]"
                             style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-dim)' }}
                         >{t('department.matrix.freq')}</th>
-                        <th className="p-4 text-center text-[11px] font-black uppercase tracking-widest border-l-2" colSpan={2}
-                            style={{ width: '60px', borderColor: 'var(--color-border)', color: 'var(--color-text-dim)' }}
+                        <th className="p-4 text-center text-[11px] font-black uppercase tracking-widest border-l-2"
+                            style={{ width: '50px', borderColor: 'var(--color-border)', color: 'var(--color-text-dim)' }}
                         >{t('department.matrix.start')}</th>
                         {Array.from({ length: 52 }, (_, i) => (
                             <th key={`kw-head-${i + 1}`} className={`p-0 text-center text-[9px] font-mono font-bold border-l w-[24px] transition-all duration-500 relative ${i + 1 === currentKw ? 'text-white' : ''}`}
@@ -920,7 +939,7 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                             {task.translations?.[i18n.language.split('-')[0]]?.title || task.translations?.[i18n.language]?.title || task.title}
                                         </div>
                                         <div className="text-[10px] font-black uppercase tracking-widest mt-0.5" style={{ color: 'var(--color-accent)' }}>
-                                            {task.translations?.[i18n.language.split('-')[0]]?.anlage || task.translations?.[i18n.language]?.anlage || task.anlage}
+                                            {task.anlage}
                                         </div>
                                     </div>
                                 </div>
@@ -953,20 +972,20 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                     <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.annually') || 'Jährlich'}</option>
                                 </select>
                             </td>
-                            <td className="px-1 border-r text-center text-xs font-mono font-bold"
-                                style={{ color: 'var(--color-text-dim)', borderColor: 'var(--color-border)' }}
-                            >KW</td>
-                            <td className="px-0.5 border-r-2 text-center text-xs font-mono font-bold"
-                                style={{ color: 'var(--color-text-dim)', borderColor: 'var(--color-border)' }}
+                            <td className="px-1 border-r-2 text-center text-[10px] font-mono font-black"
+                                style={{ color: 'var(--color-text-dim)', borderColor: 'var(--color-border)', width: '50px' }}
                             >
-                                <input
-                                    type="number"
-                                    min={1}
-                                    max={52}
-                                    value={task.abKw || 1}
-                                    onChange={(e) => onUpdateTask(task.id, { abKw: parseInt(e.target.value) || 1 })}
-                                    className="w-10 bg-transparent text-center outline-none border-b border-transparent focus:border-amber-500 transition-colors"
-                                />
+                                <div className="flex items-center justify-center gap-1">
+                                    <span className="opacity-40">KW</span>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        max={52}
+                                        value={task.abKw || 1}
+                                        onChange={(e) => onUpdateTask(task.id, { abKw: parseInt(e.target.value) || 1 })}
+                                        className="w-6 bg-transparent text-center outline-none border-b border-transparent focus:border-amber-500 transition-colors"
+                                    />
+                                </div>
                             </td>
                             {Array.from({ length: 52 }, (_, i) => {
                                 const kw = i + 1;
@@ -1225,7 +1244,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
                                             color: 'var(--color-field-text)'
                                         }}
                                     >
-                                        {task.translations?.[i18n.language.split('-')[0]]?.anlage || task.translations?.[i18n.language]?.anlage || task.anlage}
+                                        {task.anlage}
                                     </span>
                                 </td>
                                 <td className="py-6">
