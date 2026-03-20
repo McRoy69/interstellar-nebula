@@ -18,6 +18,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     const { t, i18n } = useTranslation();
     const compact = settings.ui.compactMode;
 
+    const CURRENT_KW = APP_CONFIG.CURRENT_KW;
+
     // Stats calculated from departments state with extreme robustness
     const safeSum = (arr: DepartmentData[], key: keyof DepartmentData['stats']) =>
         arr.reduce((acc, d) => {
@@ -32,7 +34,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
 
     // Active delays across all departments
     const totalAktuellerVerzug = departments.reduce((acc, d) => {
-        const lateCount = d.tasks.filter(t => t.status !== 'Done' && (CURRENT_KW - t.kw) >= 1).length;
+        const lateCount = (d.tasks || []).filter(t => t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) >= 1).length;
         return acc + lateCount;
     }, 0);
 
@@ -40,7 +42,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     const globalEfficiencyRaw = totalGeplant > 0 ? (totalErledigt / totalGeplant) * 100 : 0;
     const globalEfficiency = isNaN(globalEfficiencyRaw) ? 0 : Math.round(globalEfficiencyRaw);
 
-    const CURRENT_KW = APP_CONFIG.CURRENT_KW;
     const target = settings.thresholds.efficiencyTarget;
     const isMeetingTarget = globalEfficiency >= target;
     const isNearTarget = globalEfficiency >= target * 0.85; // Within 15% range

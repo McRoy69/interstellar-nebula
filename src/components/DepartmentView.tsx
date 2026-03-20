@@ -1249,8 +1249,8 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
     });
 
     const erledigtTasks = filteredTasks.filter(t => t.status === 'Done');
-    const lateTasks = filteredTasks.filter(t => t.status !== 'Done' && (CURRENT_KW - t.kw) >= 1);
-    const pendingTasks = filteredTasks.filter(t => t.status !== 'Done' && (CURRENT_KW - t.kw) < 1);
+    const lateTasks = filteredTasks.filter(t => t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) >= 1);
+    const pendingTasks = filteredTasks.filter(t => t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) < 1);
 
     const totalErledigt = erledigtTasks.length;
     const totalOffen = pendingTasks.length + lateTasks.length;
