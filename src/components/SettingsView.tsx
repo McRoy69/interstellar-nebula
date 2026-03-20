@@ -29,7 +29,6 @@ interface SettingsViewProps {
 const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, departments, setDepartments }) => {
     const { t, i18n } = useTranslation();
     const [activeTab, setActiveTab] = useState<'general' | 'ui' | 'depts' | 'export'>('general');
-    const [confirmingId, setConfirmingId] = useState<string | null>(null);
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [passwordInput, setPasswordInput] = useState('');
     const [pendingTab, setPendingTab] = useState<'depts' | 'export' | null>(null);
@@ -91,10 +90,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
     };
 
     const deleteDept = (id: string) => {
-        if (confirmingId === id) {
-            setDepartments(prev => prev.filter(d => d.id !== id));
-            setConfirmingId(null);
-        }
+        setDepartments(prev => prev.filter(d => d.id !== id));
     };
 
     const addEmail = () => {
@@ -558,7 +554,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                    setConfirmingId(dept.id);
                                                     deleteDept(dept.id);
                                                 }}
                                                 className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all ml-4 shadow-sm"

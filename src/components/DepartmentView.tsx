@@ -34,9 +34,26 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     const [localPlanningTasks, setLocalPlanningTasks] = useState(data.planningTasks || []);
 
     const currentKw = APP_CONFIG.CURRENT_KW; // Baseline for color logic
+    const [isPlanAuthorized, setIsPlanAuthorized] = useState(false);
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [passwordInput, setPasswordInput] = useState('');
-    const [isPlanAuthorized, setIsPlanAuthorized] = useState(false);
+    const [showDeletePasswordPrompt, setShowDeletePasswordPrompt] = useState(false);
+    const [deletePasswordInput, setDeletePasswordInput] = useState('');
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+    const handleConfirmDelete = () => {
+        if (deletePasswordInput === '3400') {
+            if (pendingDeleteId) {
+                setLocalTasks(prev => prev.filter(t => t.id !== pendingDeleteId));
+                setPendingDeleteId(null);
+            }
+            setShowDeletePasswordPrompt(false);
+            setDeletePasswordInput('');
+        } else {
+            alert('Passwort falsch / Contraseña incorrecta');
+            setDeletePasswordInput('');
+        }
+    };
 
     React.useEffect(() => {
         setLocalTasks(data.tasks);
@@ -635,7 +652,10 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                             getStatusInfo={getStatusInfo}
                                             onAbschliessen={handleAbschliessen}
                                             onUpdateTask={handleUpdateTask}
-                                            onDeleteTask={(id: string) => setLocalTasks(prev => prev.filter(t => t.id !== id))}
+                                            onDeleteTask={(id: string) => {
+                                                setPendingDeleteId(id);
+                                                setShowDeletePasswordPrompt(true);
+                                            }}
                                         />
                                     ) : activeTab === 'Statistik' ? (
                                         <StatisticsView localTasks={localTasks} settings={settings} />
@@ -732,6 +752,66 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                     style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-bg-sidebar)' }}
                                 >
                                     {t('common.confirm') || 'Bestätigen'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Password Prompt Modal for Journal Deletion */}
+            <AnimatePresence>
+                {showDeletePasswordPrompt && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[110] flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="w-full max-w-sm p-10 rounded-[2.5rem] shadow-2xl border flex flex-col items-center"
+                            style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
+                        >
+                            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-6 border border-amber-500/20">
+                                <Trash2 size={32} className="text-amber-500" />
+                            </div>
+                            <h3 className="text-lg font-black uppercase tracking-tight mb-2 text-center" style={{ color: 'var(--color-text-main)' }}>
+                                {t('common.confirmDelete') || 'Löschvorgang autorisieren'}
+                            </h3>
+                            <p className="text-xs font-bold uppercase tracking-widest text-center mb-8 opacity-60" style={{ color: 'var(--color-text-dim)' }}>
+                                Passwort erforderlich (3400)
+                            </p>
+                            <input
+                                type="password"
+                                autoFocus
+                                value={deletePasswordInput}
+                                onChange={(e) => setDeletePasswordInput(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleConfirmDelete()}
+                                placeholder="****"
+                                className="w-full bg-black/5 border border-black/10 rounded-2xl px-6 py-4 text-center text-2xl font-mono tracking-[0.5em] outline-none shadow-inner mb-6"
+                                style={{ color: 'var(--color-text-main)' }}
+                            />
+                            <div className="flex gap-4 w-full">
+                                <button
+                                    onClick={() => {
+                                        setShowDeletePasswordPrompt(false);
+                                        setDeletePasswordInput('');
+                                        setPendingDeleteId(null);
+                                    }}
+                                    className="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest bg-black/5 hover:bg-black/10 transition-colors"
+                                    style={{ color: 'var(--color-text-dim)' }}
+                                >
+                                    {t('common.cancel') || 'Abbrechen'}
+                                </button>
+                                <button
+                                    onClick={handleConfirmDelete}
+                                    className="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95"
+                                    style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-bg-sidebar)' }}
+                                >
+                                    {t('common.confirm') || 'OK'}
                                 </button>
                             </div>
                         </motion.div>
@@ -1105,11 +1185,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
                                             </button>
                                         )}
                                         <button
-                                            onClick={() => {
-                                                if (window.confirm(t('common.confirmDelete') || 'Delete task?')) {
-                                                    onDeleteTask(task.id);
-                                                }
-                                            }}
+                                            onClick={() => onDeleteTask(task.id)}
                                             className="p-2 rounded-lg hover:bg-rose-500/10 transition-colors text-rose-500/50 hover:text-rose-500"
                                             title={t('common.delete') || 'Löschen'}
                                         >
