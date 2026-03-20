@@ -1209,7 +1209,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
 
 const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings: AppSettings }) => {
     const { t, i18n } = useTranslation();
-    const [timeFilter, setTimeFilter] = useState<'Letzte Woche' | 'Letzter Monat' | 'Dieses Jahr' | 'Alle'>('Alle');
+    const [timeFilter, setTimeFilter] = useState<'all' | 'lastWeek' | 'lastMonth' | 'thisYear'>('all');
     const [selectedMetric, setSelectedMetric] = useState<'Done' | 'Pending' | 'Late' | null>(null);
 
     // Baseline for current date
@@ -1220,16 +1220,16 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
         let startKw = 1;
         let endKw = 52;
 
-        if (timeFilter === t('department.stats.filters.lastWeek')) {
+        if (timeFilter === 'lastWeek') {
             startKw = CURRENT_KW - 1;
             endKw = CURRENT_KW;
-        } else if (timeFilter === t('department.stats.filters.lastMonth')) {
+        } else if (timeFilter === 'lastMonth') {
             startKw = CURRENT_KW - 4;
             endKw = CURRENT_KW;
-        } else if (timeFilter === t('department.stats.filters.thisYear')) {
+        } else if (timeFilter === 'thisYear') {
             startKw = 1;
             endKw = CURRENT_KW; // Only up to now for "Progress"
-        } else if (timeFilter === t('department.stats.filters.all')) {
+        } else if (timeFilter === 'all') {
             return true;
         }
 
@@ -1426,10 +1426,10 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
                                     onChange={(e) => setTimeFilter(e.target.value as any)}
                                     style={{ color: 'var(--color-text-main)' }}
                                 >
-                                    <option value="Alle" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('department.stats.filters.all')}</option>
-                                    <option value="Dieses Jahr" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('department.stats.filters.thisYear')}</option>
-                                    <option value="Letzter Monat" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('department.stats.filters.lastMonth')}</option>
-                                    <option value="Letzte Woche" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('department.stats.filters.lastWeek')}</option>
+                                    <option value="all" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('department.stats.filters.all')}</option>
+                                    <option value="thisYear" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('department.stats.filters.thisYear')}</option>
+                                    <option value="lastMonth" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('department.stats.filters.lastMonth')}</option>
+                                    <option value="lastWeek" style={{ backgroundColor: 'var(--color-field-bg)' }}>{t('department.stats.filters.lastWeek')}</option>
                                 </select>
                             </div>
                         </div>
@@ -1553,7 +1553,7 @@ const AnlagenView = ({ tasks, planningTasks, settings }: { tasks: Task[], planni
     // Derive unique machines only from real journal/archive tasks
     const machineMap = React.useMemo(() => {
         const map: Record<string, { name: string; totalTasks: number; doneTasks: number; openTasks: number; lateTasks: number; lastService: string; nextTasks: string[] }> = {};
-        const CURRENT_KW = 12;
+        const CURRENT_KW = APP_CONFIG.CURRENT_KW;
 
         // Build machine list ONLY from tasks (not planningTasks) and skip generic names
         tasks.forEach(t => {

@@ -51,8 +51,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     const efficiencyBg = isMeetingTarget ? 'bg-emerald-500/10' : isNearTarget ? 'bg-amber-500/10' : 'bg-rose-500/10';
 
     const getCriticalTasksCount = (dept: DepartmentData) => {
-        return dept.tasks.filter(t =>
-            t.status !== 'Done' && (CURRENT_KW - t.kw) >= settings.thresholds.criticalWeeks
+        const tasks = dept.tasks || [];
+        const threshold = settings?.thresholds?.criticalWeeks ?? 3;
+        return tasks.filter(t =>
+            t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) >= threshold
         ).length;
     };
 

@@ -82,9 +82,10 @@ function App() {
             if (y === 2026 && ti.status !== 'Done') {
               const pt = (dept.planningTasks || []).find((p: any) => p.title === ti.title && p.anlage === ti.anlage);
               if (pt) {
-                // If it matches a matrix item, it MUST follow the current matrix schedule
-                if (!isTaskPlanned(pt, kw)) {
-                  console.log(`Cleaning up obsolete task: ${ti.title} KW${kw}`);
+                // Relaxed cleanup: only remove if it's for CURRENT or FUTURE weeks and not planned.
+                // Keep all LATE tasks (kw < CURRENT_KW) as they represent outstanding work.
+                if (!isTaskPlanned(pt, kw) && kw >= CURRENT_KW) {
+                  console.log(`Cleaning up obsolete CURRENT/FUTURE task: ${ti.title} KW${kw}`);
                   return false;
                 }
               } else if (ti.id?.startsWith('auto-')) {
