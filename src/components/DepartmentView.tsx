@@ -835,6 +835,11 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
     onToggleWeek: (id: string, kw: number) => void,
     currentKw: number
 }) => {
+    const { t, i18n } = useTranslation();
+    const [newTitle, setNewTitle] = useState('');
+    const [newAnlage, setNewAnlage] = useState('');
+    const [newWer, setNewWer] = useState('MA');
+    const [newFreq, setNewFreq] = useState('Wöchentlich');
     const [newAbKw, setNewAbKw] = useState(1);
     const [editingTask, setEditingTask] = useState<PlanningTask | null>(null);
     const [editTitle, setEditTitle] = useState('');
