@@ -59,6 +59,7 @@
             },
             "filter": "BUSCAR TAREA...",
             "export": "Exportar PDF",
+            "planningAccess": "Acceso Administrativo Planificación",
             "loading": "Cargando sección {{tab}}...",
             "matrix": {
                 "taskMachine": "Tarea / Equipo",

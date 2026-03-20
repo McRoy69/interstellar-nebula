@@ -3,9 +3,7 @@ import type { DepartmentData, Task, PlanningTask } from '../data/mockData';
 import type { AppSettings } from '../types/settings';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    ClipboardList, Archive, BarChart3, Settings as Tools, Search,
-    CheckCircle2, Clock, AlertTriangle, ChevronRight, Download,
-    Calendar, User, Plus, Info, Activity, X, Filter, Trash2
+    Calendar, User, Plus, Info, Activity, X, Filter, Trash2, Lock
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } from 'recharts';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +32,9 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     const [localPlanningTasks, setLocalPlanningTasks] = useState(data.planningTasks || []);
 
     const currentKw = APP_CONFIG.CURRENT_KW; // Baseline for color logic
+    const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+    const [passwordInput, setPasswordInput] = useState('');
+    const [isPlanAuthorized, setIsPlanAuthorized] = useState(false);
 
     React.useEffect(() => {
         setLocalTasks(data.tasks);
@@ -221,6 +222,18 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                 }
             };
         }));
+    };
+
+    const verifyPlanPassword = () => {
+        if (passwordInput === '3400') {
+            setIsPlanAuthorized(true);
+            setActiveTab('Plan');
+            setShowPasswordPrompt(false);
+            setPasswordInput('');
+        } else {
+            alert('Passwort falsch / Contraseña incorrecta');
+            setPasswordInput('');
+        }
     };
 
     const exportToPDF = () => {
@@ -481,7 +494,13 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id as TabType)}
+                            onClick={() => {
+                                if (tab.id === 'Plan' && !isPlanAuthorized) {
+                                    setShowPasswordPrompt(true);
+                                } else {
+                                    setActiveTab(tab.id as TabType);
+                                }
+                            }}
                             className={`flex items-center gap-3 px-8 py-3.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
                                 ? 'text-white shadow-lg transform scale-[1.02]'
                                 : 'hover:bg-black/5'
@@ -491,6 +510,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                 color: activeTab === tab.id ? 'var(--color-bg-sidebar)' : 'var(--color-text-dim)'
                             }}
                         >
+                            {tab.id === 'Plan' && !isPlanAuthorized && <Lock size={16} className="mr-1 opacity-50" />}
                             {React.cloneElement(tab.icon as React.ReactElement<any>, { size: 20 })}
                             {tab.label}
                         </button>
@@ -613,6 +633,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                             getStatusInfo={getStatusInfo}
                                             onAbschliessen={handleAbschliessen}
                                             onUpdateTask={handleUpdateTask}
+                                            onDeleteTask={(id) => setLocalTasks(prev => prev.filter(t => t.id !== id))}
                                         />
                                     ) : activeTab === 'Statistik' ? (
                                         <StatisticsView localTasks={localTasks} settings={settings} />
@@ -656,7 +677,66 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                     </AnimatePresence>
                 </div>
             </div>
-        </div >
+
+            {/* Password Prompt Modal for Planung */}
+            <AnimatePresence>
+                {showPasswordPrompt && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="w-full max-w-sm p-10 rounded-[2.5rem] shadow-2xl border flex flex-col items-center"
+                            style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
+                        >
+                            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-6 border border-amber-500/20">
+                                <Lock size={32} className="text-amber-500" />
+                            </div>
+                            <h3 className="text-lg font-black uppercase tracking-tight mb-2 text-center" style={{ color: 'var(--color-text-main)' }}>
+                                {t('department.planningAccess')}
+                            </h3>
+                            <p className="text-xs font-bold uppercase tracking-widest text-center mb-8 opacity-60" style={{ color: 'var(--color-text-dim)' }}>
+                                Passwort erforderlich
+                            </p>
+                            <input
+                                type="password"
+                                autoFocus
+                                value={passwordInput}
+                                onChange={(e) => setPasswordInput(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && verifyPlanPassword()}
+                                placeholder="****"
+                                className="w-full bg-black/5 border border-black/10 rounded-2xl px-6 py-4 text-center text-2xl font-mono tracking-[0.5em] outline-none shadow-inner mb-6"
+                                style={{ color: 'var(--color-text-main)' }}
+                            />
+                            <div className="flex gap-4 w-full">
+                                <button
+                                    onClick={() => {
+                                        setShowPasswordPrompt(false);
+                                        setPasswordInput('');
+                                    }}
+                                    className="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest bg-black/5 hover:bg-black/10 transition-colors"
+                                    style={{ color: 'var(--color-text-dim)' }}
+                                >
+                                    {t('common.cancel') || 'Abbrechen'}
+                                </button>
+                                <button
+                                    onClick={verifyPlanPassword}
+                                    className="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95"
+                                    style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-bg-sidebar)' }}
+                                >
+                                    {t('common.confirm') || 'Bestätigen'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 };
 
@@ -1007,19 +1087,32 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask }: {
                                     </div>
                                 </td>
                                 <td className="py-6 pr-10 text-right">
-                                    {task.status !== 'Done' && (
+                                    <div className="flex items-center justify-end gap-3">
+                                        {task.status !== 'Done' && (
+                                            <button
+                                                onClick={() => onAbschliessen(task.id)}
+                                                className="px-6 py-3 rounded-xl text-xs font-black text-white uppercase tracking-wider shadow-lg transition-all hover:scale-105 active:scale-95"
+                                                style={{
+                                                    backgroundColor: 'var(--color-success)',
+                                                    color: 'white',
+                                                    boxShadow: '0 10px 15px -3px var(--color-success-glow)'
+                                                }}
+                                            >
+                                                {t('department.journal.complete')}
+                                            </button>
+                                        )}
                                         <button
-                                            onClick={() => onAbschliessen(task.id)}
-                                            className="px-6 py-3 rounded-xl text-xs font-black text-white uppercase tracking-wider shadow-lg transition-all hover:scale-105 active:scale-95"
-                                            style={{
-                                                backgroundColor: 'var(--color-success)',
-                                                color: 'white',
-                                                boxShadow: '0 10px 15px -3px var(--color-success-glow)'
+                                            onClick={() => {
+                                                if (window.confirm(t('common.confirmDelete') || 'Delete task?')) {
+                                                    onDeleteTask(task.id);
+                                                }
                                             }}
+                                            className="p-2 rounded-lg hover:bg-rose-500/10 transition-colors text-rose-500/50 hover:text-rose-500"
+                                            title={t('common.delete') || 'Löschen'}
                                         >
-                                            {t('department.journal.complete')}
+                                            <Trash2 size={20} />
                                         </button>
-                                    )}
+                                    </div>
                                 </td>
                             </tr>
                         );

@@ -57,6 +57,7 @@
       },
       "filter": "AUFGABE SUCHEN...",
       "export": "PDF Export",
+      "planningAccess": "Admin-Zugriff Planung",
       "loading": "Bereich {{tab}} wird initialisiert...",
       "matrix": {
         "taskMachine": "Aufgabe / Anlage",

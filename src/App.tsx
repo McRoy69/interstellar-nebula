@@ -72,12 +72,18 @@ function App() {
             const kw = ti.kw;
             const pkw = ti.plannedKw;
 
-            // Cleanup Logic: If it's an auto-injected task for 2026, verify if it's still planned
-            if (ti.id?.startsWith('auto-') && y === 2026) {
+            // Cleanup Logic: If it's a 2026 task and not done, verify if it's still planned
+            if (y === 2026 && ti.status !== 'Done') {
               const pt = (dept.planningTasks || []).find((p: any) => p.title === ti.title && p.anlage === ti.anlage);
-              if (!pt || !isTaskPlanned(pt, kw)) {
-                console.log(`Cleaning up obsolete auto-task: ${ti.title} KW${kw}`);
-                return false; // Remove it
+              if (pt) {
+                // If it matches a matrix item, it MUST follow the current matrix schedule
+                if (!isTaskPlanned(pt, kw)) {
+                  console.log(`Cleaning up obsolete task: ${ti.title} KW${kw}`);
+                  return false;
+                }
+              } else if (ti.id?.startsWith('auto-')) {
+                // If it's an auto-task but the matrix item is gone, remove it
+                return false;
               }
             }
 
