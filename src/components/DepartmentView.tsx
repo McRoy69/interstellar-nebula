@@ -3,6 +3,8 @@ import type { DepartmentData, Task, PlanningTask } from '../data/mockData';
 import type { AppSettings } from '../types/settings';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
+    ClipboardList, Archive, BarChart3, Settings as Tools, Search,
+    CheckCircle2, Clock, AlertTriangle, ChevronRight, Download,
     Calendar, User, Plus, Info, Activity, X, Filter, Trash2, Lock
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } from 'recharts';
@@ -633,7 +635,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                             getStatusInfo={getStatusInfo}
                                             onAbschliessen={handleAbschliessen}
                                             onUpdateTask={handleUpdateTask}
-                                            onDeleteTask={(id) => setLocalTasks(prev => prev.filter(t => t.id !== id))}
+                                            onDeleteTask={(id: string) => setLocalTasks(prev => prev.filter(t => t.id !== id))}
                                         />
                                     ) : activeTab === 'Statistik' ? (
                                         <StatisticsView localTasks={localTasks} settings={settings} />
@@ -984,11 +986,12 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
     );
 };
 
-const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask }: {
+const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDeleteTask }: {
     tasks: Task[],
     getStatusInfo: (t: Task) => any,
     onAbschliessen: (id: string) => void,
-    onUpdateTask: (id: string, updates: Partial<Task>) => void
+    onUpdateTask: (id: string, updates: Partial<Task>) => void,
+    onDeleteTask: (id: string) => void
 }) => {
     const { t, i18n } = useTranslation();
     return (
