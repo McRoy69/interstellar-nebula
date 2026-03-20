@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     ClipboardList, Archive, BarChart3, Settings as Tools, Search,
     CheckCircle2, Clock, AlertTriangle, ChevronRight, Download,
-    Calendar, User, Plus, Info, Activity, X, Filter, Trash2, Lock
+    Calendar, User, Plus, Info, Activity, X, Filter, Trash2, Lock, Pencil, Save
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } from 'recharts';
 import { useTranslation } from 'react-i18next';
@@ -835,18 +835,28 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
     onToggleWeek: (id: string, kw: number) => void,
     currentKw: number
 }) => {
-    const { t, i18n } = useTranslation();
-    const [newTitle, setNewTitle] = useState('');
-    const [newAnlage, setNewAnlage] = useState('');
-    const [newWer, setNewWer] = useState('MA');
-    const [newFreq, setNewFreq] = useState('Wöchentlich');
     const [newAbKw, setNewAbKw] = useState(1);
+    const [editingTask, setEditingTask] = useState<PlanningTask | null>(null);
+    const [editTitle, setEditTitle] = useState('');
+    const [editAnlage, setEditAnlage] = useState('');
 
     const handleAdd = () => {
         if (!newTitle || !newAnlage) return;
         onAddTask(newTitle, newAnlage, newWer, newFreq, newAbKw);
         setNewTitle('');
         setNewAnlage('');
+    };
+
+    const handleStartEdit = (task: PlanningTask) => {
+        setEditingTask(task);
+        setEditTitle(task.title);
+        setEditAnlage(task.anlage);
+    };
+
+    const handleSaveEdit = () => {
+        if (!editingTask) return;
+        onUpdateTask(editingTask.id, { title: editTitle, anlage: editAnlage });
+        setEditingTask(null);
     };
 
     return (
@@ -871,7 +881,7 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                             style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-dim)' }}
                         >{t('department.matrix.freq')}</th>
                         <th className="p-4 text-center text-[11px] font-black uppercase tracking-widest border-l-2" colSpan={2}
-                            style={{ width: '80px', borderColor: 'var(--color-border)', color: 'var(--color-text-dim)' }}
+                            style={{ width: '60px', borderColor: 'var(--color-border)', color: 'var(--color-text-dim)' }}
                         >{t('department.matrix.start')}</th>
                         {Array.from({ length: 52 }, (_, i) => (
                             <th key={`kw-head-${i + 1}`} className={`p-0 text-center text-[9px] font-mono font-bold border-l w-[24px] transition-all duration-500 relative ${i + 1 === currentKw ? 'text-white' : ''}`}
@@ -894,8 +904,11 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                 style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
                             >
                                 <div className="flex items-center gap-4">
+                                    <button onClick={() => handleStartEdit(task)} className="transition-colors opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-amber-500/10" style={{ color: 'var(--color-text-dim)' }} title="Aufgabe bearbeiten">
+                                        <Pencil size={15} />
+                                    </button>
                                     <button onClick={() => onDeleteTask(task.id)} className="transition-colors opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-orange-500/10" style={{ color: 'var(--color-text-dim)' }} title="Aufgabe löschen">
-                                        <Trash2 size={16} />
+                                        <Trash2 size={15} />
                                     </button>
                                     <div>
                                         <div className="text-sm font-bold leading-tight" style={{ color: 'var(--color-text-main)' }}>
@@ -938,7 +951,7 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                             <td className="px-1 border-r text-center text-xs font-mono font-bold"
                                 style={{ color: 'var(--color-text-dim)', borderColor: 'var(--color-border)' }}
                             >KW</td>
-                            <td className="px-1 border-r-2 text-center text-xs font-mono font-bold"
+                            <td className="px-0.5 border-r-2 text-center text-xs font-mono font-bold"
                                 style={{ color: 'var(--color-text-dim)', borderColor: 'var(--color-border)' }}
                             >
                                 <input
@@ -1065,6 +1078,94 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                     </tr>
                 </tbody>
             </table>
+
+            {/* Edit Task Modal */}
+            <AnimatePresence>
+                {editingTask && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="w-full max-w-lg p-10 rounded-[2.5rem] shadow-2xl border flex flex-col"
+                            style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
+                        >
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                                    <Pencil size={24} className="text-amber-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black uppercase tracking-tight" style={{ color: 'var(--color-text-main)' }}>
+                                        {t('department.matrix.editTask') || 'Aufgabe bearbeiten'}
+                                    </h3>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50" style={{ color: 'var(--color-text-dim)' }}>
+                                        ID: {editingTask.id}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6 mb-10">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest pl-1" style={{ color: 'var(--color-text-dim)' }}>
+                                        {t('department.matrix.machine')}
+                                    </label>
+                                    <input
+                                        value={editAnlage}
+                                        onChange={(e) => setEditAnlage(e.target.value)}
+                                        className="w-full rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all font-bold shadow-inner border"
+                                        style={{
+                                            backgroundColor: 'var(--color-field-bg)',
+                                            borderColor: 'var(--color-border)',
+                                            color: 'var(--color-field-text)',
+                                            '--tw-ring-color': 'var(--color-accent)'
+                                        } as any}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest pl-1" style={{ color: 'var(--color-text-dim)' }}>
+                                        {t('department.matrix.task')}
+                                    </label>
+                                    <textarea
+                                        value={editTitle}
+                                        onChange={(e) => setEditTitle(e.target.value)}
+                                        rows={3}
+                                        className="w-full rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-opacity-20 transition-all font-bold shadow-inner border resize-none"
+                                        style={{
+                                            backgroundColor: 'var(--color-field-bg)',
+                                            borderColor: 'var(--color-border)',
+                                            color: 'var(--color-field-text)',
+                                            '--tw-ring-color': 'var(--color-accent)'
+                                        } as any}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setEditingTask(null)}
+                                    className="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest bg-black/5 hover:bg-black/10 transition-colors"
+                                    style={{ color: 'var(--color-text-dim)' }}
+                                >
+                                    {t('common.cancel') || 'Abbrechen'}
+                                </button>
+                                <button
+                                    onClick={handleSaveEdit}
+                                    className="flex-3 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95 flex items-center justify-center gap-2"
+                                    style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-bg-sidebar)', flex: 2 }}
+                                >
+                                    <Save size={16} />
+                                    {t('common.save') || 'Speichern'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
