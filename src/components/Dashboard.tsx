@@ -52,9 +52,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
 
     const getCriticalTasksCount = (dept: DepartmentData) => {
         const tasks = dept.tasks || [];
-        const threshold = settings?.thresholds?.criticalWeeks ?? 3;
+        // Use a 1-week threshold for all 'Delay Warnings' to match department stats/KPIs
         return tasks.filter(t =>
-            t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) >= threshold
+            t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) >= 1
         ).length;
     };
 

@@ -88,8 +88,8 @@ function App() {
                   console.log(`Cleaning up obsolete CURRENT/FUTURE task: ${ti.title} KW${kw}`);
                   return false;
                 }
-              } else if (ti.id?.startsWith('auto-')) {
-                // If it's an auto-task but the matrix item is gone, remove it
+              } else if (ti.id?.startsWith('auto-') && kw >= CURRENT_KW) {
+                // If it's an auto-task but the matrix item is gone, AND it's not a historical delay, remove it
                 return false;
               }
             }
