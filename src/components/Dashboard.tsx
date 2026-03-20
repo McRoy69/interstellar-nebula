@@ -30,6 +30,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     const totalVerspaetet = safeSum(departments, 'spaetErledigt');
     const totalErledigt = totalPuenktlich + totalVerspaetet;
 
+    // Active delays across all departments
+    const totalAktuellerVerzug = departments.reduce((acc, d) => {
+        const lateCount = d.tasks.filter(t => t.status !== 'Done' && (CURRENT_KW - t.kw) >= 1).length;
+        return acc + lateCount;
+    }, 0);
+
     // Final defensive calculation for global efficiency (YTD: Total Done / Total Due)
     const globalEfficiencyRaw = totalGeplant > 0 ? (totalErledigt / totalGeplant) * 100 : 0;
     const globalEfficiency = isNaN(globalEfficiencyRaw) ? 0 : Math.round(globalEfficiencyRaw);
@@ -222,8 +228,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                         },
                         {
                             label: t('dashboard.criticalPoints'),
-                            value: totalVerspaetet,
-                            subValue: null,
+                            value: totalAktuellerVerzug,
+                            subValue: totalVerspaetet > 0 ? `+ ${totalVerspaetet} hist.` : null,
                             color: 'text-rose-600',
                             accent: 'text-rose-600',
                             bg: 'bg-rose-500/10',
