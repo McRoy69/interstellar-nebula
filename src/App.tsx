@@ -53,6 +53,12 @@ function App() {
           ui: { ...defaultSettings.ui, ...(finalSettings.ui || {}), ...parsedLocalUi },
           notifications: { ...defaultSettings.notifications, ...(finalSettings.notifications || {}) }
         };
+
+        // Migration: If criticalWeeks is still at old default (1), upgrade to new default (3)
+        if (mergedSettings.thresholds.criticalWeeks === 1) {
+          mergedSettings.thresholds.criticalWeeks = 3;
+        }
+
         finalSettings = mergedSettings;
 
         // Apply Global Sync Logic (Injection of missing KW tasks)
