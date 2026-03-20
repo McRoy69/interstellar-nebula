@@ -83,8 +83,8 @@
             },
             "statusLabels": {
                 "done": "TAMAMLANDI",
-                "late3w": "KRİTİK (>3 Hf)",
-                "late13w": "GECİKMİŞ (1-3 Hf)",
+                "late3w": "KRİTİK (>{{weeks}} Hf)",
+                "late13w": "GECİKMİŞ (1-{{weeks}} Hf)",
                 "current": "GÜNCEL"
             },
             "stats": {
@@ -110,7 +110,7 @@
                 "plan3": "Frekans: Gereken tekrarlama periyodunu tanımlar.",
                 "plan4": "Başlangıç (KW): Planın etkinleşeceği haftayı belirler.",
                 "journalTitle": "Jurnal Kullanım Kılavuzu",
-                "journal1": "Sinyalizasyon: Yeşil (Zamanında), Sarı (1-3 hf gecikme), Kırmızı (>3 hf gecikme).",
+                "journal1": "Sinyalizasyon: Yeşil (Zamanında), Sarı (1-{{weeks}} hf gecikme), Kırmızı (>{{weeks}} hf gecikme).",
                 "journal2": "Kapanış Tarihi: Gerçek uygulama gününü belirtin.",
                 "journal3": "Visum: Görevi tamamlayan teknisyenin parafı.",
                 "journal4": "Tamamla: Görevi arşivler ve genel istatistikleri günceller."

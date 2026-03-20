@@ -175,8 +175,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         }
 
         const delta = currentKw - task.kw;
-        if (delta >= settings.thresholds.criticalWeeks) return { label: t('department.statusLabels.late3w'), color: 'text-orange-500', bg: 'bg-orange-500' };
-        if (delta >= 1) return { label: t('department.statusLabels.late13w'), color: 'text-amber-500', bg: 'bg-amber-500' };
+        if (delta >= settings.thresholds.criticalWeeks) return { label: t('department.statusLabels.late3w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-orange-500', bg: 'bg-orange-500' };
+        if (delta >= 1) return { label: t('department.statusLabels.late13w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-amber-500', bg: 'bg-amber-500' };
         return { label: t('department.statusLabels.current'), color: 'text-emerald-500', bg: 'bg-emerald-500' };
     };
 
@@ -185,6 +185,11 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     };
 
     const handleAbschliessen = (taskId: string) => {
+        const task = localTasks.find(t => t.id === taskId);
+        if (task && (!task.datum || !task.visum)) {
+            alert('Datum und Visum müssen ausgefüllt sein. / Fecha y Visum deben estar completos.');
+            return;
+        }
         setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'Done' } : t));
     };
 
@@ -685,9 +690,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                     <InstructionCard
                                         title={t('department.instructions.journalTitle')}
                                         items={[
-                                            t('department.instructions.journal1')
-                                                .replace('1-3W', `1-${settings.thresholds.criticalWeeks - 1}W`)
-                                                .replace('>3W', `≥${settings.thresholds.criticalWeeks}W`),
+                                            t('department.instructions.journal1', { weeks: settings.thresholds.criticalWeeks }),
                                             t('department.instructions.journal2'),
                                             t('department.instructions.journal3'),
                                             t('department.instructions.journal4')
@@ -1173,13 +1176,15 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
                                     <div className="flex items-center justify-end gap-3">
                                         {task.status !== 'Done' && (
                                             <button
+                                                disabled={!task.datum || !task.visum}
                                                 onClick={() => onAbschliessen(task.id)}
-                                                className="px-6 py-3 rounded-xl text-xs font-black text-white uppercase tracking-wider shadow-lg transition-all hover:scale-105 active:scale-95"
+                                                className={`px-6 py-3 rounded-xl text-xs font-black text-white uppercase tracking-wider shadow-lg transition-all ${(!task.datum || !task.visum) ? 'opacity-20 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}`}
                                                 style={{
                                                     backgroundColor: 'var(--color-success)',
                                                     color: 'white',
-                                                    boxShadow: '0 10px 15px -3px var(--color-success-glow)'
+                                                    boxShadow: (!task.datum || !task.visum) ? 'none' : '0 10px 15px -3px var(--color-success-glow)'
                                                 }}
+                                                title={(!task.datum || !task.visum) ? 'Datum y Visum requeridos / Datum und Visum erforderlich' : ''}
                                             >
                                                 {t('department.journal.complete')}
                                             </button>

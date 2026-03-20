@@ -91,8 +91,8 @@
       },
       "statusLabels": {
         "done": "ERLEDIGT",
-        "late3w": "KRITISCH (>3W)",
-        "late13w": "VERSPÄTET (1-3W)",
+        "late3w": "KRITISCH (>{{weeks}}W)",
+        "late13w": "VERSPÄTET (1-{{weeks}}W)",
         "current": "AKTUELL"
       },
       "stats": {
@@ -118,7 +118,7 @@
         "plan3": "Frequenz: Definiert den Wiederholungszyklus der Aufgabe.",
         "plan4": "Start-KW: Legt die erste Ausführungswoche im Jahr fest.",
         "journalTitle": "Bedienungshinweise Journal",
-        "journal1": "Indikatoren: Grün (Pünktlich), Gelb (1-3W Verzug), Rot (>3W Verzug).",
+        "journal1": "Indikatoren: Grün (Pünktlich), Gelb (1-{{weeks}}W Verzug), Rot (>{{weeks}}W Verzug).",
         "journal2": "Ist-Datum: Tatsächlicher Tag der Ausführung eingeben.",
         "journal3": "Visum: Kürzel der verantwortlichen Person.",
         "journal4": "Abschließen: Archiviert die Aufgabe und aktualisiert die Statistik."
