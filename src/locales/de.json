@@ -11,7 +11,7 @@
       "centralStats": "ZENTRALE STATISTIK",
       "subtitle": "Härterei Blessing AG • Predictive Maintenance Analytics",
       "liveDataflow": "ECHTZEIT-DATENFLUSS",
-      "period": "Zeitraum: März 2026",
+      "period": "Zeitraum: {{month}} {{year}}",
       "globalEfficiency": "GESAMTEFFIZIENZ",
       "totalExecuted": "PÜNKTLICHE ERLEDIGUNG",
       "criticalPoints": "KRITISCHE VERSÄUMNISSE",
@@ -26,7 +26,7 @@
       "bottlenecks": "Engpässe (Flop-2)",
       "noBottlenecks": "Keine kritischen Engpässe identifiziert.",
       "analysisInfo": "Analyse-Parameter",
-      "analysisInfoDesc": "Effizienzbasierte Berechnung: Planung vs. Ist-Ausführung (Stand KW 11).",
+      "analysisInfoDesc": "Effizienzbasierte Berechnung: Planung vs. Ist-Ausführung (Stand KW {{kw}}).",
       "analysisNote": "Die Berechnung erfolgt auf Basis des wöchentlichen Soll-Ist-Abgleichs.",
       "targets": {
         "target": "Ziel",

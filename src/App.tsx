@@ -82,10 +82,10 @@ function App() {
       const cleanExistingTasks = (dept.tasks || []).filter((ti: any) => {
         const t = (ti.title || "").toLowerCase().trim();
         const a = (ti.anlage || "").toLowerCase().trim();
-        const y = ti.year || 2026;
+        const y = ti.year || APP_CONFIG.CURRENT_YEAR;
         const kw = ti.kw;
 
-        if (y === 2026 && ti.status !== 'Done') {
+        if (y === APP_CONFIG.CURRENT_YEAR && ti.status !== 'Done') {
           const pt = (dept.planningTasks || []).find((p: any) => p.title === ti.title && p.anlage === ti.anlage);
           if (pt) {
             // AGGRESSIVE CLEANUP: Remove AUTO-generated tasks if they are no longer planned, 
@@ -112,7 +112,7 @@ function App() {
           if (isTaskPlanned(pt, kw)) {
             const t = (pt.title || "").toLowerCase().trim();
             const a = (pt.anlage || "").toLowerCase().trim();
-            const key = `${a}-${t}-${kw}-2026`;
+            const key = `${a}-${t}-${kw}-${APP_CONFIG.CURRENT_YEAR}`;
 
             if (!existingTaskKeys.has(key)) {
               missingTasks.push({
@@ -120,7 +120,7 @@ function App() {
                 title: pt.title,
                 anlage: pt.anlage,
                 kw: kw,
-                year: 2026,
+                year: APP_CONFIG.CURRENT_YEAR,
                 status: 'Open',
                 wer: pt.wer,
                 isLate: kw < CURRENT_KW,
@@ -136,7 +136,7 @@ function App() {
         return dept;
       }
 
-      const filteredTasks = [...cleanExistingTasks, ...missingTasks].filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || 2026) >= 2026);
+      const filteredTasks = [...cleanExistingTasks, ...missingTasks].filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR);
 
       return {
         ...dept,

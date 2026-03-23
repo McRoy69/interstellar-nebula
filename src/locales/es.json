@@ -11,7 +11,7 @@
       "centralStats": "PANEL DE CONTROL CENTRAL",
       "subtitle": "Härterei Blessing AG • Análisis de Rendimiento de Mantenimiento",
       "liveDataflow": "FLUJO DE DATOS EN TIEMPO REAL",
-      "period": "Período: Marzo 2026",
+      "period": "Período: {{month}} {{year}}",
       "globalEfficiency": "EFICIENCIA GLOBAL",
       "totalExecuted": "TOTAL EJECUTADO A TIEMPO",
       "onTimeTotal": "EJECUCIONES PUNTUALES",
@@ -28,7 +28,7 @@
       "bottlenecks": "Cuellos de Botella (Flop-2)",
       "noBottlenecks": "No se han detectado cuellos de botella.",
       "analysisInfo": "Métricas de Análisis",
-      "analysisInfoDesc": "Cálculo de eficiencia basado en la planificación vs. ejecución real (KW 11).",
+      "analysisInfoDesc": "Cálculo basado en eficiencia: Planificado vs Ejecutado (Status KW {{kw}}).",
       "analysisNote": "La eficiencia se calcula comparando el plan semanal con la ejecución reportada.",
       "targets": {
         "target": "Objetivo",

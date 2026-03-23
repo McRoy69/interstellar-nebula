@@ -109,7 +109,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     React.useEffect(() => {
         if (!onUpdate) return;
 
-        const filteredTasks = localTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || 2026) >= 2026);
+        const filteredTasks = localTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR);
 
         // Statistics Logic: YTD (Year-To-Date) up to current week
         const ytdTasks = filteredTasks.filter((ti: any) => ti.kw <= currentKw);
@@ -281,7 +281,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         };
 
         if (activeTab === 'Plan') {
-            drawHeader(`${t('pdf.maintenancePlan')}: ${data.name}`, `${t('pdf.annualMatrix')} ${new Date().getFullYear()} - KW ${currentKw}`);
+            drawHeader(`${t('pdf.maintenancePlan')}: ${data.name}`, `${t('pdf.annualMatrix')} ${APP_CONFIG.CURRENT_YEAR} - KW ${currentKw}`);
 
             const headers = [t('pdf.anlage'), t('department.matrix.taskMachine').split('/')[0].trim(), t('pdf.who'), t('department.matrix.freq'), t('pdf.planned'), ...Array.from({ length: 52 }, (_, i) => (i + 1).toString())];
             const tableData = sortedPlanningTasks.map(task => {

@@ -162,7 +162,7 @@ const EMAIL_I18N = {
 const getReportHtml = (appData, isAutomated = false, lang = 'de', recipientName = '') => {
     const t = EMAIL_I18N[lang] || EMAIL_I18N['de'];
     const greeting = recipientName ? `${t.greeting.split(' ')[0]} ${recipientName},` : t.greeting;
-    const kw = appData.settings?.currentKw || 12;
+    const kw = appData.settings?.currentKw || 13;
     const appUrl = process.env.APP_URL || 'https://wartungsplan.up.railway.app';
     const departments = appData.departments || [];
     const stats = appData.stats || {};

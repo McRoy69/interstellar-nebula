@@ -189,7 +189,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                 color: 'var(--color-accent)'
                             }}
                         >
-                            {t('dashboard.period')} (YTD)
+                            {t('dashboard.period', { 
+                                month: new Intl.DateTimeFormat(i18n.language, { month: 'long' }).format(new Date()),
+                                year: APP_CONFIG.CURRENT_YEAR 
+                            })} (YTD)
                         </div>
                         <button
                             onClick={handleExportPDF}
@@ -517,7 +520,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                             <p className="text-[10px] leading-relaxed italic"
                                 style={{ color: 'var(--color-text-dim)' }}
                             >
-                                {t('dashboard.analysisNote')}
+                                {t('dashboard.analysisInfoDesc', { kw: CURRENT_KW })}
                             </p>
                         </div>
                     </div>
