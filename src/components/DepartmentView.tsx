@@ -1452,12 +1452,26 @@ const StatisticsView = ({ localTasks, settings }: { localTasks: Task[], settings
     });
 
     const erledigtTasks = filteredTasks.filter(t => t.status === 'Done');
-    const lateTasks = filteredTasks.filter(t => t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) >= 1);
-    const pendingTasks = filteredTasks.filter(t => t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) < 1);
+    
+    // Use frequency-aware logic for late vs pending
+    const lateTasks = filteredTasks.filter(t => {
+        if (t.status === 'Done') return false;
+        const delta = CURRENT_KW - (t.kw || 0);
+        const buffer = getFrequencyBuffer(t.frequenz || '');
+        return delta >= buffer;
+    });
+    
+    const pendingTasks = filteredTasks.filter(t => {
+        if (t.status === 'Done') return false;
+        const delta = CURRENT_KW - (t.kw || 0);
+        const buffer = getFrequencyBuffer(t.frequenz || '');
+        return delta < buffer;
+    });
 
     const totalErledigt = erledigtTasks.length;
-    const totalOffen = pendingTasks.length + lateTasks.length;
-    const quote = Math.round((totalErledigt / (totalErledigt + totalOffen)) * 100) || 0;
+    const totalOffen = lateTasks.length + pendingTasks.length;
+    const totalEfficiencyRelevantOffen = lateTasks.length; // Only late tasks lower efficiency
+    const quote = Math.round((totalErledigt / (totalErledigt + totalEfficiencyRelevantOffen)) * 100) || 0;
 
     const getModalConfig = () => {
         switch (selectedMetric) {

@@ -35,12 +35,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
 
     // Active delays across all departments (respecting frequency buffers)
     const totalAktuellerVerzug = departments.reduce((acc, d) => {
-        const critThreshold = settings.thresholds.criticalWeeks || 3;
         const lateCount = (d.tasks || []).filter(t => {
             if (t.status === 'Done') return false;
             const delta = CURRENT_KW - (t.kw || 0);
             const buffer = getFrequencyBuffer(t.frequenz || '');
-            return delta >= (buffer + critThreshold);
+            return delta >= buffer;
         }).length;
         return acc + lateCount;
     }, 0);
@@ -59,12 +58,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
 
     const getCriticalTasksCount = (dept: DepartmentData) => {
         const tasks = dept.tasks || [];
-        const critThreshold = settings.thresholds.criticalWeeks || 3;
+        // Use frequency buffer to define 'Delayed' tasks (matching department view)
         return tasks.filter(t => {
             if (t.status === 'Done') return false;
             const delta = CURRENT_KW - (t.kw || 0);
             const buffer = getFrequencyBuffer(t.frequenz || '');
-            return delta >= (buffer + critThreshold);
+            return delta >= buffer;
         }).length;
     };
 
