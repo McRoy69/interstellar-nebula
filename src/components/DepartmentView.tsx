@@ -1246,6 +1246,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
                     >
                         <th className="py-6 pl-12">{t('department.journal.task')}</th>
                         <th className="py-6">{t('department.journal.machine')}</th>
+                        <th className="py-6">{t('department.matrix.freq')}</th>
                         <th className="py-6">{t('department.matrix.who')}</th>
                         <th className="py-6">{t('department.journal.dateReal')}</th>
                         <th className="py-6">{t('department.journal.visa')}</th>
@@ -1275,6 +1276,17 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
                                         }}
                                     >
                                         {task.anlage}
+                                    </span>
+                                </td>
+                                <td className="py-6">
+                                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded border opacity-70"
+                                        style={{
+                                            backgroundColor: 'var(--color-field-bg)',
+                                            borderColor: 'var(--color-border)',
+                                            color: 'var(--color-text-dim)'
+                                        }}
+                                    >
+                                        {task.frequenz ? (t(`department.matrix.freqs.${task.frequenz.toLowerCase()}`) || task.frequenz) : '-'}
                                     </span>
                                 </td>
                                 <td className="py-6">
