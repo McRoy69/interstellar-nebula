@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { APP_CONFIG } from '../config';
+import { getFrequencyBuffer } from '../utils/dateUtils';
 
 interface DashboardProps {
     onNavigate: (id: string, tab?: string) => void;
@@ -32,9 +33,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
     const totalVerspaetet = safeSum(departments, 'spaetErledigt');
     const totalErledigt = totalPuenktlich + totalVerspaetet;
 
-    // Active delays across all departments
+    // Active delays across all departments (respecting frequency buffers)
     const totalAktuellerVerzug = departments.reduce((acc, d) => {
-        const lateCount = (d.tasks || []).filter(t => t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) >= 1).length;
+        const critThreshold = settings.thresholds.criticalWeeks || 3;
+        const lateCount = (d.tasks || []).filter(t => {
+            if (t.status === 'Done') return false;
+            const delta = CURRENT_KW - (t.kw || 0);
+            const buffer = getFrequencyBuffer(t.frequenz || '');
+            return delta >= (buffer + critThreshold);
+        }).length;
         return acc + lateCount;
     }, 0);
 
@@ -52,10 +59,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
 
     const getCriticalTasksCount = (dept: DepartmentData) => {
         const tasks = dept.tasks || [];
-        // Use a 1-week threshold for all 'Delay Warnings' to match department stats/KPIs
-        return tasks.filter(t =>
-            t.status !== 'Done' && (CURRENT_KW - (t.kw || 0)) >= 1
-        ).length;
+        const critThreshold = settings.thresholds.criticalWeeks || 3;
+        return tasks.filter(t => {
+            if (t.status === 'Done') return false;
+            const delta = CURRENT_KW - (t.kw || 0);
+            const buffer = getFrequencyBuffer(t.frequenz || '');
+            return delta >= (buffer + critThreshold);
+        }).length;
     };
 
     const handleExportPDF = () => {
