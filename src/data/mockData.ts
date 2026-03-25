@@ -10,6 +10,7 @@ export interface Task {
   visum?: string;
   datum?: string;
   wer?: string;
+  frequenz?: string;
   isLate?: boolean;
   delayWeeks?: number;
   doneKw?: number;

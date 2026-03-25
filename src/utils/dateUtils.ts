@@ -18,3 +18,13 @@ export function getISOYear(date: Date = new Date()): number {
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
   return d.getUTCFullYear();
 }
+
+export function getFrequencyBuffer(frequenz: string = ''): number {
+  const f = frequenz.toLowerCase();
+  if (f.includes('jährlich') || f.includes('jahrlich')) return 52;
+  if (f.includes('halbjährlich')) return 26;
+  if (f.includes('vierteljährlich')) return 13;
+  if (f.includes('monatlich')) return 4;
+  if (f.includes('alle 2 wochen')) return 2;
+  return 1; // Default for daily/weekly
+}

@@ -10,6 +10,7 @@ import type { AppSettings } from './types/settings';
 import { defaultSettings } from './types/settings';
 import type { DepartmentData, Task } from './data/mockData';
 import { APP_CONFIG } from './config';
+import { getFrequencyBuffer } from './utils/dateUtils';
 
 function App() {
   const [activeView, setActiveView] = useState('dashboard');
@@ -73,31 +74,36 @@ function App() {
     if (!isLoaded) return;
 
     const CURRENT_KW = APP_CONFIG.CURRENT_KW;
-    let syncedDepts = departments.map((dept: any) => {
-      if (String(dept.id) === '3' || dept.name.toLowerCase().includes('waffe') || dept.name.toLowerCase().includes('armo')) {
-        dept.name = 'Armoloy';
+    const syncedDepts = departments.map((dept: any) => {
+      // Create a fresh copy to avoid mutation
+      const deptCopy = { ...dept };
+      
+      // Standardize name if necessary (if we must maintain this legacy rule)
+      if (String(deptCopy.id) === '3' || deptCopy.name.toLowerCase().includes('waffe') || deptCopy.name.toLowerCase().includes('armo')) {
+        deptCopy.name = 'Armoloy';
       }
 
       const existingTaskKeys = new Set();
-      const cleanExistingTasks = (dept.tasks || []).filter((ti: any) => {
+      const cleanExistingTasks = (deptCopy.tasks || []).filter((ti: any) => {
         const t = (ti.title || "").toLowerCase().trim();
         const a = (ti.anlage || "").toLowerCase().trim();
         const y = ti.year || APP_CONFIG.CURRENT_YEAR;
         const kw = ti.kw;
 
         if (y === APP_CONFIG.CURRENT_YEAR && ti.status !== 'Done') {
-          const pt = (dept.planningTasks || []).find((p: any) => p.title === ti.title && p.anlage === ti.anlage);
+          // Robust matching: lowercase and trim
+          const pt = (deptCopy.planningTasks || []).find((p: any) => 
+            (p.title || "").toLowerCase().trim() === t && 
+            (p.anlage || "").toLowerCase().trim() === a
+          );
+
           if (pt) {
-            // AGGRESSIVE CLEANUP: Remove AUTO-generated tasks if they are no longer planned, 
-            // even if they are "late" (kw < CURRENT_KW).
             if (!isTaskPlanned(pt, kw)) {
               if (ti.id?.startsWith('auto-') && !ti.datum && !ti.visum) {
-                console.log(`Aggressively cleaning up UNPLANNED task: ${ti.title} KW${kw}`);
                 return false;
               }
             }
           } else if (ti.id?.startsWith('auto-')) {
-            // Task not in plan at all anymore
             return false;
           }
         }
@@ -107,7 +113,7 @@ function App() {
       });
 
       const missingTasks: Task[] = [];
-      (dept.planningTasks || []).forEach((pt: any) => {
+      (deptCopy.planningTasks || []).forEach((pt: any) => {
         for (let kw = 1; kw <= CURRENT_KW; kw++) {
           if (isTaskPlanned(pt, kw)) {
             const t = (pt.title || "").toLowerCase().trim();
@@ -115,15 +121,18 @@ function App() {
             const key = `${a}-${t}-${kw}-${APP_CONFIG.CURRENT_YEAR}`;
 
             if (!existingTaskKeys.has(key)) {
+              const buffer = getFrequencyBuffer(pt.frequenz);
               missingTasks.push({
-                id: `auto-${Date.now()}-${pt.id}-${kw}`,
+                // STABLE ID: No Date.now() to avoid infinite loops
+                id: `auto-${deptCopy.id}-${pt.id}-${kw}`,
                 title: pt.title,
                 anlage: pt.anlage,
                 kw: kw,
                 year: APP_CONFIG.CURRENT_YEAR,
                 status: 'Open',
                 wer: pt.wer,
-                isLate: kw < CURRENT_KW,
+                frequenz: pt.frequenz, // Preserve frequency for status logic
+                isLate: (CURRENT_KW - kw) >= buffer,
                 translations: pt.translations
               });
               existingTaskKeys.add(key);
@@ -132,14 +141,16 @@ function App() {
         }
       });
 
-      if (missingTasks.length === 0 && cleanExistingTasks.length === (dept.tasks || []).length) {
+      if (missingTasks.length === 0 && cleanExistingTasks.length === (dept.tasks || []).length && deptCopy.name === dept.name) {
         return dept;
       }
 
-      const filteredTasks = [...cleanExistingTasks, ...missingTasks].filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR);
+      const filteredTasks = [...cleanExistingTasks, ...missingTasks].filter((taskItem: any) => 
+        (taskItem.year || taskItem.plannedYear || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR
+      );
 
       return {
-        ...dept,
+        ...deptCopy,
         tasks: filteredTasks
       };
     });
@@ -148,7 +159,7 @@ function App() {
       console.log("Plan change detected, syncing journal...");
       setDepartments(syncedDepts);
     }
-  }, [departments, isLoaded]);
+  }, [departments, isLoaded, settings.thresholds.criticalWeeks]);
 
   // 2. Persist to API whenever state changes
   useEffect(() => {

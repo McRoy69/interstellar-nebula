@@ -14,6 +14,7 @@ import autoTable from 'jspdf-autotable';
 import { isTaskPlanned } from '../data/mockData';
 import { APP_CONFIG } from '../config';
 import { getTaskTranslations } from '../utils/translation';
+import { getFrequencyBuffer } from '../utils/dateUtils';
 
 interface DepartmentViewProps {
     data: DepartmentData;
@@ -175,8 +176,12 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         }
 
         const delta = currentKw - task.kw;
-        if (delta >= settings.thresholds.criticalWeeks) return { label: t('department.statusLabels.late3w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-orange-500', bg: 'bg-orange-500' };
-        if (delta >= 1) return { label: t('department.statusLabels.late13w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-amber-500', bg: 'bg-amber-500' };
+        const buffer = getFrequencyBuffer(task.frequenz);
+        const criticalBuffer = buffer + (settings.thresholds.criticalWeeks || 3);
+
+        if (delta >= criticalBuffer) return { label: t('department.statusLabels.late3w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-orange-500', bg: 'bg-orange-500' };
+        if (delta >= buffer) return { label: t('department.statusLabels.late13w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-amber-500', bg: 'bg-amber-500' };
+        
         return { label: t('department.statusLabels.current'), color: 'text-emerald-500', bg: 'bg-emerald-500' };
     };
 
