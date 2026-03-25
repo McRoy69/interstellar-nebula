@@ -1,4 +1,5 @@
 import realData from './realData.json';
+import { APP_CONFIG } from '../config';
 
 export interface Task {
   id: string;
@@ -106,7 +107,21 @@ const filterAndRecalculate = (data: any[]): DepartmentData[] => {
     });
 
     // Recalculate Statistics
-    const geplant = filteredTasks.length;
+    // Only count tasks towards "Efficiency" if they are either DONE or LATE (Open but past due)
+    const currentKw = APP_CONFIG.CURRENT_KW;
+    const currentYear = APP_CONFIG.CURRENT_YEAR;
+
+    const relevantForEfficiency = filteredTasks.filter((t: any) => {
+      if (t.status === 'Done') return true;
+      // If open, check if it's already late
+      const tYear = t.year || t.plannedYear || currentYear;
+      const tKw = t.kw || t.plannedKw || 1;
+      if (tYear < currentYear) return true;
+      if (tYear === currentYear && tKw < currentKw) return true;
+      return false;
+    });
+
+    const geplant = relevantForEfficiency.length;
     const erledigt = filteredTasks.filter((t: any) => t.status === 'Done').length;
     const erledigtPuenktlich = filteredTasks.filter((t: any) => t.status === 'Done' && !t.isLate).length;
     const spaetErledigt = filteredTasks.filter((t: any) => t.status === 'Done' && t.isLate).length;
