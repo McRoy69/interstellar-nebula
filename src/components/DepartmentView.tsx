@@ -41,6 +41,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     const [showDeletePasswordPrompt, setShowDeletePasswordPrompt] = useState(false);
     const [deletePasswordInput, setDeletePasswordInput] = useState('');
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+    const lastSentRef = React.useRef<string>("");
 
     const handleConfirmDelete = () => {
         if (deletePasswordInput === '3400') {
@@ -155,11 +156,17 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             }
         };
 
-        // Only trigger if data actually changed to avoid infinite loops
-        if (JSON.stringify(updated) !== JSON.stringify(data)) {
+        const serialized = JSON.stringify({
+            tasks: localTasks,
+            planningTasks: localPlanningTasks,
+            verantwortlicher
+        });
+
+        if (serialized !== lastSentRef.current) {
+            lastSentRef.current = serialized;
             onUpdate(updated);
         }
-    }, [localTasks, localPlanningTasks, verantwortlicher, data, onUpdate]);
+    }, [localTasks, localPlanningTasks, verantwortlicher, onUpdate]);
 
 
     const tabs = [

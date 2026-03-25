@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Sidebar from './components/Sidebar';
@@ -20,6 +20,7 @@ function App() {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [departments, setDepartments] = useState<DepartmentData[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const isSyncingRef = useRef(false);
 
   // 1. Initial Load from API (with LocalStorage fallback for migration)
   useEffect(() => {
@@ -69,16 +70,17 @@ function App() {
     loadData();
   }, []);
 
-  // Sync logic moved to a reactive effect
+  // 1. Core Synchronization: Planning Matrix -> Operating Journal
   useEffect(() => {
     if (!isLoaded) return;
+    if (isSyncingRef.current) return;
+    isSyncingRef.current = true;
 
-    const CURRENT_KW = APP_CONFIG.CURRENT_KW;
-    const syncedDepts = departments.map((dept: any) => {
-      // Create a fresh copy to avoid mutation
-      const deptCopy = { ...dept };
-      
-      // Standardize name if necessary (if we must maintain this legacy rule)
+    const syncedDepts = departments.map(dept => {
+      const deptCopy = JSON.parse(JSON.stringify(dept));
+      const CURRENT_KW = APP_CONFIG.CURRENT_KW;
+
+      // Standardize name if necessary
       if (String(deptCopy.id) === '3' || deptCopy.name.toLowerCase().includes('waffe') || deptCopy.name.toLowerCase().includes('armo')) {
         deptCopy.name = 'Armoloy';
       }
@@ -91,9 +93,6 @@ function App() {
           const y = ti.year || APP_CONFIG.CURRENT_YEAR;
           const ptId = ti.planningTaskId;
 
-          // MATCHING LOGIC: Map journal task BACK to planning task
-          // Priority 1: Direct ID Match (New)
-          // Priority 2: Title + Anlage Match (Legacy fallback)
           const pt = (dept.planningTasks || []).find((p: any) => 
             ptId ? p.id === ptId : (
               (p.title || "").toLowerCase().trim() === t && 
@@ -126,16 +125,15 @@ function App() {
             if (!existingTaskKeys.has(key)) {
               const buffer = getFrequencyBuffer(pt.frequenz);
               missingTasks.push({
-                // STABLE ID: No Date.now() to avoid infinite loops
                 id: `auto-${deptCopy.id}-${pt.id}-${kw}`,
-                planningTaskId: pt.id, // Store source ID for robust matching
+                planningTaskId: pt.id,
                 title: pt.title,
                 anlage: pt.anlage,
                 kw: kw,
                 year: APP_CONFIG.CURRENT_YEAR,
                 status: 'Open',
                 wer: pt.wer,
-                frequenz: pt.frequenz, // Preserve frequency for status logic
+                frequenz: pt.frequenz,
                 isLate: (CURRENT_KW - kw) >= buffer,
                 translations: pt.translations
               });
@@ -145,24 +143,24 @@ function App() {
         }
       });
 
-      if (missingTasks.length === 0 && cleanExistingTasks.length === (dept.tasks || []).length && deptCopy.name === dept.name) {
+      if (missingTasks.length === 0 && cleanExistingTasks.length === (dept.tasks || []).length) {
         return dept;
       }
 
-      const filteredTasks = [...cleanExistingTasks, ...missingTasks].filter((taskItem: any) => 
-        (taskItem.year || taskItem.plannedYear || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR
-      );
-
       return {
         ...deptCopy,
-        tasks: filteredTasks
+        tasks: [...cleanExistingTasks, ...missingTasks].filter((ti: any) => (ti.year || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR)
       };
     });
 
     if (JSON.stringify(syncedDepts) !== JSON.stringify(departments)) {
-      console.log("Plan change detected, syncing journal...");
       setDepartments(syncedDepts);
     }
+    
+    // Release lock after a short delay to allow state to settle
+    setTimeout(() => {
+      isSyncingRef.current = false;
+    }, 100);
   }, [departments, isLoaded, settings.thresholds.criticalWeeks]);
 
   // 2. Persist to API whenever state changes
