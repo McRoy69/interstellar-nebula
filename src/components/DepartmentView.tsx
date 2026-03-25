@@ -144,13 +144,35 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
 
         const filteredTasks = localTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR);
 
-        // Statistics Logic: YTD (Year-To-Date) up to current week
+        // Statistics Logic: Only count tasks towards "geplant" if they are DONE or already LATE (past their frequency buffer)
         const ytdTasks = filteredTasks.filter((ti: any) => ti.kw <= currentKw);
 
-        const geplant = Number(ytdTasks.length) || 0;
-        const erledigtPuenktlich = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && !ti.isLate).length) || 0;
-        const spaetErledigt = Number(ytdTasks.filter((ti: any) => ti.status === 'Done' && ti.isLate).length) || 0;
-        const erledigtTotal = erledigtPuenktlich + spaetErledigt;
+        const efficiencyRelevantTasks = filteredTasks.filter((ti: any) => {
+            if (ti.status === 'Done') return true;
+            // Only count if it belongs to this year or past
+            const tYear = ti.year || ti.plannedYear || APP_CONFIG.CURRENT_YEAR;
+            if (tYear < APP_CONFIG.CURRENT_YEAR) return true;
+            if (tYear > APP_CONFIG.CURRENT_YEAR) return false;
+
+            const delta = currentKw - (ti.kw || ti.plannedKw || 1);
+            const buffer = getFrequencyBuffer(ti.frequenz || '');
+            return delta >= buffer;
+        });
+
+        const geplant = efficiencyRelevantTasks.length;
+        const currentErledigt = ytdTasks.filter((ti: any) => ti.status === 'Done');
+        
+        // A task is "punctual" if it was done within its frequency buffer
+        const erledigtPuenktlich = currentErledigt.filter((ti: any) => {
+             const dKw = ti.doneKw || ti.kw; // Fallback to planned kw if not recorded
+             const pKw = ti.kw || ti.plannedKw || dKw;
+             const delta = dKw - pKw;
+             const buffer = getFrequencyBuffer(ti.frequenz || '');
+             return delta < buffer;
+        }).length;
+
+        const spaetErledigt = currentErledigt.length - erledigtPuenktlich;
+        const erledigtTotal = currentErledigt.length;
 
         const rate = geplant > 0 ? Math.round((erledigtTotal / geplant) * 100) : 100;
 
@@ -162,10 +184,10 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             stats: {
                 ...data.stats,
                 geplant,
-                erledigt: Number(ytdTasks.filter((ti: any) => ti.status === 'Done').length) || 0,
+                erledigt: erledigtTotal,
                 erledigtPuenktlich,
                 spaetErledigt,
-                offen: Number(ytdTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
+                offen: Number(efficiencyRelevantTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
                 erfüllungsquote: rate
             }
         };
@@ -194,13 +216,13 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
 
     const getFrequencyPriority = (freq: string): number => {
         const f = freq.toLowerCase();
-        if (f.includes('täglich')) return 1;
-        if (f.includes('wöchentlich')) return 2;
-        if (f.includes('alle 2 wochen')) return 3;
-        if (f.includes('monatlich')) return 4;
-        if (f.includes('vierteljährlich')) return 5;
-        if (f.includes('halbjährlich')) return 6;
-        if (f.includes('jährlich')) return 7;
+        if (f.includes('täglich') || f.includes('daily')) return 1;
+        if (f.includes('wöchentlich') || f.includes('weekly')) return 2;
+        if (f.includes('alle 2 wochen') || f.includes('biweekly')) return 3;
+        if (f.includes('monatlich') || f.includes('monthly')) return 4;
+        if (f.includes('vierteljährlich') || f.includes('quarterly')) return 5;
+        if (f.includes('halbjährlich') || f.includes('semi-annually')) return 6;
+        if (f.includes('jährlich') || f.includes('annually')) return 7;
         return 10;
     };
 

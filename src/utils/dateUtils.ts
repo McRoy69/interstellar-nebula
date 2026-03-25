@@ -21,10 +21,10 @@ export function getISOYear(date: Date = new Date()): number {
 
 export function getFrequencyBuffer(frequenz: string = ''): number {
   const f = frequenz.toLowerCase();
-  if (f.includes('jährlich') || f.includes('jahrlich')) return 52;
-  if (f.includes('halbjährlich')) return 26;
-  if (f.includes('vierteljährlich')) return 13;
-  if (f.includes('monatlich')) return 4;
-  if (f.includes('alle 2 wochen')) return 2;
+  if (f.includes('jährlich') || f.includes('annually') || f.includes('jahrlich')) return 52;
+  if (f.includes('halbjährlich') || f.includes('semi-annually') || f.includes('halbjahrlich')) return 26;
+  if (f.includes('vierteljährlich') || f.includes('quarterly') || f.includes('vierteljahr')) return 13;
+  if (f.includes('monatlich') || f.includes('monthly')) return 4;
+  if (f.includes('alle 2 wochen') || f.includes('biweekly')) return 2;
   return 1; // Default for daily/weekly
 }

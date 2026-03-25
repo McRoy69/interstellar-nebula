@@ -1,5 +1,6 @@
 import realData from './realData.json';
 import { APP_CONFIG } from '../config';
+import { getFrequencyBuffer } from '../utils/dateUtils';
 
 export interface Task {
   id: string;
@@ -107,32 +108,42 @@ const filterAndRecalculate = (data: any[]): DepartmentData[] => {
     });
 
     // Recalculate Statistics
-    // Only count tasks towards "Efficiency" if they are either DONE or LATE (Open but past due)
     const currentKw = APP_CONFIG.CURRENT_KW;
     const currentYear = APP_CONFIG.CURRENT_YEAR;
 
     const relevantForEfficiency = filteredTasks.filter((t: any) => {
       if (t.status === 'Done') return true;
-      // If open, check if it's already late
+      // If open, check if it's already past the buffer
       const tYear = t.year || t.plannedYear || currentYear;
-      const tKw = t.kw || t.plannedKw || 1;
       if (tYear < currentYear) return true;
-      if (tYear === currentYear && tKw < currentKw) return true;
-      return false;
+      if (tYear > currentYear) return false;
+
+      const delta = currentKw - (t.kw || t.plannedKw || 1);
+      const buffer = getFrequencyBuffer(t.frequenz || '');
+      return delta >= buffer;
     });
 
     const geplant = relevantForEfficiency.length;
-    const erledigt = filteredTasks.filter((t: any) => t.status === 'Done').length;
-    const erledigtPuenktlich = filteredTasks.filter((t: any) => t.status === 'Done' && !t.isLate).length;
-    const spaetErledigt = filteredTasks.filter((t: any) => t.status === 'Done' && t.isLate).length;
-    const offen = filteredTasks.filter((t: any) => t.status !== 'Done').length;
-    const rate = geplant > 0 ? Math.round((erledigtPuenktlich / geplant) * 100) : 100;
+    const totalErledigtTasks = filteredTasks.filter((t: any) => t.status === 'Done');
+    
+    // A task is "punctual" if it was done within its frequency buffer
+    const erledigtPuenktlich = totalErledigtTasks.filter((t: any) => {
+        const dKw = t.doneKw || t.kw;
+        const pKw = t.kw || t.plannedKw || dKw;
+        const delta = dKw - pKw;
+        const buffer = getFrequencyBuffer(t.frequenz || '');
+        return delta < buffer;
+    }).length;
+
+    const spaetErledigt = totalErledigtTasks.length - erledigtPuenktlich;
+    const offen = relevantForEfficiency.filter((t: any) => t.status !== 'Done').length;
+    const rate = geplant > 0 ? Math.round((totalErledigtTasks.length / geplant) * 100) : 100;
 
     return {
       ...dept,
       stats: {
         geplant,
-        erledigt,
+        erledigt: totalErledigtTasks.length,
         erledigtPuenktlich,
         offen,
         erfüllungsquote: rate,
