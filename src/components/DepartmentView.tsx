@@ -11,8 +11,22 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } 
 import { useTranslation } from 'react-i18next';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { isTaskPlanned } from '../data/mockData';
 import { APP_CONFIG } from '../config';
+
+// Frequenz Mapping Helper
+const getFreqKey = (f: string): string => {
+    if (!f) return 'weekly';
+    const low = f.toLowerCase();
+    if (low.includes('täglich') || low.includes('diario') || low === 'daily') return 'daily';
+    if (low.includes('wöchentlich') || low.includes('semanal') || low === 'weekly') return 'weekly';
+    if (low.includes('2 wochen') || low.includes('2 semanas') || low === 'biweekly') return 'biweekly';
+    if (low.includes('monatlich') || low.includes('mensual') || low === 'monthly') return 'monthly';
+    if (low.includes('viertel') || low.includes('trimestral') || low === 'quarterly') return 'quarterly';
+    if (low.includes('halb') || low.includes('semestral') || low === 'semi-annually') return 'semi-annually';
+    if (low.includes('jährlich') || low.includes('anual') || low === 'annually') return 'annually';
+    return low;
+};
+import { isTaskPlanned } from '../data/mockData';
 import { getTaskTranslations } from '../utils/translation';
 import { getFrequencyBuffer } from '../utils/dateUtils';
 
@@ -883,7 +897,7 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
     const [newTitle, setNewTitle] = useState('');
     const [newAnlage, setNewAnlage] = useState('');
     const [newWer, setNewWer] = useState('MA');
-    const [newFreq, setNewFreq] = useState('Wöchentlich');
+    const [newFreq, setNewFreq] = useState('weekly');
     const [newAbKw, setNewAbKw] = useState(1);
     const [editingTask, setEditingTask] = useState<PlanningTask | null>(null);
     const [editTitle, setEditTitle] = useState('');
@@ -988,18 +1002,18 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                             </td>
                             <td className="p-1 border-r" style={{ borderColor: 'var(--color-border)' }}>
                                 <select
-                                    value={task.frequenz}
+                                    value={getFreqKey(task.frequenz)}
                                     onChange={(e) => onUpdateTask(task.id, { frequenz: e.target.value })}
                                     className="w-full bg-transparent text-center text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-black/5 py-2 rounded leading-tight"
                                     style={{ color: 'var(--color-text-dim)' }}
                                 >
-                                    <option value="Täglich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.daily') || 'Täglich'}</option>
-                                    <option value="Wöchentlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.weekly') || 'Wöchentlich'}</option>
-                                    <option value="Alle 2 Wochen" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.biweekly') || 'Alle 2 Wochen'}</option>
-                                    <option value="Monatlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.monthly') || 'Monatlich'}</option>
-                                    <option value="Vierteljährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.quarterly') || 'Vierteljährlich'}</option>
-                                    <option value="Halbjährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.semi-annually') || 'Halbjährlich'}</option>
-                                    <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.annually') || 'Jährlich'}</option>
+                                    <option value="daily" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.daily')}</option>
+                                    <option value="weekly" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.weekly')}</option>
+                                    <option value="biweekly" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.biweekly')}</option>
+                                    <option value="monthly" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.monthly')}</option>
+                                    <option value="quarterly" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.quarterly')}</option>
+                                    <option value="semi-annually" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.semi-annually')}</option>
+                                    <option value="annually" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.annually')}</option>
                                 </select>
                             </td>
                             <td className="px-1 border-r-2 text-center text-[10px] font-mono font-black"
@@ -1083,7 +1097,7 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                         </td>
                         <td className="p-4 border-r" style={{ borderColor: 'var(--color-border)' }}>
                             <select
-                                value={newFreq}
+                                value={getFreqKey(newFreq)}
                                 onChange={(e) => setNewFreq(e.target.value)}
                                 className="w-full rounded-lg px-3 py-3 text-xs uppercase font-bold outline-none cursor-pointer border"
                                 style={{
@@ -1092,13 +1106,13 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                     color: 'var(--color-field-text)'
                                 }}
                             >
-                                <option value="Täglich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.daily')}</option>
-                                <option value="Wöchentlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.weekly')}</option>
-                                <option value="Alle 2 Wochen" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.biweekly')}</option>
-                                <option value="Monatlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.monthly')}</option>
-                                <option value="Vierteljährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.quarterly')}</option>
-                                <option value="Halbjährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.semi-annually')}</option>
-                                <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.annually')}</option>
+                                <option value="daily" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.daily')}</option>
+                                <option value="weekly" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.weekly')}</option>
+                                <option value="biweekly" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.biweekly')}</option>
+                                <option value="monthly" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.monthly')}</option>
+                                <option value="quarterly" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.quarterly')}</option>
+                                <option value="semi-annually" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.semi-annually')}</option>
+                                <option value="annually" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.annually')}</option>
                             </select>
                         </td>
                         <td colSpan={2} className="px-5">
@@ -1286,7 +1300,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
                                             color: 'var(--color-text-dim)'
                                         }}
                                     >
-                                        {task.frequenz ? (t(`department.matrix.freqs.${task.frequenz.toLowerCase()}`) || task.frequenz) : '-'}
+                                        {t(`department.matrix.freqs.${getFreqKey(task.frequenz || '')}`)}
                                     </span>
                                 </td>
                                 <td className="py-6">
