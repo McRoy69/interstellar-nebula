@@ -97,8 +97,25 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             }
 
             if (changed) {
-                setLocalPlanningTasks(updatedPlanningTasks);
-                setLocalTasks(updatedTasks);
+                // Batch updates to avoid multiple sync triggers
+                setLocalPlanningTasks(prev => {
+                    const next = [...prev];
+                    updatedPlanningTasks.forEach((ut, idx) => {
+                        if (JSON.stringify(ut.translations) !== JSON.stringify(next[idx]?.translations)) {
+                            next[idx] = { ...next[idx], translations: ut.translations };
+                        }
+                    });
+                    return next;
+                });
+                setLocalTasks(prev => {
+                    const next = [...prev];
+                    updatedTasks.forEach((ut, idx) => {
+                        if (JSON.stringify(ut.translations) !== JSON.stringify(next[idx]?.translations)) {
+                            next[idx] = { ...next[idx], translations: ut.translations };
+                        }
+                    });
+                    return next;
+                });
             }
         };
 
@@ -205,7 +222,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         const translations = await getTaskTranslations(title, ''); // Only translate title
 
         const newPlanningTask: PlanningTask = {
-            id: `p-${Date.now()}`,
+            // Stable ID using prefix, title slug and timestamp
+            id: `p-${title.substring(0, 5).toLowerCase().replace(/[^a-z0-9]/g, '')}-${Date.now()}`,
             title,
             anlage,
             wer: wer || 'MA',
@@ -1067,13 +1085,13 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
                                     color: 'var(--color-field-text)'
                                 }}
                             >
-                                <option value="Täglich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Täglich</option>
-                                <option value="Wöchentlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Wöchentlich</option>
-                                <option value="Alle 2 Wochen" style={{ backgroundColor: 'var(--color-bg-card)' }}>Alle 2 Wochen</option>
-                                <option value="Monatlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Monatlich</option>
-                                <option value="Vierteljährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Vierteljährlich</option>
-                                <option value="Halbjährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Halbjährlich</option>
-                                <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>Jährlich</option>
+                                <option value="Täglich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.daily')}</option>
+                                <option value="Wöchentlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.weekly')}</option>
+                                <option value="Alle 2 Wochen" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.biweekly')}</option>
+                                <option value="Monatlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.monthly')}</option>
+                                <option value="Vierteljährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.quarterly')}</option>
+                                <option value="Halbjährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.semi-annually')}</option>
+                                <option value="Jährlich" style={{ backgroundColor: 'var(--color-bg-card)' }}>{t('department.matrix.freqs.annually')}</option>
                             </select>
                         </td>
                         <td colSpan={2} className="px-5">

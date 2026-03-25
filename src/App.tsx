@@ -86,15 +86,19 @@ function App() {
       const existingTaskKeys = new Set();
       const cleanExistingTasks = (deptCopy.tasks || []).filter((ti: any) => {
         const t = (ti.title || "").toLowerCase().trim();
-        const a = (ti.anlage || "").toLowerCase().trim();
-        const y = ti.year || APP_CONFIG.CURRENT_YEAR;
-        const kw = ti.kw;
+          const a = (ti.anlage || "").toLowerCase().trim();
+          const kw = ti.kw;
+          const y = ti.year || APP_CONFIG.CURRENT_YEAR;
+          const ptId = ti.planningTaskId;
 
-        if (y === APP_CONFIG.CURRENT_YEAR && ti.status !== 'Done') {
-          // Robust matching: lowercase and trim
-          const pt = (deptCopy.planningTasks || []).find((p: any) => 
-            (p.title || "").toLowerCase().trim() === t && 
-            (p.anlage || "").toLowerCase().trim() === a
+          // MATCHING LOGIC: Map journal task BACK to planning task
+          // Priority 1: Direct ID Match (New)
+          // Priority 2: Title + Anlage Match (Legacy fallback)
+          const pt = (dept.planningTasks || []).find((p: any) => 
+            ptId ? p.id === ptId : (
+              (p.title || "").toLowerCase().trim() === t && 
+              (p.anlage || "").toLowerCase().trim() === a
+            )
           );
 
           if (pt) {
@@ -106,7 +110,6 @@ function App() {
           } else if (ti.id?.startsWith('auto-')) {
             return false;
           }
-        }
 
         existingTaskKeys.add(`${a}-${t}-${kw}-${y}`);
         return true;
@@ -125,6 +128,7 @@ function App() {
               missingTasks.push({
                 // STABLE ID: No Date.now() to avoid infinite loops
                 id: `auto-${deptCopy.id}-${pt.id}-${kw}`,
+                planningTaskId: pt.id, // Store source ID for robust matching
                 title: pt.title,
                 anlage: pt.anlage,
                 kw: kw,

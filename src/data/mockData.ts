@@ -18,6 +18,7 @@ export interface Task {
   translations?: {
     [lang: string]: { title: string; anlage: string; }
   };
+  planningTaskId?: string;
 }
 
 export interface PlanningTask {
