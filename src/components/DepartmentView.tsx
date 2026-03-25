@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { DepartmentData, Task, PlanningTask } from '../data/mockData';
 import type { AppSettings } from '../types/settings';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,7 +41,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     const [showDeletePasswordPrompt, setShowDeletePasswordPrompt] = useState(false);
     const [deletePasswordInput, setDeletePasswordInput] = useState('');
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-    const lastSentRef = React.useRef<string>("");
+    const lastSentRef = useRef<string>("");
 
     const handleConfirmDelete = () => {
         if (deletePasswordInput === '3400') {
