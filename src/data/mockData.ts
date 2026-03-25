@@ -52,14 +52,13 @@ export const isTaskPlanned = (task: PlanningTask, kw: number) => {
 
     // For periodic tasks, follow the cycle
     let step = 1;
-    if (freq.includes('wöchentlich') || freq.includes('wochentlich')) step = 1;
-    else if (freq.includes('alle 2 wochen') || freq.includes('14-tägig')) step = 2;
-    // ...
-    else if (freq.includes('monatlich')) step = 4;
-    else if (freq.includes('vierteljährlich')) step = 13;
-    else if (freq.includes('halbjährlich')) step = 26;
-    else if (freq.includes('jährlich')) step = 52;
-    else if (freq.includes('täglich')) step = 1;
+    if (freq.includes('wöchentlich') || freq.includes('weekly')) step = 1;
+    else if (freq.includes('alle 2 wochen') || freq.includes('biweekly')) step = 2;
+    else if (freq.includes('monatlich') || freq.includes('monthly')) step = 4;
+    else if (freq.includes('vierteljährlich') || freq.includes('quarterly')) step = 13;
+    else if (freq.includes('halbjährlich') || freq.includes('semi-annually')) step = 26;
+    else if (freq.includes('jährlich') || freq.includes('annually')) step = 52;
+    else if (freq.includes('täglich') || freq.includes('daily')) step = 1;
 
     return (kw - startKw) % step === 0;
   }
