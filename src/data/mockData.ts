@@ -100,26 +100,27 @@ export interface DepartmentData {
 }
 
 const calculateBottlenecks = (tasks: Task[]) => {
-  const currentKw = APP_CONFIG.CURRENT_KW;
-  
-  // Group all LATE tasks by title to find systemic bottlenecks
+  // Group all LATE-FINISHED tasks by title to find systemic historical bottlenecks
   const groups: Record<string, { title: string, count: number, totalDelay: number, maxDelay: number, translations?: any }> = {};
   
   tasks.forEach(t => {
-      if (t.status === 'Done') return; 
+      // Historical bottlenecks focus on tasks that were completed (status === 'Done') but late
+      if (t.status !== 'Done') return; 
       
-      const delta = currentKw - (t.kw || 0);
+      const doneKw = t.doneKw || t.kw;
+      const plannedKw = t.kw || 0;
+      const delta = doneKw - plannedKw;
       const buffer = getFrequencyBuffer(t.frequenz || '');
-      const currentDelay = delta - buffer;
+      const historicalDelay = delta - buffer;
       
-      if (currentDelay >= 0) { // It's past its frequency-based buffer
+      if (historicalDelay >= 0) { // It was finished past its frequency-based buffer
           const key = t.title;
           if (!groups[key]) {
               groups[key] = { title: t.title, count: 0, totalDelay: 0, maxDelay: 0, translations: t.translations };
           }
           groups[key].count++;
-          groups[key].totalDelay += Math.max(0, currentDelay);
-          groups[key].maxDelay = Math.max(groups[key].maxDelay, currentDelay);
+          groups[key].totalDelay += Math.max(0, historicalDelay);
+          groups[key].maxDelay = Math.max(groups[key].maxDelay, historicalDelay);
       }
   });
   
@@ -132,7 +133,7 @@ const calculateBottlenecks = (tasks: Task[]) => {
           maxDelay: g.maxDelay,
           translations: g.translations
       }))
-      .slice(0, 3); // FLOP-3
+      .slice(0, 2); // FLOP-2
 };
 
 export const recalculateDepartment = (dept: any): DepartmentData => {
