@@ -492,18 +492,19 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                                 {t('dashboard.critical')}
                                             </span>
                                         </div>
-                                        <div className="flex items-center justify-between">
-                                            <h4 className={`${compact ? 'text-lg' : 'text-xl'} font-black tracking-tight transition-all notranslate`}
+                                        <div className="flex items-center justify-between gap-4">
+                                            <h4 className={`${compact ? 'text-base' : 'text-lg'} font-black tracking-tight transition-all notranslate truncate flex-1`}
                                                 translate="no"
+                                                title={dept.name}
                                                 style={{ color: 'var(--color-text-main)' }}
                                             >{dept.name}</h4>
-                                            <div className="text-right">
-                                                <div className={`${compact ? 'text-3xl' : 'text-4xl'} font-mono font-black transition-transform drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]`}
+                                            <div className="text-right shrink-0">
+                                                <div className={`${compact ? 'text-2xl' : 'text-3xl'} font-mono font-black transition-transform drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]`}
                                                     style={{ color: '#f43f5e' }}
                                                 >
                                                     {dept.criticalCount}
                                                 </div>
-                                                <div className="text-[11px] uppercase font-black tracking-[0.2em] mt-1"
+                                                <div className="text-[10px] uppercase font-black tracking-[0.2em] mt-1 opacity-70"
                                                     style={{ color: 'var(--color-text-dim)' }}
                                                 >{t('dashboard.incidents')}</div>
                                             </div>
