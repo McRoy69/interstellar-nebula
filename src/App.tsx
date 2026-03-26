@@ -5,7 +5,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import DepartmentView from './components/DepartmentView';
 import SettingsView from './components/SettingsView';
-import { mockData, isTaskPlanned } from './data/mockData';
+import { mockData, isTaskPlanned, recalculateDepartment } from './data/mockData';
 import type { AppSettings } from './types/settings';
 import { defaultSettings } from './types/settings';
 import type { DepartmentData, Task } from './data/mockData';
@@ -147,10 +147,12 @@ function App() {
         return dept;
       }
 
-      return {
+      const updatedTasks = [...cleanExistingTasks, ...missingTasks].filter((ti: any) => (ti.year || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR);
+      
+      return recalculateDepartment({
         ...deptCopy,
-        tasks: [...cleanExistingTasks, ...missingTasks].filter((ti: any) => (ti.year || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR)
-      };
+        tasks: updatedTasks
+      });
     });
 
     if (JSON.stringify(syncedDepts) !== JSON.stringify(departments)) {

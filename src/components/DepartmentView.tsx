@@ -26,7 +26,7 @@ const getFreqKey = (f: string): string => {
     if (low.includes('jährlich') || low.includes('anual') || low === 'annually') return 'annually';
     return low;
 };
-import { isTaskPlanned } from '../data/mockData';
+import { isTaskPlanned, recalculateDepartment } from '../data/mockData';
 import { getTaskTranslations } from '../utils/translation';
 import { getFrequencyBuffer } from '../utils/dateUtils';
 
@@ -142,55 +142,12 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     React.useEffect(() => {
         if (!onUpdate) return;
 
-        const filteredTasks = localTasks.filter((taskItem: any) => (taskItem.year || taskItem.plannedYear || APP_CONFIG.CURRENT_YEAR) >= APP_CONFIG.CURRENT_YEAR);
-
-        // Statistics Logic: Only count tasks towards "geplant" if they are DONE or already LATE (past their frequency buffer)
-        const ytdTasks = filteredTasks.filter((ti: any) => ti.kw <= currentKw);
-
-        const efficiencyRelevantTasks = filteredTasks.filter((ti: any) => {
-            if (ti.status === 'Done') return true;
-            // Only count if it belongs to this year or past
-            const tYear = ti.year || ti.plannedYear || APP_CONFIG.CURRENT_YEAR;
-            if (tYear < APP_CONFIG.CURRENT_YEAR) return true;
-            if (tYear > APP_CONFIG.CURRENT_YEAR) return false;
-
-            const delta = currentKw - (ti.kw || ti.plannedKw || 1);
-            const buffer = getFrequencyBuffer(ti.frequenz || '');
-            return delta >= buffer;
-        });
-
-        const geplant = efficiencyRelevantTasks.length;
-        const currentErledigt = ytdTasks.filter((ti: any) => ti.status === 'Done');
-        
-        // A task is "punctual" if it was done within its frequency buffer
-        const erledigtPuenktlich = currentErledigt.filter((ti: any) => {
-             const dKw = ti.doneKw || ti.kw; // Fallback to planned kw if not recorded
-             const pKw = ti.kw || ti.plannedKw || dKw;
-             const delta = dKw - pKw;
-             const buffer = getFrequencyBuffer(ti.frequenz || '');
-             return delta < buffer;
-        }).length;
-
-        const spaetErledigt = currentErledigt.length - erledigtPuenktlich;
-        const erledigtTotal = currentErledigt.length;
-
-        const rate = geplant > 0 ? Math.round((erledigtTotal / geplant) * 100) : 100;
-
-        const updated: DepartmentData = {
+        const updated = recalculateDepartment({
             ...data,
             verantwortlicher,
             tasks: localTasks,
-            planningTasks: localPlanningTasks,
-            stats: {
-                ...data.stats,
-                geplant,
-                erledigt: erledigtTotal,
-                erledigtPuenktlich,
-                spaetErledigt,
-                offen: Number(efficiencyRelevantTasks.filter((ti: any) => ti.status !== 'Done').length) || 0,
-                erfüllungsquote: rate
-            }
-        };
+            planningTasks: localPlanningTasks
+        });
 
         const serialized = JSON.stringify({
             tasks: localTasks,
