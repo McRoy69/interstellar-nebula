@@ -58,7 +58,7 @@ function App() {
         }
 
         setSettings(mergedSettings);
-        setDepartments(finalDepts);
+        setDepartments(finalDepts.map(d => recalculateDepartment(d)));
         setIsLoaded(true);
       } catch (e) {
         console.error('Failed to load data from API', e);
