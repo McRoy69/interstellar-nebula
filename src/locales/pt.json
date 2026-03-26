@@ -19,7 +19,7 @@
             "criticalPoints": "PONTOS CRÍTICOS",
             "activeSystems": "DEPARTAMENTOS ATIVOS",
             "activeDepartments": "DEPARTAMENTOS MONITORADOS",
-            "performancePerDept": "Desempenho por Departamento",
+            "performancePerDept": "Desempenho Pontual por Departamento",
             "delayWarnings": "Alertas de Atraso",
             "critical": "CRÍTICO",
             "incidents": "Incidentes",

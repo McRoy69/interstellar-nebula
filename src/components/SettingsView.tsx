@@ -78,7 +78,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
         const newDept: DepartmentData = {
             id: newId,
             name: 'New Department',
-            stats: { geplant: 0, erledigt: 0, erledigtPuenktlich: 0, offen: 0, erfüllungsquote: 0 },
+            stats: { geplant: 0, erledigt: 0, erledigtPuenktlich: 0, offen: 0, erfüllungsquote: 0, pünktlichRate: 0 },
             tasks: [],
             planningTasks: []
         };

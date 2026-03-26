@@ -320,7 +320,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, departments, settings
                                             if (b.name === 'Armoloy') return -1;
                                             return a.name.localeCompare(b.name);
                                         })
-                                        .map(d => ({ name: d.name, value: d.stats?.erfüllungsquote || 0 }))
+                                        .map(d => ({ name: d.name, value: d.stats?.pünktlichRate || 0 }))
                                     } margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorPerf" x1="0" y1="0" x2="0" y2="1">

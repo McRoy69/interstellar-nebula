@@ -81,6 +81,7 @@ export interface DepartmentData {
     erledigtPuenktlich: number;
     offen: number;
     erfüllungsquote: number;
+    pünktlichRate: number;
     spaetErledigt?: number;
   };
   tasks: Task[];
@@ -185,6 +186,7 @@ export const recalculateDepartment = (dept: any): DepartmentData => {
       erledigtPuenktlich,
       offen,
       erfüllungsquote: rate,
+      pünktlichRate: totalErledigtTasks.length > 0 ? Math.round((erledigtPuenktlich / totalErledigtTasks.length) * 100) : 100,
       spaetErledigt
     },
     tasks: filteredTasks,
