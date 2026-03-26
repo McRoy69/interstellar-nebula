@@ -727,9 +727,12 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                                     }
 
                                                     // Operational Journal: Delay priority (most urgent first)
-                                                    const delayA = currentKw - a.kw;
-                                                    const delayB = currentKw - b.kw;
-                                                    if (delayB !== delayA) return delayB - delayA;
+                                                    const bufferA = getFrequencyBuffer(a.frequenz || '');
+                                                    const bufferB = getFrequencyBuffer(b.frequenz || '');
+                                                    const effectiveDelayA = (currentKw - a.kw) - bufferA;
+                                                    const effectiveDelayB = (currentKw - b.kw) - bufferB;
+
+                                                    if (effectiveDelayB !== effectiveDelayA) return effectiveDelayB - effectiveDelayA;
                                                     if (b.year !== a.year) return b.year - a.year;
                                                     return b.kw - a.kw;
                                                 })
