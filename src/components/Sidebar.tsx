@@ -79,7 +79,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
             </div>
 
             {/* Navigation */}
-            <nav className={`flex-1 ${isCollapsed ? 'p-2' : 'p-8'} space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar transition-all duration-500`}>
+            <nav className={`flex-1 ${isCollapsed ? 'p-2' : 'p-8'} space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar transition-all duration-500 backdrop-blur-xl`}
+                style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                    boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.1)'
+                }}
+            >
                 <div
                     onClick={() => onSelect('dashboard')}
                     className={`nav-item ${activeId === 'dashboard' ? 'active' : ''} ${isCollapsed ? 'justify-center px-0' : ''}`}
