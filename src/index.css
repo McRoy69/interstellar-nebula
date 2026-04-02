@@ -256,12 +256,18 @@ body {
 }
 
 /* Sidebar specific scrollbar to be more visible on dark backgrounds */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.08);
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--color-accent);
+  border-radius: 2px;
+  box-shadow: 0 0 4px var(--color-accent-glow);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {

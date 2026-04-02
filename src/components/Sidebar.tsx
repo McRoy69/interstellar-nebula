@@ -78,13 +78,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                 </div>
             </div>
 
-            {/* Navigation */}
-            <nav className={`flex-1 ${isCollapsed ? 'p-2' : 'p-8'} space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar transition-all duration-500 backdrop-blur-xl`}
+            {/* Navigation - "The Machining Slot" industrial technical bay */}
+            <nav className={`flex-1 ${isCollapsed ? 'p-2' : 'p-8'} space-y-3 overflow-y-auto overflow-x-hidden custom-scrollbar transition-all duration-500 relative shadow-2xl z-20`}
                 style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                    boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.1)'
+                    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), transparent 80px, transparent calc(100% - 80px), rgba(0,0,0,0.4)), repeating-linear-gradient(0deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 1px, transparent 1px, transparent 4px)',
+                    borderTop: '1px solid #89aef3',
+                    borderBottom: '1px solid #89aef3',
+                    boxShadow: 'inset 0 25px 40px -10px rgba(0,0,0,0.8), inset 0 -25px 40px -10px rgba(0,0,0,0.8)',
+                    maskImage: 'linear-gradient(to bottom, transparent, black 2%, black 98%, transparent)'
                 }}
             >
                 <div
