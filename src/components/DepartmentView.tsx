@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     ClipboardList, Archive, BarChart3, Settings as Tools, Search,
     CheckCircle2, Clock, AlertTriangle, ChevronRight, Download,
-    Calendar, User, Plus, Info, Activity, X, Filter, Trash2, Lock, Pencil, Save
+    Calendar, User, Plus, Info, Activity, X, Filter, Trash2, Pencil, Save
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } from 'recharts';
 import { useTranslation } from 'react-i18next';
@@ -49,7 +49,6 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     const [localPlanningTasks, setLocalPlanningTasks] = useState(data.planningTasks || []);
 
     const currentKw = APP_CONFIG.CURRENT_KW; // Baseline for color logic
-    const [isPlanAuthorized, setIsPlanAuthorized] = useState(true);
     const [showDeletePasswordPrompt, setShowDeletePasswordPrompt] = useState(false);
     const [deletePasswordInput, setDeletePasswordInput] = useState('');
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
