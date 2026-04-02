@@ -49,9 +49,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                 <X size={24} />
             </button>
             {/* Brand Section */}
-            <div className={`${isCollapsed ? 'p-4' : 'p-10'} pb-8 transition-all duration-500`}>
+            {/* Brand Section - Fixed height for perfect alignment */}
+            <div className={`${isCollapsed ? 'p-4' : 'px-8 h-[120px]'} flex items-center transition-all duration-500`}>
                 <div className="flex items-center gap-5">
-                    <div className={`${isCollapsed ? 'w-[50px] h-[40px]' : 'w-[140px] h-[84px]'} flex items-center justify-center shrink-0 p-0 transition-all hover:scale-105 duration-300 overflow-hidden`}>
+                    <div className={`${isCollapsed ? 'w-[50px] h-[40px]' : 'w-[110px] h-[66px]'} flex items-center justify-center shrink-0 p-0 transition-all hover:scale-105 duration-300 overflow-hidden`}>
                         <img
                             src="/blessing-logo.png"
                             alt="Logo"
@@ -98,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeId, onSelect, departments, isOp
                 </div>
 
                 {!isCollapsed ? (
-                    <div className="pt-10 pb-4 px-5 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
+                    <div className="pt-10 pb-4 px-5 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] h-[50px]">
                         {t('sidebar.productionUnits')}
                     </div>
                 ) : (

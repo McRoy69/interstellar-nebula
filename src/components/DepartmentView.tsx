@@ -454,14 +454,14 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                 style={{ backgroundColor: 'var(--color-accent-glow)', opacity: 0.3 }}
             />
 
-            {/* Sub-Header - Compact Design */}
-            <div className={`backdrop-blur-xl border-b ${compact ? 'px-6 lg:px-8 py-2 lg:py-3.5' : 'px-6 lg:px-12 py-3 lg:py-5'} relative z-10 w-full shadow-lg transition-all`}
+            {/* Sub-Header - Optimized for 120px Sidebar Alignment */}
+            <div className={`backdrop-blur-xl border-b ${compact ? 'px-6 lg:px-8 h-[90px]' : 'px-6 lg:px-12 h-[120px]'} flex items-center relative z-10 w-full shadow-lg transition-all`}
                 style={{
                     backgroundColor: 'var(--color-bg-header)',
                     borderColor: 'var(--color-border)'
                 }}
             >
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 max-w-[2000px] mx-auto w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 max-w-[2000px] mx-auto w-full">
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-[10px] font-black tracking-[0.2em] mb-1"
                             style={{ color: 'var(--color-accent)' }}
