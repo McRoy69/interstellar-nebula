@@ -49,9 +49,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     const [localPlanningTasks, setLocalPlanningTasks] = useState(data.planningTasks || []);
 
     const currentKw = APP_CONFIG.CURRENT_KW; // Baseline for color logic
-    const [isPlanAuthorized, setIsPlanAuthorized] = useState(false);
-    const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
-    const [passwordInput, setPasswordInput] = useState('');
+    const [isPlanAuthorized, setIsPlanAuthorized] = useState(true);
     const [showDeletePasswordPrompt, setShowDeletePasswordPrompt] = useState(false);
     const [deletePasswordInput, setDeletePasswordInput] = useState('');
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -70,6 +68,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             setDeletePasswordInput('');
         }
     };
+
+
 
     React.useEffect(() => {
         setLocalTasks(data.tasks);
@@ -237,6 +237,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     };
 
     const handleUpdatePlanningTask = (taskId: string, updates: Partial<PlanningTask>) => {
+        if (!confirm(t('common.confirmAction') || '¿Desea guardar los cambios en esta tarea?')) return;
         setLocalPlanningTasks(prev => prev.map(t => {
             if (t.id === taskId) {
                 // If user changes start week or frequency, clear the explicit weeks map
@@ -253,6 +254,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     };
 
     const handleToggleWeek = (taskId: string, kw: number) => {
+        if (!confirm(t('common.confirmAction') || '¿Desea cambiar el estado de esta semana?')) return;
         setLocalPlanningTasks(prev => prev.map(task => {
             if (task.id !== taskId) return task;
 
@@ -271,17 +273,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         }));
     };
 
-    const verifyPlanPassword = () => {
-        if (passwordInput === '3400') {
-            setIsPlanAuthorized(true);
-            setActiveTab('Plan');
-            setShowPasswordPrompt(false);
-            setPasswordInput('');
-        } else {
-            alert('Passwort falsch / Contraseña incorrecta');
-            setPasswordInput('');
-        }
-    };
+
 
     const exportToPDF = () => {
         const doc = new jsPDF({
@@ -556,11 +548,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                         <button
                             key={tab.id}
                             onClick={() => {
-                                if (tab.id === 'Plan' && !isPlanAuthorized) {
-                                    setShowPasswordPrompt(true);
-                                } else {
-                                    setActiveTab(tab.id as TabType);
-                                }
+                                setActiveTab(tab.id as TabType);
                             }}
                             className={`flex items-center gap-3 px-8 py-3.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
                                 ? 'text-white shadow-lg transform scale-[1.02]'
@@ -571,7 +559,6 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                 color: activeTab === tab.id ? 'var(--color-bg-sidebar)' : 'var(--color-text-dim)'
                             }}
                         >
-                            {tab.id === 'Plan' && !isPlanAuthorized && <Lock size={16} className="mr-1 opacity-50" />}
                             {React.cloneElement(tab.icon as React.ReactElement<any>, { size: 20 })}
                             {tab.label}
                         </button>
@@ -654,7 +641,11 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                             tasks={sortedPlanningTasks} // Use sorted tasks here
                                             onAddTask={handleAddTask}
                                             onUpdateTask={handleUpdatePlanningTask}
-                                            onDeleteTask={(id) => setLocalPlanningTasks(prev => prev.filter(t => t.id !== id))}
+                                            onDeleteTask={(id) => {
+                                                if (confirm(t('common.confirmDelete') || '¿Desea eliminar esta tarea de la planificación?')) {
+                                                    setLocalPlanningTasks(prev => prev.filter(t => t.id !== id));
+                                                }
+                                            }}
                                             onToggleWeek={handleToggleWeek}
                                             currentKw={currentKw}
                                         />
@@ -700,6 +691,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                             onDeleteTask={(id: string) => {
                                                 setPendingDeleteId(id);
                                                 setShowDeletePasswordPrompt(true);
+                                                setDeletePasswordInput('');
                                             }}
                                         />
                                     ) : activeTab === 'Statistik' ? (
@@ -742,65 +734,6 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                     </AnimatePresence>
                 </div>
             </div>
-
-            {/* Password Prompt Modal for Planung */}
-            <AnimatePresence>
-                {showPasswordPrompt && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="w-full max-w-sm p-10 rounded-[2.5rem] shadow-2xl border flex flex-col items-center"
-                            style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
-                        >
-                            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-6 border border-amber-500/20">
-                                <Lock size={32} className="text-amber-500" />
-                            </div>
-                            <h3 className="text-lg font-black uppercase tracking-tight mb-2 text-center" style={{ color: 'var(--color-text-main)' }}>
-                                {t('department.planningAccess')}
-                            </h3>
-                            <p className="text-xs font-bold uppercase tracking-widest text-center mb-8 opacity-60" style={{ color: 'var(--color-text-dim)' }}>
-                                Passwort erforderlich
-                            </p>
-                            <input
-                                type="password"
-                                autoFocus
-                                value={passwordInput}
-                                onChange={(e) => setPasswordInput(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && verifyPlanPassword()}
-                                placeholder="****"
-                                className="w-full bg-black/5 border border-black/10 rounded-2xl px-6 py-4 text-center text-2xl font-mono tracking-[0.5em] outline-none shadow-inner mb-6"
-                                style={{ color: 'var(--color-text-main)' }}
-                            />
-                            <div className="flex gap-4 w-full">
-                                <button
-                                    onClick={() => {
-                                        setShowPasswordPrompt(false);
-                                        setPasswordInput('');
-                                    }}
-                                    className="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest bg-black/5 hover:bg-black/10 transition-colors"
-                                    style={{ color: 'var(--color-text-dim)' }}
-                                >
-                                    {t('common.cancel') || 'Abbrechen'}
-                                </button>
-                                <button
-                                    onClick={verifyPlanPassword}
-                                    className="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95"
-                                    style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-bg-sidebar)' }}
-                                >
-                                    {t('common.confirm') || 'Bestätigen'}
-                                </button>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
             {/* Password Prompt Modal for Journal Deletion */}
             <AnimatePresence>
@@ -854,7 +787,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                     className="flex-1 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest text-white transition-all shadow-lg hover:shadow-amber-500/20 active:scale-95"
                                     style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-bg-sidebar)' }}
                                 >
-                                    {t('common.confirm') || 'OK'}
+                                    {t('common.confirm') || 'Bestätigen'}
                                 </button>
                             </div>
                         </motion.div>

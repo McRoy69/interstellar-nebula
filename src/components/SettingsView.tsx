@@ -59,6 +59,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
         }
     };
 
+
+
     const handleThresholdChange = (key: keyof AppSettings['thresholds'], value: number) => {
         setSettings(prev => ({
             ...prev,
@@ -776,11 +778,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                 </button>
             </div>
 
+
             {/* Password Prompt Modal */}
             {showPasswordPrompt && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-300 p-6">
-                    <div className="w-full max-w-sm bg-white p-10 rounded-[2.5rem] shadow-2xl border flex flex-col items-center animate-in zoom-in-95 duration-300"
-                        style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}
+                    <div className="w-full max-sm-xs:scale-90 p-10 rounded-[2.5rem] shadow-2xl border flex flex-col items-center animate-in zoom-in-95 duration-300"
+                        style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)', maxWidth: '400px' }}
                     >
                         <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-6 border border-amber-500/20">
                             <Settings size={32} className="text-amber-500" />
@@ -798,7 +801,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                             onChange={(e) => setPasswordInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && verifyPassword()}
                             placeholder="****"
-                            className="w-full bg-black/5 border-none rounded-2xl p-6 text-center text-2xl font-black tracking-[0.5em] focus:ring-2 focus:ring-amber-500 transition-all mb-6"
+                            className="w-full bg-black/5 border border-black/10 rounded-2xl p-6 text-center text-2xl font-black tracking-[0.5em] focus:ring-2 focus:ring-amber-500 transition-all mb-6"
                             style={{ color: 'var(--color-text-main)' }}
                         />
                         <div className="flex gap-3 w-full">
@@ -807,7 +810,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, setSettings, depa
                                 className="flex-1 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all hover:bg-black/5"
                                 style={{ color: 'var(--color-text-dim)' }}
                             >
-                                Abbrechen
+                                {t('common.cancel') || 'Abbrechen'}
                             </button>
                             <button
                                 onClick={verifyPassword}
