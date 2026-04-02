@@ -454,8 +454,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                 style={{ backgroundColor: 'var(--color-accent-glow)', opacity: 0.3 }}
             />
 
-            {/* Sub-Header */}
-            <div className={`backdrop-blur-xl border-b ${compact ? 'px-6 lg:px-8 py-3 lg:py-5' : 'px-6 lg:px-12 py-4 lg:py-8'} relative z-10 w-full shadow-lg transition-all`}
+            {/* Sub-Header - Compact Design */}
+            <div className={`backdrop-blur-xl border-b ${compact ? 'px-6 lg:px-8 py-2 lg:py-3.5' : 'px-6 lg:px-12 py-3 lg:py-5'} relative z-10 w-full shadow-lg transition-all`}
                 style={{
                     backgroundColor: 'var(--color-bg-header)',
                     borderColor: 'var(--color-border)'
@@ -463,18 +463,18 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             >
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 max-w-[2000px] mx-auto w-full">
                     <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-black tracking-[0.2em] mb-2"
+                        <div className="flex items-center gap-2 text-[10px] font-black tracking-[0.2em] mb-1"
                             style={{ color: 'var(--color-accent)' }}
                         >
                             <span>{t('department.productionUnit')}</span>
-                            <ChevronRight size={14} />
+                            <ChevronRight size={12} />
                             <span style={{ color: 'var(--color-text-dim)' }}>{t('department.operativeControl')}</span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-4 lg:gap-6">
-                            <h1 className={`${compact ? 'text-3xl lg:text-4xl' : 'text-4xl lg:text-6xl'} font-black tracking-tight font-sans transition-all`}
+                        <div className="flex flex-wrap items-center gap-4 lg:gap-5">
+                            <h1 className={`${compact ? 'text-2xl lg:text-3xl' : 'text-3xl lg:text-4xl'} font-black tracking-tight font-sans transition-all`}
                                 style={{ color: 'var(--color-text-main)' }}
                             >{data.name}</h1>
-                            <div className="flex items-center gap-3 px-4 py-2 rounded-lg group transition-all shadow-inner focus-within:ring-2 focus-within:ring-opacity-50"
+                            <div className="flex items-center gap-3 px-3 py-1.5 rounded-lg group transition-all shadow-inner focus-within:ring-2 focus-within:ring-opacity-50"
                                 style={{
                                     backgroundColor: 'var(--color-field-bg)',
                                     borderColor: 'var(--color-border)',
@@ -493,9 +493,9 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                         </div>
                     </div>
 
-                    {/* Quick Metrics */}
-                    <div className="flex flex-wrap gap-4 lg:gap-6">
-                        <div className="px-6 lg:px-8 py-3 lg:py-4 rounded-xl shadow-lg text-center relative overflow-hidden group border flex-1 min-w-[120px]"
+                    {/* Quick Metrics - Compact */}
+                    <div className="flex flex-wrap gap-2 lg:gap-4">
+                        <div className="px-5 lg:px-6 py-1.5 lg:py-2.5 rounded-xl shadow-lg text-center relative overflow-hidden group border flex-1 min-w-[100px]"
                             style={{
                                 backgroundColor: 'var(--color-bg-card)',
                                 borderColor: 'var(--color-border)'
@@ -504,39 +504,39 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                                 style={{ backgroundColor: 'var(--color-accent-glow)' }}
                             />
-                            <div className="text-[10px] uppercase font-black tracking-[0.2em] mb-1 relative z-10"
+                            <div className="text-[9px] uppercase font-black tracking-[0.2em] mb-0 relative z-10"
                                 style={{ color: 'var(--color-accent)' }}
                             >
                                 {t('department.stats.currentKw')}
                             </div>
                             <div className="flex items-center justify-center gap-3 mt-1 lg:mt-2 relative z-10">
-                                <span className="text-3xl lg:text-4xl font-mono font-black transition-colors"
+                                <span className="text-2xl lg:text-3xl font-mono font-black transition-colors"
                                     style={{
                                         color: 'var(--color-text-main)',
-                                        textShadow: '0 0 15px var(--color-accent-glow)'
+                                        textShadow: '0 0 10px var(--color-accent-glow)'
                                     }}
                                 >
                                     {currentKw}
                                 </span>
                             </div>
                         </div>
-                        <div className="px-6 lg:px-8 py-3 lg:py-4 rounded-xl shadow-lg text-center min-w-[120px] flex-1 border"
+                        <div className="px-5 lg:px-6 py-1.5 lg:py-2.5 rounded-xl shadow-lg text-center min-w-[110px] flex-1 border"
                             style={{
                                 backgroundColor: 'var(--color-bg-card)',
                                 borderColor: 'var(--color-border)'
                             }}
                         >
-                            <div className="text-[10px] uppercase font-black tracking-[0.2em] mb-1"
+                            <div className="text-[9px] uppercase font-black tracking-[0.2em] mb-0"
                                 style={{ color: 'var(--color-text-dim)' }}
                             >{t('department.efficiency')}</div>
-                            <span className={`text-2xl lg:text-3xl font-mono font-black block leading-tight ${data.stats.erfüllungsquote >= settings.thresholds.efficiencyTarget ? 'text-emerald-500' : data.stats.erfüllungsquote >= settings.thresholds.efficiencyTarget * 0.85 ? 'text-amber-500' : 'text-rose-500'}`}>{data.stats.erfüllungsquote}%</span>
+                            <span className={`text-xl lg:text-2xl font-mono font-black block leading-tight ${data.stats.erfüllungsquote >= settings.thresholds.efficiencyTarget ? 'text-emerald-500' : data.stats.erfüllungsquote >= settings.thresholds.efficiencyTarget * 0.85 ? 'text-amber-500' : 'text-rose-500'}`}>{data.stats.erfüllungsquote}%</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Tab Navigation */}
-            <div className={`${compact ? 'px-8 mt-6' : 'px-12 mt-10'} max-w-[2000px] w-full mx-auto relative z-10 transition-all`}>
+            {/* Tab Navigation - Tighter Margin */}
+            <div className={`${compact ? 'px-8 mt-4' : 'px-12 mt-6'} max-w-[2000px] w-full mx-auto relative z-10 transition-all`}>
                 <div className="flex gap-2 p-2 rounded-2xl w-fit border shadow-lg"
                     style={{
                         backgroundColor: 'var(--color-bg-card)',
