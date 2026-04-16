@@ -17433,5 +17433,60 @@
         "maxDelay": 1
       }
     ]
+  },
+  {
+    "id": "99",
+    "name": "Unterhalt",
+    "verantwortlicher": "Jesus Lopez",
+    "stats": {
+      "geplant": 10,
+      "erledigt": 3,
+      "offen": 7,
+      "erfüllungsquote": 30,
+      "erledigtPuenktlich": 1,
+      "spaetErledigt": 2
+    },
+    "tasks": [
+      {
+        "id": "auto-99-1",
+        "title": "Cambio de filtro",
+        "kw": 5,
+        "plannedKw": 5,
+        "year": 2026,
+        "anlage": "Sistema A",
+        "status": "Done",
+        "visum": "JL",
+        "datum": "2026-03-05",
+        "wer": "MA",
+        "frequenz": "weekly"
+      },
+      {
+        "id": "auto-99-2",
+        "title": "Cambio de filtro",
+        "kw": 6,
+        "plannedKw": 6,
+        "year": 2026,
+        "anlage": "Sistema A",
+        "status": "Done",
+        "visum": "JL",
+        "datum": "2026-03-12",
+        "wer": "MA",
+        "frequenz": "weekly"
+      },
+      {
+        "id": "auto-99-3",
+        "title": "Revisión motor",
+        "kw": 7,
+        "plannedKw": 7,
+        "year": 2026,
+        "anlage": "Motor C",
+        "status": "Done",
+        "visum": "JL",
+        "datum": "2026-03-25",
+        "wer": "MA",
+        "frequenz": "weekly"
+      }
+    ],
+    "planningTasks": []
   }
 ]

@@ -211,7 +211,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             alert('Datum und Visum müssen ausgefüllt sein. / Fecha y Visum deben estar completos.');
             return;
         }
-        setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'Done' } : t));
+        setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'Done', doneKw: currentKw } : t));
     };
 
 

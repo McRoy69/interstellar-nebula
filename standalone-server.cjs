@@ -14,37 +14,87 @@ if (dns.setDefaultResultOrder) {
     dns.setDefaultResultOrder('ipv4first');
 }
 
-// SQLite Database Setup
+// Database Setup: SQLite (Local) or MySQL (Production/Hostinger)
 const sqlite3 = require('sqlite3').verbose();
-const dbPath = process.env.DATABASE_PATH || path.join(__dirname, 'database.sqlite');
+const mysql = require('mysql2');
 
-// Ensure directory exists for DB if a custom path is provided
-const dbDir = path.dirname(dbPath);
-if (!fs.existsSync(dbDir)) {
-    console.log(`Creating directory for database: ${dbDir}`);
-    fs.mkdirSync(dbDir, { recursive: true });
+const isMySQL = !!(process.env.MYSQL_HOST || process.env.MYSQL_URL);
+let db;
+
+if (isMySQL) {
+    console.log('Using MySQL database (Production mode)');
+    const mysqlConfig = process.env.MYSQL_URL || {
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE,
+        port: process.env.MYSQL_PORT || 3306,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    };
+    db = mysql.createPool(mysqlConfig);
+
+    // Verify connection and create table
+    db.query(`CREATE TABLE IF NOT EXISTS app_state (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        data LONGTEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`, (err) => {
+        if (err) {
+            console.error('CRITICAL: Error initializing MySQL table:', err.message);
+        } else {
+            console.log('MySQL schema verified.');
+        }
+    });
+} else {
+    const dbPath = process.env.DATABASE_PATH || path.join(__dirname, 'database.sqlite');
+    console.log(`Using SQLite database at: ${dbPath} (Local mode)`);
+    
+    // Ensure directory exists for DB if a custom path is provided
+    const dbDir = path.dirname(dbPath);
+    if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
+    }
+
+    db = new sqlite3.Database(dbPath, (err) => {
+        if (err) {
+            console.error('CRITICAL: Error opening SQLite DB:', err.message);
+            process.exit(1);
+        } else {
+            db.run(`CREATE TABLE IF NOT EXISTS app_state (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                data TEXT NOT NULL,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`, (err) => {
+                if (err) console.error('Error creating SQLite table:', err.message);
+                else console.log('SQLite schema verified.');
+            });
+        }
+    });
 }
 
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('CRITICAL: Error opening database:', err.message);
-        process.exit(1); // Exit if DB cannot be opened
-    } else {
-        console.log(`Connected to the SQLite database at: ${dbPath}`);
-        // Initialize table for state persistence
-        db.run(`CREATE TABLE IF NOT EXISTS app_state (
-            id INTEGER PRIMARY KEY,
-            data TEXT NOT NULL,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`, (err) => {
-            if (err) {
-                console.error('Error creating table:', err.message);
-            } else {
-                console.log('Database schema verified.');
-            }
+// Unified Database Helpers
+function dbGet(sql, params, callback) {
+    if (isMySQL) {
+        db.query(sql, params, (err, rows) => {
+            callback(err, rows && rows.length > 0 ? rows[0] : null);
         });
+    } else {
+        db.get(sql, params, callback);
     }
-});
+}
+
+function dbRun(sql, params, callback) {
+    if (isMySQL) {
+        db.query(sql, params, (err, results) => {
+            const context = { lastID: results ? results.insertId : null };
+            if (callback) callback.call(context, err);
+        });
+    } else {
+        db.run(sql, params, callback);
+    }
+}
 
 app.use(express.json({ limit: '50mb' }));
 
@@ -310,7 +360,7 @@ const sendReport = async (isAutomated = false, providedData = null) => {
         if (providedData) {
             handleData(null);
         } else {
-            db.get('SELECT data FROM app_state ORDER BY id DESC LIMIT 1', (err, row) => {
+            dbGet('SELECT data FROM app_state ORDER BY id DESC LIMIT 1', [], (err, row) => {
                 if (err) return reject(err);
                 if (!row) {
                     // Minimo fallback para evitar crash si no hay nada en DB
@@ -341,7 +391,7 @@ if (fs.existsSync(distPath)) {
 
 // API Endpoints
 app.get('/api/data', (req, res) => {
-    db.get('SELECT data FROM app_state ORDER BY id DESC LIMIT 1', (err, row) => {
+    dbGet('SELECT data FROM app_state ORDER BY id DESC LIMIT 1', [], (err, row) => {
         if (err) {
             console.error('DB Get Error:', err.message);
             res.status(500).json({ error: err.message });
@@ -377,7 +427,7 @@ app.get('/api/translate', async (req, res) => {
 
 app.post('/api/data', (req, res) => {
     const data = JSON.stringify(req.body);
-    db.run('INSERT INTO app_state (data, updated_at) VALUES (?, CURRENT_TIMESTAMP)', [data], function (err) {
+    dbRun('INSERT INTO app_state (data, updated_at) VALUES (?, CURRENT_TIMESTAMP)', [data], function (err) {
         if (err) {
             console.error('DB Post Error:', err.message);
             res.status(500).json({ error: err.message });

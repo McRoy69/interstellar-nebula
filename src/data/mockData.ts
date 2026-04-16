@@ -1,6 +1,6 @@
 import realData from './realData.json';
 import { APP_CONFIG } from '../config';
-import { getFrequencyBuffer } from '../utils/dateUtils';
+import { getFrequencyBuffer, getISOWeek } from '../utils/dateUtils';
 
 export interface Task {
   id: string;
@@ -108,7 +108,15 @@ const calculateBottlenecks = (tasks: Task[]) => {
       // Historical bottlenecks focus on tasks that were completed (status === 'Done') but late
       if (t.status !== 'Done') return; 
       
-      const doneKw = t.doneKw || t.kw;
+      let doneKw = t.doneKw;
+      if (!doneKw && t.datum) {
+          const parsedDate = new Date(t.datum);
+          if (!isNaN(parsedDate.getTime())) {
+              doneKw = getISOWeek(parsedDate);
+          }
+      }
+      doneKw = doneKw || t.kw || 0;
+
       const plannedKw = t.kw || 0;
       const delta = doneKw - plannedKw;
       const buffer = getFrequencyBuffer(t.frequenz || '');
@@ -165,7 +173,12 @@ export const recalculateDepartment = (dept: any): DepartmentData => {
   
   // A task is "punctual" if it was done within its frequency buffer
   const erledigtPuenktlich = totalErledigtTasks.filter((t: any) => {
-      const dKw = t.doneKw || t.kw;
+      let dKw = t.doneKw;
+      if (!dKw && t.datum) {
+          const parsedDate = new Date(t.datum);
+          if (!isNaN(parsedDate.getTime())) dKw = getISOWeek(parsedDate);
+      }
+      dKw = dKw || t.kw;
       const pKw = t.kw || t.plannedKw || dKw;
       const delta = dKw - pKw;
       const buffer = getFrequencyBuffer(t.frequenz || '');
