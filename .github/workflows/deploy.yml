@@ -39,8 +39,12 @@ jobs:
             git reset --hard origin/${{ github.ref_name }}
             # He quitado 'git clean -fd' para proteger tu base de datos y archivos .env
 
-            # 3. Reconstruir e Iniciar con Docker Compose
-            # Probamos con 'docker compose' (nuevo) y 'docker-compose' (viejo)
-            (docker compose up -d --build) || (docker-compose up -d --build) || (docker restart wartungsplan)
+            # 3. Reconstrucción AGRESIVA (Forzar recreación y limpieza de caché)
+            docker compose down || true
+            docker compose build --no-cache
+            docker compose up -d --force-recreate
 
-            echo "Despliegue finalizado con reconstrucción de imagen."
+            # 4. Limpieza de imágenes huérfanas para ahorrar espacio
+            docker image prune -f
+            
+            echo "Despliegue forzado completado exitosamente."
