@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - '*' # Ejecutar en cualquier rama para facilitar las pruebas
+      - '*'
 
 jobs:
   build-and-deploy:
@@ -13,18 +13,18 @@ jobs:
       - name: 1. Descargar Código
         uses: actions/checkout@v4
 
-      - name: 2. Configurar Node.js (Vite/Tailwind 4)
+      - name: 2. Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
 
-      - name: 3. Construir Proyecto (En GitHub para ahorrar RAM en VPS)
+      - name: 3. Construir Proyecto (GitHub)
         run: |
           npm install
           npm run build
 
-      - name: 4. Subir archivos al servidor (Temp)
+      - name: 4. Subir archivos (Temp)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
@@ -34,38 +34,56 @@ jobs:
           target: "~/deploy_tmp"
           strip_components: 0
 
-      - name: 5. Sincronizar y Reiniciar (Detección de Ruta Real)
+      - name: 5. Super Diagnóstico y Reinicio
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            # --- BUSCAR RUTA DEL PROYECTO ---
-            REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
+            echo "--- BUSCANDO RUTA REAL ---"
+            # Técnica 1: Etiqueta de Docker Compose
+            REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
             
+            # Técnica 2: Volúmenes si la 1 falla
             if [ -z "$REAL_PATH" ]; then
-              if [ -d "$HOME/interstellar-nebula" ]; then REAL_PATH="$HOME/interstellar-nebula";
-              elif [ -d "/root/interstellar-nebula" ]; then REAL_PATH="/root/interstellar-nebula";
-              elif [ -d "/var/www/interstellar-nebula" ]; then REAL_PATH="/var/www/interstellar-nebula";
-              else REAL_PATH="$HOME/interstellar-nebula"; fi
+                REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
             fi
             
-            # --- SINCRONIZACIÓN Y REINICIO ---
-            cp -r ~/deploy_tmp/dist $REAL_PATH/
-            cp ~/deploy_tmp/standalone-server.cjs $REAL_PATH/
-            cp ~/deploy_tmp/package*.json $REAL_PATH/
-            cp ~/deploy_tmp/Dockerfile $REAL_PATH/
-            cp ~/deploy_tmp/docker-compose.yml $REAL_PATH/
-            
-            cd $REAL_PATH
-            
-            # Detectar comando Docker
-            DOCKER_CMD="docker compose"
-            if ! docker compose version &> /dev/null; then
-              DOCKER_CMD="docker-compose"
+            # Técnica 3: Fallback manual
+            if [ -z "$REAL_PATH" ]; then
+                [ -d "/root/interstellar-nebula" ] && REAL_PATH="/root/interstellar-nebula"
+                [ -d "/var/www/interstellar-nebula" ] && REAL_PATH="/var/www/interstellar-nebula"
             fi
             
-            $DOCKER_CMD up -d --build --force-recreate
+            echo "RESULTADO RUTA: $REAL_PATH"
+            
+            if [ ! -z "$REAL_PATH" ]; then
+                echo "Sincronizando en $REAL_PATH..."
+                cp -r ~/deploy_tmp/dist $REAL_PATH/
+                cp ~/deploy_tmp/standalone-server.cjs $REAL_PATH/
+                cp ~/deploy_tmp/package*.json $REAL_PATH/
+                cp ~/deploy_tmp/Dockerfile $REAL_PATH/
+                cp ~/deploy_tmp/docker-compose.yml $REAL_PATH/
+                cd $REAL_PATH
+            else
+                echo "ADVERTENCIA: No se detectó ruta activa. Usando carpeta por defecto."
+                mkdir -p ~/interstellar-nebula
+                cp -r ~/deploy_tmp/* ~/interstellar-nebula/
+                cd ~/interstellar-nebula
+            fi
+            
+            # Reiniciar
+            docker compose up -d --build --force-recreate
+            
+            echo "--- VERIFICACIÓN POST-ARRANQUE ---"
+            sleep 5
+            echo "Estado Contenedores:"
+            docker ps
+            echo "Contenido de carpeta dist en el contenedor:"
+            docker exec wartungsplan ls -la /app/dist || echo "Carpeta dist no encontrada en el contenedor!"
+            echo "Logs del servidor (Últimas 20 líneas):"
+            docker logs --tail 20 wartungsplan
+            
             rm -rf ~/deploy_tmp
-            echo "Despliegue de producción completado con éxito."
+            echo "Fin del super diagnóstico."
