@@ -36,41 +36,37 @@ jobs:
           source: "deploy.tar.gz"
           target: "~/"
 
-      - name: 6. Sincronización Detallada y Espionaje de Configuración
+      - name: 6. Sincronización y Reinicio Profesional
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            echo "--- ESPIANDO CONFIGURACIÓN DE OPENCLAW (Lo que funciona) ---"
-            OPENCLAW_ID=$(docker ps -a --format '{{.Names}}' | grep openclaw | head -n 1)
-            if [ -n "$OPENCLAW_ID" ]; then
-                echo "Labels de Openclaw:"
-                docker inspect $OPENCLAW_ID --format '{{json .Config.Labels}}'
-                echo "Redes de Openclaw:"
-                docker inspect $OPENCLAW_ID --format '{{range $net, $conf := .NetworkSettings.Networks}}{{$net}}{{println}}{{end}}'
-            else
-                echo "No se encontró el contenedor Openclaw."
-            fi
+            set -e
             
-            echo "--- BUSCANDO TRAEFIK ---"
-            docker ps -a | grep traefik || echo "No se ve Traefik por aquí."
-            
-            echo "--- RUTA ACTIVA ---"
+            # Detectar ruta activa del proyecto
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
+            if [ -z "$REAL_PATH" ]; then
+                REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
+            fi
             [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
             
+            mkdir -p $REAL_PATH
             cd $REAL_PATH
+            
+            # Instalación limpia
             rm -rf dist
             tar -xzf ~/deploy.tar.gz -C ./
+            rm ~/deploy.tar.gz
             
             # Docker Compose
             DOCKER_CMD="docker compose"
             if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
+            # Reinicio de producción con la nueva configuración de Traefik
             $DOCKER_CMD build --no-cache
             $DOCKER_CMD up -d --force-recreate
             
-            echo "Estado Final:"
+            echo "--- DESPLIEGUE CORREGIDO Y ACTIVO ---"
             docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}" | grep wartungsplan
