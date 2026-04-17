@@ -1287,7 +1287,7 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
                                             const { isLate, delayWeeks } = calculateTaskPunctuality(task, currentKw);
                                             return (
                                                 <div className={`text-[10px] font-black px-2 py-0.5 rounded border inline-flex self-start uppercase tracking-wider ${isLate ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'}`}>
-                                                    {isLate ? t('department.journal.lateWeeks', { weeks: delayWeeks || '?' }) : t('department.journal.onTime')}
+                                                    {isLate ? t('department.journal.lateWeeks', { weeks: delayWeeks || '?' }) : t('department.journal.onTime') + ' (V2.1)'}
                                                 </div>
                                             );
                                         })()}
