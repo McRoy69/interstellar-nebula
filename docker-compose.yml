@@ -17,3 +17,17 @@ services:
       - ./Journal:/app/Journal
       - ./Journal_Archiv:/app/Journal_Archiv
       - ./database.sqlite:/app/database.sqlite
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wartungsplan.rule=Host(`wartungsplan.jennidesign.eu`)"
+      - "traefik.http.routers.wartungsplan.entrypoints=websecure"
+      - "traefik.http.routers.wartungsplan.tls=true"
+      - "traefik.http.routers.wartungsplan.tls.certresolver=myresolver"
+      - "traefik.http.services.wartungsplan.loadbalancer.server.port=3000"
+    networks:
+      - default
+      - traefik-net
+
+networks:
+  traefik-net:
+    external: true
