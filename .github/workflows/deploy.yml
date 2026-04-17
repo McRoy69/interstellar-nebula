@@ -41,17 +41,27 @@ jobs:
 
             # 3. Detectar comando Docker (con o sin guion)
             DOCKER_CMD="docker compose"
-            if ! command -v docker compose &> /dev/null; then
+            if ! docker compose version &> /dev/null; then
               DOCKER_CMD="docker-compose"
             fi
             echo "Usando comando: $DOCKER_CMD"
 
-            # 4. Reconstrucción AGRESIVA (Forzar recreación y limpieza de caché)
+            # 4. Diagnóstico PRE-Arranque
+            echo "--- ESTADO DE PUERTOS (Buscando puerto 3000) ---"
+            (ss -tulnp | grep :3000) || echo "Puerto 3000 libre."
+
+            # 5. Reconstrucción AGRESIVA
+            echo "--- REINICIANDO CONTENEDOR ---"
             $DOCKER_CMD down || true
             $DOCKER_CMD build --no-cache
             $DOCKER_CMD up -d --force-recreate
 
-            # 5. Limpieza de imágenes huérfanas
-            docker image prune -f
+            # 6. Diagnóstico POST-Arranque
+            sleep 5
+            echo "--- ESTADO ACTUAL DE DOCKER ---"
+            $DOCKER_CMD ps
             
-            echo "Despliegue forzado completado exitosamente con $DOCKER_CMD."
+            echo "--- ÚLTIMOS LOGS DEL SERVIDOR ---"
+            $DOCKER_CMD logs --tail 30 wartungsplan
+            
+            echo "Autopsia de despliegue completada."
