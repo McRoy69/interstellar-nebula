@@ -36,15 +36,13 @@ jobs:
           source: "deploy.tar.gz"
           target: "~/"
 
-      - name: 6. Sincronización y Prueba de Vida
+      - name: 6. Sincronización y Reparación de Permisos
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            set -e
-            
             # Detectar ruta activa del proyecto
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
             if [ -z "$REAL_PATH" ]; then
@@ -52,10 +50,21 @@ jobs:
             fi
             [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
             
-            mkdir -p $REAL_PATH
-            cd $REAL_PATH
+            echo "OPERANDO EN: $REAL_PATH"
+            mkdir -p $REAL_PATH/Journal $REAL_PATH/Journal_Archiv
             
-            # Instalación limpia
+            # Asegurar que el archivo de base de datos existe para que Docker no cree una carpeta con ese nombre
+            if [ ! -f "$REAL_PATH/database.sqlite" ]; then
+                echo "Creando base de datos inicial..."
+                touch "$REAL_PATH/database.sqlite"
+            fi
+            
+            # REPARACIÓN DE PERMISOS (Crucial para SQLite en Docker)
+            echo "Reparando permisos..."
+            chmod 666 "$REAL_PATH/database.sqlite" || true
+            chmod -R 777 $REAL_PATH/Journal $REAL_PATH/Journal_Archiv || true
+            
+            cd $REAL_PATH
             rm -rf dist
             tar -xzf ~/deploy.tar.gz -C ./
             rm ~/deploy.tar.gz
@@ -67,11 +76,9 @@ jobs:
             $DOCKER_CMD build --no-cache
             $DOCKER_CMD up -d --force-recreate
             
-            echo "--- PRUEBA DE VIDA INTERNA (localhost:3000) ---"
-            sleep 5 # Esperamos a que Node arranque
-            curl -v localhost:3000 || echo "ERROR: La web no responde ni siquiera internamente."
+            echo "--- ESTADO DE ARCHIVOS ---"
+            ls -la
             
-            echo "--- LOGS DEL CONTENEDOR ---"
+            echo "--- VERIFICACIÓN DE ARRANQUE ---"
+            sleep 5
             docker logs wartungsplan --tail 20
-            
-            echo "--- DESPLIEGUE FINALIZADO ---"
