@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.github
+database.sqlite
+Journal
+Journal_Archiv
+release
+temp_*
+*.log

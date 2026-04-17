@@ -34,11 +34,13 @@ jobs:
             cd $PROJECT_DIR
             echo "Trabajando en: $(pwd)"
 
-            # 2. Sincronizar con GitHub (limpiando posibles conflictos locales)
+            # 2. Sincronizar con GitHub (SOLO archivos de código, sin borrar datos)
             git fetch origin ${{ github.ref_name }}
             git reset --hard origin/${{ github.ref_name }}
-            git clean -fd
+            # He quitado 'git clean -fd' para proteger tu base de datos y archivos .env
 
-            # 3. Reiniciar el servicio
-            # Intentamos docker-compose primero, luego reinicio por nombre
-            docker-compose restart || docker restart $(docker ps -q --filter name=wartungsplan) || echo "Aviso: No se pudo reiniciar el contenedor, pero el código se actualizó."
+            # 3. Reconstruir e Iniciar con Docker Compose
+            # Probamos con 'docker compose' (nuevo) y 'docker-compose' (viejo)
+            (docker compose up -d --build) || (docker-compose up -d --build) || (docker restart wartungsplan)
+
+            echo "Despliegue finalizado con reconstrucción de imagen."
