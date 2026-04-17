@@ -13,7 +13,7 @@ jobs:
       - name: 1. Descargar Código
         uses: actions/checkout@v4
 
-      - name: 2. Configurar Node.js
+      - name: 2. Configurar Node.js (Vite/Tailwind 4)
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -24,24 +24,41 @@ jobs:
           npm install
           npm run build
 
-      - name: 4. Subir archivos al servidor (SCP)
+      - name: 4. Subir archivos al servidor (Temp)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           source: "dist,standalone-server.cjs,package*.json,Dockerfile,docker-compose.yml"
-          target: "interstellar-nebula"
+          target: "~/deploy_tmp"
           strip_components: 0
 
-      - name: 5. Reiniciar Servidor (SSH Ligero)
+      - name: 5. Sincronizar y Reiniciar (Detección de Ruta Real)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd interstellar-nebula
+            # --- BUSCAR RUTA DEL PROYECTO ---
+            REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
+            
+            if [ -z "$REAL_PATH" ]; then
+              if [ -d "$HOME/interstellar-nebula" ]; then REAL_PATH="$HOME/interstellar-nebula";
+              elif [ -d "/root/interstellar-nebula" ]; then REAL_PATH="/root/interstellar-nebula";
+              elif [ -d "/var/www/interstellar-nebula" ]; then REAL_PATH="/var/www/interstellar-nebula";
+              else REAL_PATH="$HOME/interstellar-nebula"; fi
+            fi
+            
+            # --- SINCRONIZACIÓN Y REINICIO ---
+            cp -r ~/deploy_tmp/dist $REAL_PATH/
+            cp ~/deploy_tmp/standalone-server.cjs $REAL_PATH/
+            cp ~/deploy_tmp/package*.json $REAL_PATH/
+            cp ~/deploy_tmp/Dockerfile $REAL_PATH/
+            cp ~/deploy_tmp/docker-compose.yml $REAL_PATH/
+            
+            cd $REAL_PATH
             
             # Detectar comando Docker
             DOCKER_CMD="docker compose"
@@ -49,7 +66,6 @@ jobs:
               DOCKER_CMD="docker-compose"
             fi
             
-            echo "--- REINICIANDO CONSTRUIDO ---"
             $DOCKER_CMD up -d --build --force-recreate
-            
-            echo "Despliegue final exitoso (Build en GitHub)."
+            rm -rf ~/deploy_tmp
+            echo "Despliegue de producción completado con éxito."
