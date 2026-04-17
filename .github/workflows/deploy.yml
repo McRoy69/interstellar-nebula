@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - hauptsächlich
+      - principalmente
 
 jobs:
   deploy:
@@ -22,12 +24,9 @@ jobs:
             elif [ -d "/var/www/wartungsplan-blessing" ]; then cd /var/www/wartungsplan-blessing;
             else echo "Carpeta del proyecto no encontrada"; exit 1; fi
 
-            # 2. Descargar los cambios de GitHub (usando la rama correcta: main)
-            git fetch origin main
-            git reset --hard origin/main
+            # 2. Sincronizar con la rama que activó el despliegue
+            git fetch origin ${{ github.ref_name }}
+            git reset --hard origin/${{ github.ref_name }}
 
-            # 3. Reinstalar dependencias (opcional, pero útil si cambian)
-            # npm install --production
-
-            # 4. Reiniciar los contenedores
+            # 3. Reiniciar los contenedores para aplicar cambios
             docker-compose restart || docker restart $(docker ps -q --filter name=wartungsplan)
