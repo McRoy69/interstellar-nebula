@@ -54,20 +54,26 @@ export function calculateTaskPunctuality(task: { kw: number, status: string, dat
   let isLate = false;
   let delayWeeks = 0;
 
+  const plannedKw = Number(task.kw);
+
   if (task.status === 'Done') {
     let dKw = task.doneKw;
     if (!dKw && task.datum) {
       const parsedDate = parseTaskDate(task.datum);
       if (parsedDate) dKw = getISOWeek(parsedDate);
     }
-    dKw = dKw || task.kw;
-    const delta = dKw - task.kw;
+    
+    const finalDoneKw = Number(dKw || plannedKw);
+    const delta = finalDoneKw - plannedKw;
+    
+    console.log(`DEBUG PUNTUALIDAD -> Tarea KW: ${plannedKw}, Fin KW: ${finalDoneKw}, Delta: ${delta}, Buffer: ${buffer}, Status: ${task.status}`);
+
     if (delta > buffer) {
       isLate = true;
       delayWeeks = delta - buffer;
     }
   } else {
-    const delta = currentKw - task.kw;
+    const delta = Number(currentKw) - plannedKw;
     if (delta >= buffer) {
       isLate = true;
       delayWeeks = Math.max(0, delta);
