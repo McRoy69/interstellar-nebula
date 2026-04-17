@@ -48,3 +48,31 @@ export function parseTaskDate(dateStr: string): Date | null {
   const d = new Date(dateStr);
   return isNaN(d.getTime()) ? null : d;
 }
+
+export function calculateTaskPunctuality(task: { kw: number, status: string, datum?: string, doneKw?: number, frequenz?: string }, currentKw: number): { isLate: boolean, delayWeeks: number } {
+  const buffer = getFrequencyBuffer(task.frequenz || '');
+  let isLate = false;
+  let delayWeeks = 0;
+
+  if (task.status === 'Done') {
+    let dKw = task.doneKw;
+    if (!dKw && task.datum) {
+      const parsedDate = parseTaskDate(task.datum);
+      if (parsedDate) dKw = getISOWeek(parsedDate);
+    }
+    dKw = dKw || task.kw;
+    const delta = dKw - task.kw;
+    if (delta > buffer) {
+      isLate = true;
+      delayWeeks = delta - buffer;
+    }
+  } else {
+    const delta = currentKw - task.kw;
+    if (delta >= buffer) {
+      isLate = true;
+      delayWeeks = Math.max(0, delta);
+    }
+  }
+
+  return { isLate, delayWeeks };
+}

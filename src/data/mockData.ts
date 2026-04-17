@@ -1,6 +1,6 @@
 import realData from './realData.json';
 import { APP_CONFIG } from '../config';
-import { getFrequencyBuffer, getISOWeek, parseTaskDate } from '../utils/dateUtils';
+import { getFrequencyBuffer, getISOWeek, parseTaskDate, calculateTaskPunctuality } from '../utils/dateUtils';
 
 export interface Task {
   id: string;
@@ -108,28 +108,16 @@ const calculateBottlenecks = (tasks: Task[]) => {
       // Historical bottlenecks focus on tasks that were completed (status === 'Done') but late
       if (t.status !== 'Done') return; 
       
-      let doneKw = t.doneKw;
-      if (!doneKw && t.datum) {
-          const parsedDate = parseTaskDate(t.datum);
-          if (parsedDate) {
-              doneKw = getISOWeek(parsedDate);
-          }
-      }
-      doneKw = doneKw || t.kw || 0;
-
-      const plannedKw = t.kw || 0;
-      const delta = doneKw - plannedKw;
-      const buffer = getFrequencyBuffer(t.frequenz || '');
-      const historicalDelay = delta - buffer;
+      const { isLate, delayWeeks } = calculateTaskPunctuality(t, APP_CONFIG.CURRENT_KW);
       
-      if (historicalDelay > 0) { // It was finished past its frequency-based buffer
+      if (isLate) { // It was finished past its frequency-based buffer
           const key = t.title;
           if (!groups[key]) {
               groups[key] = { title: t.title, count: 0, totalDelay: 0, maxDelay: 0, translations: t.translations };
           }
           groups[key].count++;
-          groups[key].totalDelay += Math.max(0, historicalDelay);
-          groups[key].maxDelay = Math.max(groups[key].maxDelay, historicalDelay);
+          groups[key].totalDelay += delayWeeks;
+          groups[key].maxDelay = Math.max(groups[key].maxDelay, delayWeeks);
       }
   });
   
@@ -170,30 +158,7 @@ export const recalculateDepartment = (dept: any): DepartmentData => {
 
   // Enhanced Task Property Calculation (Latencies and Delays)
   const finalTasks = filteredTasks.map((t: any) => {
-    const buffer = getFrequencyBuffer(t.frequenz || '');
-    let isLate = false;
-    let delayWeeks = 0;
-
-    if (t.status === 'Done') {
-        let dKw = t.doneKw;
-        if (!dKw && t.datum) {
-            const parsedDate = parseTaskDate(t.datum);
-            if (parsedDate) dKw = getISOWeek(parsedDate);
-        }
-        dKw = dKw || t.kw;
-        const delta = dKw - t.kw;
-        if (delta > buffer) {
-            isLate = true;
-            delayWeeks = delta - buffer;
-        }
-    } else {
-        const delta = currentKw - t.kw;
-        if (delta >= buffer) {
-            isLate = true;
-            delayWeeks = delta;
-        }
-    }
-
+    const { isLate, delayWeeks } = calculateTaskPunctuality(t, currentKw);
     return { ...t, isLate, delayWeeks };
   });
 

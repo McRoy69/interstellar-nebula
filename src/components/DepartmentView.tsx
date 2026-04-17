@@ -28,7 +28,7 @@ const getFreqKey = (f: string): string => {
 };
 import { isTaskPlanned, recalculateDepartment } from '../data/mockData';
 import { getTaskTranslations } from '../utils/translation';
-import { getFrequencyBuffer } from '../utils/dateUtils';
+import { getFrequencyBuffer, calculateTaskPunctuality } from '../utils/dateUtils';
 
 interface DepartmentViewProps {
     data: DepartmentData;
@@ -211,7 +211,12 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             alert('Datum und Visum müssen ausgefüllt sein. / Fecha y Visum deben estar completos.');
             return;
         }
-        setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'Done', doneKw: currentKw } : t));
+        
+        // Calculate punctuality immediately for the History view
+        const updatedTask = { ...task!, status: 'Done' as const, doneKw: currentKw };
+        const { isLate, delayWeeks } = calculateTaskPunctuality(updatedTask, currentKw);
+        
+        setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...updatedTask, isLate, delayWeeks } : t));
     };
 
 
@@ -1260,11 +1265,14 @@ const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDe
                                             <div className={`w-3 h-3 rounded-full ${status.bg} shadow-[0_0_8px_currentColor] border border-transparent`} />
                                             <span className={`text-xs font-black uppercase tracking-widest ${status.color}`}>{status.label}</span>
                                         </div>
-                                        {task.status === 'Done' && (
-                                            <div className={`text-[10px] font-black px-2 py-0.5 rounded border inline-flex self-start uppercase tracking-wider ${task.isLate ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'}`}>
-                                                {task.isLate ? t('department.journal.lateWeeks', { weeks: task.delayWeeks || '?' }) : t('department.journal.onTime')}
-                                            </div>
-                                        )}
+                                        {task.status === 'Done' && (() => {
+                                            const { isLate, delayWeeks } = calculateTaskPunctuality(task, currentKw);
+                                            return (
+                                                <div className={`text-[10px] font-black px-2 py-0.5 rounded border inline-flex self-start uppercase tracking-wider ${isLate ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'}`}>
+                                                    {isLate ? t('department.journal.lateWeeks', { weeks: delayWeeks || '?' }) : t('department.journal.onTime')}
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
                                 </td>
                                 <td className="py-6 pr-10 text-right">
