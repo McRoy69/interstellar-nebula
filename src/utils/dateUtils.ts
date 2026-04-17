@@ -28,3 +28,23 @@ export function getFrequencyBuffer(frequenz: string = ''): number {
   if (f.includes('alle 2 wochen') || f.includes('biweekly')) return 2;
   return 1; // Default for daily/weekly
 }
+
+export function parseTaskDate(dateStr: string): Date | null {
+  if (!dateStr) return null;
+  
+  // Handle DD.MM.YYYY format
+  if (dateStr.includes('.')) {
+    const parts = dateStr.split('.');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const year = parseInt(parts[2], 10);
+      const date = new Date(year, month, day);
+      if (!isNaN(date.getTime())) return date;
+    }
+  }
+  
+  // Fallback to native parsing (e.g. YYYY-MM-DD)
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? null : d;
+}

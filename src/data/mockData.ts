@@ -1,6 +1,6 @@
 import realData from './realData.json';
 import { APP_CONFIG } from '../config';
-import { getFrequencyBuffer, getISOWeek } from '../utils/dateUtils';
+import { getFrequencyBuffer, getISOWeek, parseTaskDate } from '../utils/dateUtils';
 
 export interface Task {
   id: string;
@@ -110,8 +110,8 @@ const calculateBottlenecks = (tasks: Task[]) => {
       
       let doneKw = t.doneKw;
       if (!doneKw && t.datum) {
-          const parsedDate = new Date(t.datum);
-          if (!isNaN(parsedDate.getTime())) {
+          const parsedDate = parseTaskDate(t.datum);
+          if (parsedDate) {
               doneKw = getISOWeek(parsedDate);
           }
       }
@@ -122,7 +122,7 @@ const calculateBottlenecks = (tasks: Task[]) => {
       const buffer = getFrequencyBuffer(t.frequenz || '');
       const historicalDelay = delta - buffer;
       
-      if (historicalDelay >= 0) { // It was finished past its frequency-based buffer
+      if (historicalDelay > 0) { // It was finished past its frequency-based buffer
           const key = t.title;
           if (!groups[key]) {
               groups[key] = { title: t.title, count: 0, totalDelay: 0, maxDelay: 0, translations: t.translations };
@@ -168,28 +168,46 @@ export const recalculateDepartment = (dept: any): DepartmentData => {
     return delta >= buffer;
   });
 
+  // Enhanced Task Property Calculation (Latencies and Delays)
+  const finalTasks = filteredTasks.map((t: any) => {
+    const buffer = getFrequencyBuffer(t.frequenz || '');
+    let isLate = false;
+    let delayWeeks = 0;
+
+    if (t.status === 'Done') {
+        let dKw = t.doneKw;
+        if (!dKw && t.datum) {
+            const parsedDate = parseTaskDate(t.datum);
+            if (parsedDate) dKw = getISOWeek(parsedDate);
+        }
+        dKw = dKw || t.kw;
+        const delta = dKw - t.kw;
+        if (delta > buffer) {
+            isLate = true;
+            delayWeeks = delta - buffer;
+        }
+    } else {
+        const delta = currentKw - t.kw;
+        if (delta >= buffer) {
+            isLate = true;
+            delayWeeks = delta;
+        }
+    }
+
+    return { ...t, isLate, delayWeeks };
+  });
+
   const geplant = relevantForEfficiency.length;
-  const totalErledigtTasks = filteredTasks.filter((t: any) => t.status === 'Done');
+  const totalErledigtTasks = finalTasks.filter((t: any) => t.status === 'Done');
   
   // A task is "punctual" if it was done within its frequency buffer
-  const erledigtPuenktlich = totalErledigtTasks.filter((t: any) => {
-      let dKw = t.doneKw;
-      if (!dKw && t.datum) {
-          const parsedDate = new Date(t.datum);
-          if (!isNaN(parsedDate.getTime())) dKw = getISOWeek(parsedDate);
-      }
-      dKw = dKw || t.kw;
-      const pKw = t.kw || t.plannedKw || dKw;
-      const delta = dKw - pKw;
-      const buffer = getFrequencyBuffer(t.frequenz || '');
-      return delta < buffer;
-  }).length;
+  const erledigtPuenktlich = totalErledigtTasks.filter((t: any) => !t.isLate).length;
 
   const spaetErledigt = totalErledigtTasks.length - erledigtPuenktlich;
   const offen = relevantForEfficiency.filter((t: any) => t.status !== 'Done').length;
   const rate = geplant > 0 ? Math.round((totalErledigtTasks.length / geplant) * 100) : 100;
 
-  const bottlenecks = calculateBottlenecks(filteredTasks);
+  const bottlenecks = calculateBottlenecks(finalTasks);
 
   return {
     ...dept,
@@ -202,7 +220,7 @@ export const recalculateDepartment = (dept: any): DepartmentData => {
       pünktlichRate: totalErledigtTasks.length > 0 ? Math.round((erledigtPuenktlich / totalErledigtTasks.length) * 100) : 100,
       spaetErledigt
     },
-    tasks: filteredTasks,
+    tasks: finalTasks,
     bottlenecks
   };
 };
