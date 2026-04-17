@@ -30,7 +30,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "dist/*,standalone-server.cjs,package*.json,Dockerfile,docker-compose.yml"
+          source: "dist,standalone-server.cjs,package*.json,Dockerfile,docker-compose.yml"
           target: "interstellar-nebula"
           strip_components: 0
 
