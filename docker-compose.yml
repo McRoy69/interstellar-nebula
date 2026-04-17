@@ -15,7 +15,7 @@ services:
     volumes:
       - ./Journal:/app/Journal
       - ./Journal_Archiv:/app/Journal_Archiv
-      - ./database.sqlite:/app/database.sqlite
+      # - ./database.sqlite:/app/database.sqlite
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wartungsplan.rule=Host(`wartungsplan.jennidesign.eu`)"

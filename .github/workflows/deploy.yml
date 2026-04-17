@@ -36,32 +36,39 @@ jobs:
           source: "deploy.tar.gz"
           target: "~/"
 
-      - name: 6. Operación de Limpieza y Búsqueda de Datos
+      - name: 6. Sincronización Profesional y Rescate
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            # 1. PARAR TODO lo que esté bloqueando
-            echo "--- LIMPIEZA DE CONTENEDORES ZOMBIES ---"
-            docker stop wartungsplan || true
-            docker rm wartungsplan || true
+            set -e
             
-            # 2. LOCALIZAR LA RUTA REAL (La que tiene los datos)
-            echo "--- BUSCANDO BASE DE DATOS REAL (Paciencia...) ---"
-            # Buscamos archivos reales de SQLite, no las carpetas falsas de Docker
-            find $HOME -name "database.sqlite" -type f
-            
-            # 3. VERIFICAR LA RUTA ACTUAL
+            # 1. Detectar ruta
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null || echo "$HOME/interstellar-nebula")
-            echo "RUTA ACTUAL DE TRABAJO: $REAL_PATH"
+            echo "OPERANDO EN: $REAL_PATH"
+            cd $REAL_PATH
             
-            # 4. BORRAR LA CARPETA FALSA que creó Docker
-            if [ -d "$REAL_PATH/database.sqlite" ]; then
-                echo "Borrando carpeta falsa 'database.sqlite'..."
-                rm -rf "$REAL_PATH/database.sqlite"
-            fi
+            # 2. LIMPIEZA CRÍTICA (Borrar carpetas falsas creadas por Docker que bloquean el inicio)
+            # Solo borramos si SON DIRECTORIOS. Los archivos reales de datos no se tocan.
+            [ -d "database.sqlite" ] && echo "Borrando carpeta falsa DB..." && rm -rf database.sqlite
+            [ -d "Journal" ] && [ ! -s "Journal" ] && echo "Borrando carpeta falsa Journal..." && rm -rf Journal
             
-            # 5. LISTAR CONTENIDO PARA COMPARAR
-            ls -la $REAL_PATH
+            # 3. Instalación código nuevo
+            rm -rf dist
+            tar -xzf ~/deploy.tar.gz -C ./
+            rm ~/deploy.tar.gz
+            
+            # 4. Reinicio limpio
+            DOCKER_CMD="docker compose"
+            if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
+            
+            $DOCKER_CMD build --no-cache
+            $DOCKER_CMD up -d --force-recreate
+            
+            echo "--- BUSCANDO BASE DE DATOS REAL PARA EL SIGUIENTE PASO ---"
+            find $HOME -name "database.sqlite" -type f || echo "No se encontró el archivo de datos aún."
+            
+            echo "ESTADO FINAL:"
+            docker ps --format "table {{.Names}}\t{{.Status}}" | grep wartungsplan
