@@ -25,7 +25,8 @@ jobs:
 
       - name: 4. Empaquetar TODO (Tar)
         run: |
-          tar -czf deploy.tar.gz dist standalone-server.cjs package*.json Dockerfile docker-compose.yml .dockerignore data
+          # Eliminamos 'data' del empaquetado porque ya reside en el servidor
+          tar -czf deploy.tar.gz dist standalone-server.cjs package*.json Dockerfile docker-compose.yml .dockerignore
 
       - name: 5. Subir Paquete (SCP Único)
         uses: appleboy/scp-action@v0.1.7
@@ -49,7 +50,7 @@ jobs:
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null || echo "$HOME/interstellar-nebula")
             cd $REAL_PATH
             
-            # Limpieza profunda de temporales
+            # Instalación limpia (Preservando la carpeta 'data' existente en el servidor)
             rm -rf dist
             tar -xzf ~/deploy.tar.gz -C ./
             rm ~/deploy.tar.gz
