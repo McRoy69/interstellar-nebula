@@ -10,7 +10,7 @@ import type { AppSettings } from './types/settings';
 import { defaultSettings } from './types/settings';
 import type { DepartmentData, Task } from './data/mockData';
 import { APP_CONFIG } from './config';
-import { getFrequencyBuffer } from './utils/dateUtils';
+import { calculateTaskPunctuality } from './utils/dateUtils';
 
 function App() {
   const [activeView, setActiveView] = useState('dashboard');

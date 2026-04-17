@@ -116,7 +116,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             if (changed) {
                 // Batch updates to avoid multiple sync triggers
                 setLocalPlanningTasks(prev => {
-                    const next = prev.map((item, idx) => {
+                    const next = prev.map((item) => {
                         const ut = updatedPlanningTasks.find(u => u && u.id === item.id);
                         if (ut && JSON.stringify(ut.translations) !== JSON.stringify(item.translations)) {
                             return { ...item, translations: ut.translations };
@@ -126,7 +126,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                     return next;
                 });
                 setLocalTasks(prev => {
-                    const next = prev.map((item, idx) => {
+                    const next = prev.map((item) => {
                         const ut = updatedTasks.find(u => u && u.id === item.id);
                         if (ut && JSON.stringify(ut.translations) !== JSON.stringify(item.translations)) {
                             return { ...item, translations: ut.translations };
@@ -715,6 +715,7 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                                                 setShowDeletePasswordPrompt(true);
                                                 setDeletePasswordInput('');
                                             }}
+                                            currentKw={currentKw}
                                         />
                                     ) : activeTab === 'Statistik' ? (
                                         <StatisticsView localTasks={localTasks} settings={settings} />
@@ -1175,12 +1176,13 @@ const MatrixView = ({ tasks, onAddTask, onUpdateTask, onDeleteTask, onToggleWeek
     );
 };
 
-const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDeleteTask }: {
+const JournalTable = ({ tasks, getStatusInfo, onAbschliessen, onUpdateTask, onDeleteTask, currentKw }: {
     tasks: Task[],
     getStatusInfo: (t: Task) => any,
     onAbschliessen: (id: string) => void,
     onUpdateTask: (id: string, updates: Partial<Task>) => void,
-    onDeleteTask: (id: string) => void
+    onDeleteTask: (id: string) => void,
+    currentKw: number
 }) => {
     const { t, i18n } = useTranslation();
     return (

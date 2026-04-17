@@ -1,6 +1,6 @@
 import realData from './realData.json';
 import { APP_CONFIG } from '../config';
-import { getFrequencyBuffer, getISOWeek, parseTaskDate, calculateTaskPunctuality } from '../utils/dateUtils';
+import { getFrequencyBuffer, calculateTaskPunctuality } from '../utils/dateUtils';
 
 export interface Task {
   id: string;
