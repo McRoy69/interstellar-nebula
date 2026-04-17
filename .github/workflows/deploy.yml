@@ -20,9 +20,9 @@ jobs:
           script: |
             # 1. Buscar la carpeta del proyecto de forma más flexible
             PROJECT_DIR=""
-            if [ -d "$HOME/wartungsplan-blessing" ]; then PROJECT_DIR="$HOME/wartungsplan-blessing";
-            elif [ -d "/root/wartungsplan-blessing" ]; then PROJECT_DIR="/root/wartungsplan-blessing";
-            elif [ -d "/var/www/wartungsplan-blessing" ]; then PROJECT_DIR="/var/www/wartungsplan-blessing";
+            if [ -d "$HOME/interstellar-nebula" ]; then PROJECT_DIR="$HOME/interstellar-nebula";
+            elif [ -d "/root/interstellar-nebula" ]; then PROJECT_DIR="/root/interstellar-nebula";
+            elif [ -d "/var/www/interstellar-nebula" ]; then PROJECT_DIR="/var/www/interstellar-nebula";
             fi
 
             if [ -z "$PROJECT_DIR" ]; then 
