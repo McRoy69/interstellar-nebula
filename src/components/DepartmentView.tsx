@@ -196,12 +196,12 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             return { label: t('department.statusLabels.done'), color: 'text-emerald-500', bg: 'bg-emerald-500' };
         }
 
-        const delta = currentKw - task.kw;
+        const { isLate, delayWeeks } = calculateTaskPunctuality(task, currentKw);
         const buffer = getFrequencyBuffer(task.frequenz);
         const criticalBuffer = buffer + (settings.thresholds.criticalWeeks || 3);
 
-        if (delta >= criticalBuffer) return { label: t('department.statusLabels.late3w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-orange-500', bg: 'bg-orange-500' };
-        if (delta >= buffer) return { label: t('department.statusLabels.late13w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-amber-500', bg: 'bg-amber-500' };
+        if (isLate && delayWeeks >= criticalBuffer) return { label: t('department.statusLabels.late3w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-orange-500', bg: 'bg-orange-500' };
+        if (isLate) return { label: t('department.statusLabels.late13w', { weeks: settings.thresholds.criticalWeeks }), color: 'text-amber-500', bg: 'bg-amber-500' };
         
         return { label: t('department.statusLabels.current'), color: 'text-emerald-500', bg: 'bg-emerald-500' };
     };
@@ -224,7 +224,8 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         }
         
         // Calculate punctuality immediately for the History view
-        const updatedTask = { ...task!, status: 'Done' as const, doneKw: currentKw };
+        const currentYear = APP_CONFIG.CURRENT_YEAR || new Date().getFullYear();
+        const updatedTask = { ...task!, status: 'Done' as const, doneKw: currentKw, doneYear: currentYear };
         const { isLate, delayWeeks } = calculateTaskPunctuality(updatedTask, currentKw);
         const finalTask = { ...updatedTask, isLate, delayWeeks };
         
