@@ -1,67 +1,55 @@
-name: Deploy to Hostinger VPS
+name: Bereitstellung auf Hostinger VPS
 
 on:
   push:
     branches:
       - main
-      - hauptsächlich
-      - principalmente
+      - '*' # Ejecutar en cualquier rama para facilitar las pruebas
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Conectar por SSH y actualizar código
-        uses: appleboy/ssh-action@v1.0.0
+      - name: 1. Descargar Código
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: 3. Construir Proyecto (En GitHub para ahorrar RAM en VPS)
+        run: |
+          npm install
+          npm run build
+
+      - name: 4. Subir archivos al servidor (SCP)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "dist/*,standalone-server.cjs,package*.json,Dockerfile,docker-compose.yml"
+          target: "interstellar-nebula"
+          strip_components: 0
+
+      - name: 5. Reiniciar Servidor (SSH Ligero)
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            # 1. Buscar la carpeta del proyecto de forma más flexible
-            PROJECT_DIR=""
-            if [ -d "$HOME/interstellar-nebula" ]; then PROJECT_DIR="$HOME/interstellar-nebula";
-            elif [ -d "/root/interstellar-nebula" ]; then PROJECT_DIR="/root/interstellar-nebula";
-            elif [ -d "/var/www/interstellar-nebula" ]; then PROJECT_DIR="/var/www/interstellar-nebula";
-            fi
-
-            if [ -z "$PROJECT_DIR" ]; then 
-              echo "ERROR: No se encontró la carpeta del proyecto en ninguna de las rutas conocidas."
-              ls -la $HOME
-              exit 1
-            fi
-
-            cd $PROJECT_DIR
-            echo "Trabajando en: $(pwd)"
-
-            # 2. Sincronizar con GitHub (SOLO archivos de código, sin borrar datos)
-            git fetch origin ${{ github.ref_name }}
-            git reset --hard origin/${{ github.ref_name }}
-            # He quitado 'git clean -fd' para proteger tu base de datos y archivos .env
-
-            # 3. Detectar comando Docker (con o sin guion)
+            cd interstellar-nebula
+            
+            # Detectar comando Docker
             DOCKER_CMD="docker compose"
             if ! docker compose version &> /dev/null; then
               DOCKER_CMD="docker-compose"
             fi
-            echo "Usando comando: $DOCKER_CMD"
-
-            # 4. Diagnóstico PRE-Arranque
-            echo "--- ESTADO DE PUERTOS (Buscando puerto 3000) ---"
-            (ss -tulnp | grep :3000) || echo "Puerto 3000 libre."
-
-            # 5. Reconstrucción AGRESIVA
-            echo "--- REINICIANDO CONTENEDOR ---"
-            $DOCKER_CMD down || true
-            $DOCKER_CMD build --no-cache
-            $DOCKER_CMD up -d --force-recreate
-
-            # 6. Diagnóstico POST-Arranque
-            sleep 5
-            echo "--- ESTADO ACTUAL DE DOCKER ---"
-            $DOCKER_CMD ps
             
-            echo "--- ÚLTIMOS LOGS DEL SERVIDOR ---"
-            $DOCKER_CMD logs --tail 30 wartungsplan
+            echo "--- REINICIANDO CONSTRUIDO ---"
+            $DOCKER_CMD up -d --build --force-recreate
             
-            echo "Autopsia de despliegue completada."
+            echo "Despliegue final exitoso (Build en GitHub)."
