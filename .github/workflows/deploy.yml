@@ -36,7 +36,7 @@ jobs:
           source: "deploy.tar.gz"
           target: "~/"
 
-      - name: 6. Sincronización y Reinicio Profesional
+      - name: 6. Sincronización y Prueba de Vida
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
@@ -64,9 +64,14 @@ jobs:
             DOCKER_CMD="docker compose"
             if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
-            # Reinicio de producción con la nueva configuración de Traefik
             $DOCKER_CMD build --no-cache
             $DOCKER_CMD up -d --force-recreate
             
-            echo "--- DESPLIEGUE CORREGIDO Y ACTIVO ---"
-            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}" | grep wartungsplan
+            echo "--- PRUEBA DE VIDA INTERNA (localhost:3000) ---"
+            sleep 5 # Esperamos a que Node arranque
+            curl -v localhost:3000 || echo "ERROR: La web no responde ni siquiera internamente."
+            
+            echo "--- LOGS DEL CONTENEDOR ---"
+            docker logs wartungsplan --tail 20
+            
+            echo "--- DESPLIEGUE FINALIZADO ---"
