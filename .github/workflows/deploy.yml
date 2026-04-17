@@ -12,7 +12,7 @@ jobs:
       - name: 1. Descargar Código
         uses: actions/checkout@v4
 
-      - name: 2. Configurar Node.js
+      - name: 2. Configurar Node.js (Vite/Tailwind 4)
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -23,24 +23,28 @@ jobs:
           npm install
           npm run build
 
-      - name: 4. Subir archivos (Temp)
+      - name: 4. Empaquetar para Despliegue Rápido (Tar)
+        run: |
+          tar -czf deploy.tar.gz dist standalone-server.cjs package*.json Dockerfile docker-compose.yml
+
+      - name: 5. Subir Paquete (SCP Único)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "dist,standalone-server.cjs,package*.json,Dockerfile,docker-compose.yml"
-          target: "~/deploy_tmp"
+          source: "deploy.tar.gz"
+          target: "~/"
           strip_components: 0
 
-      - name: 5. Sincronización y Reinicio (Producción)
+      - name: 6. Descomprimir y Reiniciar (Producción)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            # Detección inteligente de ruta
+            # Detección inteligente de ruta activa
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
             if [ -z "$REAL_PATH" ]; then
                 REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
@@ -49,20 +53,15 @@ jobs:
             
             mkdir -p $REAL_PATH
             
-            # Sincronización espejo
-            if command -v rsync >/dev/null 2>&1; then
-                rsync -av --delete ~/deploy_tmp/ $REAL_PATH/
-            else
-                rm -rf $REAL_PATH/dist
-                cp -rf ~/deploy_tmp/* $REAL_PATH/
-            fi
+            # Descomprimir directamente en la ruta (Ultra rápido)
+            tar -xzf ~/deploy.tar.gz -C $REAL_PATH
+            rm ~/deploy.tar.gz
             
             cd $REAL_PATH
             
-            # Docker Compose detect
+            # Docker Compose detect & Up
             DOCKER_CMD="docker compose"
             if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
             $DOCKER_CMD up -d --build --force-recreate
-            rm -rf ~/deploy_tmp
-            echo "Despliegue de producción finalizado correctamente."
+            echo "Despliegue comprimido finalizado con éxito."
