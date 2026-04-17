@@ -8,7 +8,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      # Las variables de MySQL se tomarán del panel de Hostinger si están configuradas allí
       - MYSQL_HOST=${MYSQL_HOST}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
@@ -24,10 +23,3 @@ services:
       - "traefik.http.routers.wartungsplan.tls=true"
       - "traefik.http.routers.wartungsplan.tls.certresolver=myresolver"
       - "traefik.http.services.wartungsplan.loadbalancer.server.port=3000"
-    networks:
-      - default
-      - traefik-net
-
-networks:
-  traefik-net:
-    external: true
