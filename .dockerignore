@@ -1,5 +1,5 @@
 node_modules
-dist
+# dist removed to allow Docker build context to see it
 .git
 .github
 database.sqlite

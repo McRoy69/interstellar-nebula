@@ -25,8 +25,8 @@ jobs:
 
       - name: 4. Empaquetar TODO (Tar)
         run: |
-          # Empaquetamos la raíz y la carpeta dist explícitamente
-          tar -czf deploy.tar.gz dist standalone-server.cjs package*.json Dockerfile docker-compose.yml
+          # Incluimos .dockerignore explícitamente para el servidor
+          tar -czf deploy.tar.gz dist standalone-server.cjs package*.json Dockerfile docker-compose.yml .dockerignore
 
       - name: 5. Subir Paquete (SCP)
         uses: appleboy/scp-action@v0.1.7
@@ -44,47 +44,33 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
+            set -e # Detener el script si algo falla
+            
             echo "--- BUSCANDO RUTA ACTIVA ---"
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
             if [ -z "$REAL_PATH" ]; then
                 REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
             fi
-            
-            # Si no detectamos nada, usamos la ruta que parece segura por tus logs
-            if [ -z "$REAL_PATH" ]; then
-                [ -d "/root/interstellar-nebula" ] && REAL_PATH="/root/interstellar-nebula"
-                [ -d "/var/www/interstellar-nebula" ] && REAL_PATH="/var/www/interstellar-nebula"
-                [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
-            fi
+            [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
             
             echo "RUTA DETECTADA: $REAL_PATH"
             mkdir -p $REAL_PATH
             
-            echo "--- LIMPIANDO E INSTALANDO ---"
-            # Nos aseguramos de descompresión limpia: borramos dist viejo antes
+            echo "--- INSTALACIÓN LIMPIA ---"
             rm -rf $REAL_PATH/dist
             tar -xzf ~/deploy.tar.gz -C $REAL_PATH/
             rm ~/deploy.tar.gz
             
-            echo "--- VERIFICACIÓN DE ARCHIVOS (IMPRESCINDIBLE) ---"
             cd $REAL_PATH
-            ls -la
-            if [ -d "dist" ]; then
-                echo "Carpeta dist encontrada. Contenido:"
-                ls -la dist | head -n 5
-            else
-                echo "ERROR CRÍTICO: Carpeta dist NO encontrada en $REAL_PATH"
-                exit 1
-            fi
             
             # Docker Compose detect
             DOCKER_CMD="docker compose"
             if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
-            echo "--- RECONSTRUCCIÓN FORZADA SIN CACHE ---"
+            echo "--- RECONSTRUCCIÓN SIN CACHE ---"
             $DOCKER_CMD build --no-cache
             $DOCKER_CMD up -d --force-recreate
             
-            echo "--- ESTADO FINAL ---"
-            docker ps | grep wartungsplan
-            echo "Despliegue de rescate completado."
+            echo "Estado Final:"
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}" | grep wartungsplan
+            echo "¡DESPLIEGUE CORREGIDO CON ÉXITO!"
