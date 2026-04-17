@@ -81,9 +81,12 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         let changed = false;
 
         const translateMissing = async () => {
-            const updatedPlanningTasks = [...localPlanningTasks];
+            const updatedPlanningTasks = [...localPlanningTasks].filter(t => !!t);
+            const updatedTasks = [...localTasks].filter(t => !!t);
+
             for (let i = 0; i < updatedPlanningTasks.length; i++) {
                 const task = updatedPlanningTasks[i];
+                if (!task) continue;
                 // Check if title is untranslated (ignore anlage now)
                 if (!task.translations || !task.translations[i18n.language.split('-')[0]]?.title) {
                     const trans = await getTaskTranslations(task.title, '');
@@ -96,9 +99,9 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
                 }
             }
 
-            const updatedTasks = [...localTasks];
             for (let i = 0; i < updatedTasks.length; i++) {
                 const task = updatedTasks[i];
+                if (!task) continue;
                 if (!task.translations || !task.translations[i18n.language.split('-')[0]]?.title) {
                     const trans = await getTaskTranslations(task.title, '');
                     if (trans && Object.keys(trans).length > 0) {
@@ -113,20 +116,22 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
             if (changed) {
                 // Batch updates to avoid multiple sync triggers
                 setLocalPlanningTasks(prev => {
-                    const next = [...prev];
-                    updatedPlanningTasks.forEach((ut, idx) => {
-                        if (JSON.stringify(ut.translations) !== JSON.stringify(next[idx]?.translations)) {
-                            next[idx] = { ...next[idx], translations: ut.translations };
+                    const next = prev.map((item, idx) => {
+                        const ut = updatedPlanningTasks.find(u => u && u.id === item.id);
+                        if (ut && JSON.stringify(ut.translations) !== JSON.stringify(item.translations)) {
+                            return { ...item, translations: ut.translations };
                         }
+                        return item;
                     });
                     return next;
                 });
                 setLocalTasks(prev => {
-                    const next = [...prev];
-                    updatedTasks.forEach((ut, idx) => {
-                        if (JSON.stringify(ut.translations) !== JSON.stringify(next[idx]?.translations)) {
-                            next[idx] = { ...next[idx], translations: ut.translations };
+                    const next = prev.map((item, idx) => {
+                        const ut = updatedTasks.find(u => u && u.id === item.id);
+                        if (ut && JSON.stringify(ut.translations) !== JSON.stringify(item.translations)) {
+                            return { ...item, translations: ut.translations };
                         }
+                        return item;
                     });
                     return next;
                 });
@@ -202,7 +207,13 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
     };
 
     const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
-        setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
+        const newTasks = localTasks.map(t => t.id === taskId ? { ...t, ...updates } : t);
+        setLocalTasks(newTasks);
+        
+        // Ensure changes bubble up immediately
+        if (onUpdate) {
+            onUpdate({ ...data, tasks: newTasks });
+        }
     };
 
     const handleAbschliessen = (taskId: string) => {
@@ -215,8 +226,14 @@ const DepartmentView: React.FC<DepartmentViewProps> = ({ data, initialTab, setti
         // Calculate punctuality immediately for the History view
         const updatedTask = { ...task!, status: 'Done' as const, doneKw: currentKw };
         const { isLate, delayWeeks } = calculateTaskPunctuality(updatedTask, currentKw);
+        const finalTask = { ...updatedTask, isLate, delayWeeks };
         
-        setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...updatedTask, isLate, delayWeeks } : t));
+        const newTasks = localTasks.map(t => t.id === taskId ? finalTask : t);
+        setLocalTasks(newTasks);
+        
+        if (onUpdate) {
+            onUpdate({ ...data, tasks: newTasks });
+        }
     };
 
 

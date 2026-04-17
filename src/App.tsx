@@ -123,7 +123,13 @@ function App() {
             const key = `${a}-${t}-${kw}-${APP_CONFIG.CURRENT_YEAR}`;
 
             if (!existingTaskKeys.has(key)) {
-              const buffer = getFrequencyBuffer(pt.frequenz);
+              const tempTask = {
+                kw: kw,
+                status: 'Open',
+                frequenz: pt.frequenz
+              };
+              const { isLate, delayWeeks } = calculateTaskPunctuality(tempTask, CURRENT_KW);
+              
               missingTasks.push({
                 id: `auto-${deptCopy.id}-${pt.id}-${kw}`,
                 planningTaskId: pt.id,
@@ -134,7 +140,8 @@ function App() {
                 status: 'Open',
                 wer: pt.wer,
                 frequenz: pt.frequenz,
-                isLate: (CURRENT_KW - kw) >= buffer,
+                isLate,
+                delayWeeks,
                 translations: pt.translations
               });
               existingTaskKeys.add(key);

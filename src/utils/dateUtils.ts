@@ -32,7 +32,7 @@ export function getFrequencyBuffer(frequenz: string = ''): number {
 export function parseTaskDate(dateStr: string): Date | null {
   if (!dateStr) return null;
   
-  // Handle DD.MM.YYYY format
+  // Handle German format (DD.MM.YYYY)
   if (dateStr.includes('.')) {
     const parts = dateStr.split('.');
     if (parts.length === 3) {
@@ -44,7 +44,7 @@ export function parseTaskDate(dateStr: string): Date | null {
     }
   }
   
-  // Fallback to native parsing (e.g. YYYY-MM-DD)
+  // Native parsing for ISO (YYYY-MM-DD) or others
   const d = new Date(dateStr);
   return isNaN(d.getTime()) ? null : d;
 }
@@ -54,10 +54,12 @@ export function calculateTaskPunctuality(task: { kw: number, status: string, dat
   let isLate = false;
   let delayWeeks = 0;
 
-  const plannedKw = Number(task.kw);
+  const plannedKw = Number(task.kw || 0);
 
   if (task.status === 'Done') {
     let dKw = task.doneKw;
+    
+    // If doneKw is missing, try to derive it from completion date
     if (!dKw && task.datum) {
       const parsedDate = parseTaskDate(task.datum);
       if (parsedDate) dKw = getISOWeek(parsedDate);
@@ -66,14 +68,14 @@ export function calculateTaskPunctuality(task: { kw: number, status: string, dat
     const finalDoneKw = Number(dKw || plannedKw);
     const delta = finalDoneKw - plannedKw;
     
-    console.log(`DEBUG PUNTUALIDAD -> Tarea KW: ${plannedKw}, Fin KW: ${finalDoneKw}, Delta: ${delta}, Buffer: ${buffer}, Status: ${task.status}`);
-
     if (delta > buffer) {
       isLate = true;
       delayWeeks = delta - buffer;
     }
   } else {
+    // For OPEN tasks, compare today (currentKw) against plannedKw
     const delta = Number(currentKw) - plannedKw;
+    
     if (delta >= buffer) {
       isLate = true;
       delayWeeks = Math.max(0, delta);

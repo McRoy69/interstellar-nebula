@@ -16,16 +16,18 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # 1. Entrar a la carpeta del proyecto en el servidor
-            # Nota: Si tu carpeta tiene otro nombre en el servidor, cámbialo aquí:
-            cd ~/wartungsplan-blessing || cd /root/wartungsplan-blessing || cd /var/www/wartungsplan-blessing
+            # 1. Intentar encontrar la carpeta del proyecto
+            if [ -d "~/wartungsplan-blessing" ]; then cd ~/wartungsplan-blessing;
+            elif [ -d "/root/wartungsplan-blessing" ]; then cd /root/wartungsplan-blessing;
+            elif [ -d "/var/www/wartungsplan-blessing" ]; then cd /var/www/wartungsplan-blessing;
+            else echo "Carpeta del proyecto no encontrada"; exit 1; fi
 
-            # 2. Descargar los cambios de GitHub
-            git pull origin hauptsächlich
+            # 2. Descargar los cambios de GitHub (usando la rama correcta: main)
+            git fetch origin main
+            git reset --hard origin/main
 
-            # 3. Reinstalar dependencias (si hubo cambios)
-            npm install
+            # 3. Reinstalar dependencias (opcional, pero útil si cambian)
+            # npm install --production
 
-            # 4. Reiniciar el contenedor Docker (esto forzará a que tome los cambios)
-            # Ajusta el nombre de tu contenedor si es diferente
-            docker restart wartungsplan-blessing || docker-compose restart
+            # 4. Reiniciar los contenedores
+            docker-compose restart || docker restart $(docker ps -q --filter name=wartungsplan)
