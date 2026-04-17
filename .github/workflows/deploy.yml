@@ -25,7 +25,6 @@ jobs:
 
       - name: 4. Empaquetar TODO (Tar)
         run: |
-          # Incluimos .dockerignore explícitamente para el servidor
           tar -czf deploy.tar.gz dist standalone-server.cjs package*.json Dockerfile docker-compose.yml .dockerignore
 
       - name: 5. Subir Paquete (SCP)
@@ -44,7 +43,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            set -e # Detener el script si algo falla
+            # No usamos 'set -e' aquí para poder ver las redes aunque falle
             
             echo "--- BUSCANDO RUTA ACTIVA ---"
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
@@ -55,6 +54,9 @@ jobs:
             
             echo "RUTA DETECTADA: $REAL_PATH"
             mkdir -p $REAL_PATH
+            
+            echo "--- DIAGNÓSTICO DE REDES ---"
+            docker network ls
             
             echo "--- INSTALACIÓN LIMPIA ---"
             rm -rf $REAL_PATH/dist
@@ -67,10 +69,10 @@ jobs:
             DOCKER_CMD="docker compose"
             if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
-            echo "--- RECONSTRUCCIÓN SIN CACHE ---"
+            echo "--- INTENTO DE ARRANQUE ---"
+            # Si falla por la red, seguiremos viendo los logs del diagnóstico arriba
             $DOCKER_CMD build --no-cache
-            $DOCKER_CMD up -d --force-recreate
+            $DOCKER_CMD up -d --force-recreate || echo "FALLO EN EL UP: Probablemente la red no existe."
             
             echo "Estado Final:"
-            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}" | grep wartungsplan
-            echo "¡DESPLIEGUE CORREGIDO CON ÉXITO!"
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}" | grep wartungsplan || echo "Contenedor no arrancado."
