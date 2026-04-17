@@ -39,12 +39,19 @@ jobs:
             git reset --hard origin/${{ github.ref_name }}
             # He quitado 'git clean -fd' para proteger tu base de datos y archivos .env
 
-            # 3. Reconstrucción AGRESIVA (Forzar recreación y limpieza de caché)
-            docker compose down || true
-            docker compose build --no-cache
-            docker compose up -d --force-recreate
+            # 3. Detectar comando Docker (con o sin guion)
+            DOCKER_CMD="docker compose"
+            if ! command -v docker compose &> /dev/null; then
+              DOCKER_CMD="docker-compose"
+            fi
+            echo "Usando comando: $DOCKER_CMD"
 
-            # 4. Limpieza de imágenes huérfanas para ahorrar espacio
+            # 4. Reconstrucción AGRESIVA (Forzar recreación y limpieza de caché)
+            $DOCKER_CMD down || true
+            $DOCKER_CMD build --no-cache
+            $DOCKER_CMD up -d --force-recreate
+
+            # 5. Limpieza de imágenes huérfanas
             docker image prune -f
             
-            echo "Despliegue forzado completado exitosamente."
+            echo "Despliegue forzado completado exitosamente con $DOCKER_CMD."
