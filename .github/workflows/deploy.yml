@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - '*'
 
 jobs:
   build-and-deploy:
@@ -34,56 +33,36 @@ jobs:
           target: "~/deploy_tmp"
           strip_components: 0
 
-      - name: 5. Super Diagnóstico y Reinicio
+      - name: 5. Sincronización y Reinicio (Producción)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            echo "--- BUSCANDO RUTA REAL ---"
-            # Técnica 1: Etiqueta de Docker Compose
+            # Detección inteligente de ruta
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
-            
-            # Técnica 2: Volúmenes si la 1 falla
             if [ -z "$REAL_PATH" ]; then
                 REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
             fi
+            [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
             
-            # Técnica 3: Fallback manual
-            if [ -z "$REAL_PATH" ]; then
-                [ -d "/root/interstellar-nebula" ] && REAL_PATH="/root/interstellar-nebula"
-                [ -d "/var/www/interstellar-nebula" ] && REAL_PATH="/var/www/interstellar-nebula"
-            fi
+            mkdir -p $REAL_PATH
             
-            echo "RESULTADO RUTA: $REAL_PATH"
-            
-            if [ ! -z "$REAL_PATH" ]; then
-                echo "Sincronizando en $REAL_PATH..."
-                cp -r ~/deploy_tmp/dist $REAL_PATH/
-                cp ~/deploy_tmp/standalone-server.cjs $REAL_PATH/
-                cp ~/deploy_tmp/package*.json $REAL_PATH/
-                cp ~/deploy_tmp/Dockerfile $REAL_PATH/
-                cp ~/deploy_tmp/docker-compose.yml $REAL_PATH/
-                cd $REAL_PATH
+            # Sincronización espejo
+            if command -v rsync >/dev/null 2>&1; then
+                rsync -av --delete ~/deploy_tmp/ $REAL_PATH/
             else
-                echo "ADVERTENCIA: No se detectó ruta activa. Usando carpeta por defecto."
-                mkdir -p ~/interstellar-nebula
-                cp -r ~/deploy_tmp/* ~/interstellar-nebula/
-                cd ~/interstellar-nebula
+                rm -rf $REAL_PATH/dist
+                cp -rf ~/deploy_tmp/* $REAL_PATH/
             fi
             
-            # Reiniciar
-            docker compose up -d --build --force-recreate
+            cd $REAL_PATH
             
-            echo "--- VERIFICACIÓN POST-ARRANQUE ---"
-            sleep 5
-            echo "Estado Contenedores:"
-            docker ps
-            echo "Contenido de carpeta dist en el contenedor:"
-            docker exec wartungsplan ls -la /app/dist || echo "Carpeta dist no encontrada en el contenedor!"
-            echo "Logs del servidor (Últimas 20 líneas):"
-            docker logs --tail 20 wartungsplan
+            # Docker Compose detect
+            DOCKER_CMD="docker compose"
+            if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
+            $DOCKER_CMD up -d --build --force-recreate
             rm -rf ~/deploy_tmp
-            echo "Fin del super diagnóstico."
+            echo "Despliegue de producción finalizado correctamente."
