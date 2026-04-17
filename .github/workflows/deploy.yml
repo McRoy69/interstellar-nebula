@@ -36,49 +36,32 @@ jobs:
           source: "deploy.tar.gz"
           target: "~/"
 
-      - name: 6. Sincronización y Reparación de Permisos
+      - name: 6. Operación de Limpieza y Búsqueda de Datos
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            # Detectar ruta activa del proyecto
-            REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
-            if [ -z "$REAL_PATH" ]; then
-                REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
+            # 1. PARAR TODO lo que esté bloqueando
+            echo "--- LIMPIEZA DE CONTENEDORES ZOMBIES ---"
+            docker stop wartungsplan || true
+            docker rm wartungsplan || true
+            
+            # 2. LOCALIZAR LA RUTA REAL (La que tiene los datos)
+            echo "--- BUSCANDO BASE DE DATOS REAL (Paciencia...) ---"
+            # Buscamos archivos reales de SQLite, no las carpetas falsas de Docker
+            find $HOME -name "database.sqlite" -type f
+            
+            # 3. VERIFICAR LA RUTA ACTUAL
+            REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null || echo "$HOME/interstellar-nebula")
+            echo "RUTA ACTUAL DE TRABAJO: $REAL_PATH"
+            
+            # 4. BORRAR LA CARPETA FALSA que creó Docker
+            if [ -d "$REAL_PATH/database.sqlite" ]; then
+                echo "Borrando carpeta falsa 'database.sqlite'..."
+                rm -rf "$REAL_PATH/database.sqlite"
             fi
-            [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
             
-            echo "OPERANDO EN: $REAL_PATH"
-            mkdir -p $REAL_PATH/Journal $REAL_PATH/Journal_Archiv
-            
-            # Asegurar que el archivo de base de datos existe para que Docker no cree una carpeta con ese nombre
-            if [ ! -f "$REAL_PATH/database.sqlite" ]; then
-                echo "Creando base de datos inicial..."
-                touch "$REAL_PATH/database.sqlite"
-            fi
-            
-            # REPARACIÓN DE PERMISOS (Crucial para SQLite en Docker)
-            echo "Reparando permisos..."
-            chmod 666 "$REAL_PATH/database.sqlite" || true
-            chmod -R 777 $REAL_PATH/Journal $REAL_PATH/Journal_Archiv || true
-            
-            cd $REAL_PATH
-            rm -rf dist
-            tar -xzf ~/deploy.tar.gz -C ./
-            rm ~/deploy.tar.gz
-            
-            # Docker Compose
-            DOCKER_CMD="docker compose"
-            if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
-            
-            $DOCKER_CMD build --no-cache
-            $DOCKER_CMD up -d --force-recreate
-            
-            echo "--- ESTADO DE ARCHIVOS ---"
-            ls -la
-            
-            echo "--- VERIFICACIÓN DE ARRANQUE ---"
-            sleep 5
-            docker logs wartungsplan --tail 20
+            # 5. LISTAR CONTENIDO PARA COMPARAR
+            ls -la $REAL_PATH
