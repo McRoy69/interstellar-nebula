@@ -1,0 +1,19 @@
+services:
+  wartungsplan:
+    build: .
+    container_name: wartungsplan
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Las variables de MySQL se tomarán del panel de Hostinger si están configuradas allí
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    volumes:
+      - ./Journal:/app/Journal
+      - ./Journal_Archiv:/app/Journal_Archiv
+      - ./database.sqlite:/app/database.sqlite
