@@ -7,12 +7,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# Copiamos el servidor y la carpeta dist (que subimos desde GitHub)
+# Copiamos los archivos generados en GitHub
 COPY standalone-server.cjs ./
 COPY dist ./dist
-COPY config.js ./config.js 2>/dev/null || :
-COPY .env ./ 2>/dev/null || :
 
-# El resto del código fuente NO es necesario en el servidor
+# Los archivos .env y config.js los manejamos de forma segura
+# (Si no existen en el contexto de copia, Docker fallaría sin ellos,
+# así que solo copiamos lo que SEGURO está en el repositorio)
+
 EXPOSE 3000
 CMD ["node", "standalone-server.cjs"]
