@@ -18,15 +18,27 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # 1. Intentar encontrar la carpeta del proyecto
-            if [ -d "~/wartungsplan-blessing" ]; then cd ~/wartungsplan-blessing;
-            elif [ -d "/root/wartungsplan-blessing" ]; then cd /root/wartungsplan-blessing;
-            elif [ -d "/var/www/wartungsplan-blessing" ]; then cd /var/www/wartungsplan-blessing;
-            else echo "Carpeta del proyecto no encontrada"; exit 1; fi
+            # 1. Buscar la carpeta del proyecto de forma más flexible
+            PROJECT_DIR=""
+            if [ -d "$HOME/wartungsplan-blessing" ]; then PROJECT_DIR="$HOME/wartungsplan-blessing";
+            elif [ -d "/root/wartungsplan-blessing" ]; then PROJECT_DIR="/root/wartungsplan-blessing";
+            elif [ -d "/var/www/wartungsplan-blessing" ]; then PROJECT_DIR="/var/www/wartungsplan-blessing";
+            fi
 
-            # 2. Sincronizar con la rama que activó el despliegue
+            if [ -z "$PROJECT_DIR" ]; then 
+              echo "ERROR: No se encontró la carpeta del proyecto en ninguna de las rutas conocidas."
+              ls -la $HOME
+              exit 1
+            fi
+
+            cd $PROJECT_DIR
+            echo "Trabajando en: $(pwd)"
+
+            # 2. Sincronizar con GitHub (limpiando posibles conflictos locales)
             git fetch origin ${{ github.ref_name }}
             git reset --hard origin/${{ github.ref_name }}
+            git clean -fd
 
-            # 3. Reiniciar los contenedores para aplicar cambios
-            docker-compose restart || docker restart $(docker ps -q --filter name=wartungsplan)
+            # 3. Reiniciar el servicio
+            # Intentamos docker-compose primero, luego reinicio por nombre
+            docker-compose restart || docker restart $(docker ps -q --filter name=wartungsplan) || echo "Aviso: No se pudo reiniciar el contenedor, pero el código se actualizó."
