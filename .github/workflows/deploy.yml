@@ -12,7 +12,7 @@ jobs:
       - name: 1. Descargar Código
         uses: actions/checkout@v4
 
-      - name: 2. Configurar Node.js (Vite/Tailwind 4)
+      - name: 2. Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -23,11 +23,12 @@ jobs:
           npm install
           npm run build
 
-      - name: 4. Empaquetar para Despliegue Rápido (Tar)
+      - name: 4. Empaquetar TODO (Tar)
         run: |
+          # Empaquetamos la raíz y la carpeta dist explícitamente
           tar -czf deploy.tar.gz dist standalone-server.cjs package*.json Dockerfile docker-compose.yml
 
-      - name: 5. Subir Paquete (SCP Único)
+      - name: 5. Subir Paquete (SCP)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
@@ -35,33 +36,55 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           source: "deploy.tar.gz"
           target: "~/"
-          strip_components: 0
 
-      - name: 6. Descomprimir y Reiniciar (Producción)
+      - name: 6. Sincronización Detallada y Reinicio
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            # Detección inteligente de ruta activa
+            echo "--- BUSCANDO RUTA ACTIVA ---"
             REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
             if [ -z "$REAL_PATH" ]; then
                 REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
             fi
-            [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
             
+            # Si no detectamos nada, usamos la ruta que parece segura por tus logs
+            if [ -z "$REAL_PATH" ]; then
+                [ -d "/root/interstellar-nebula" ] && REAL_PATH="/root/interstellar-nebula"
+                [ -d "/var/www/interstellar-nebula" ] && REAL_PATH="/var/www/interstellar-nebula"
+                [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
+            fi
+            
+            echo "RUTA DETECTADA: $REAL_PATH"
             mkdir -p $REAL_PATH
             
-            # Descomprimir directamente en la ruta (Ultra rápido)
-            tar -xzf ~/deploy.tar.gz -C $REAL_PATH
+            echo "--- LIMPIANDO E INSTALANDO ---"
+            # Nos aseguramos de descompresión limpia: borramos dist viejo antes
+            rm -rf $REAL_PATH/dist
+            tar -xzf ~/deploy.tar.gz -C $REAL_PATH/
             rm ~/deploy.tar.gz
             
+            echo "--- VERIFICACIÓN DE ARCHIVOS (IMPRESCINDIBLE) ---"
             cd $REAL_PATH
+            ls -la
+            if [ -d "dist" ]; then
+                echo "Carpeta dist encontrada. Contenido:"
+                ls -la dist | head -n 5
+            else
+                echo "ERROR CRÍTICO: Carpeta dist NO encontrada en $REAL_PATH"
+                exit 1
+            fi
             
-            # Docker Compose detect & Up
+            # Docker Compose detect
             DOCKER_CMD="docker compose"
             if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
-            $DOCKER_CMD up -d --build --force-recreate
-            echo "Despliegue comprimido finalizado con éxito."
+            echo "--- RECONSTRUCCIÓN FORZADA SIN CACHE ---"
+            $DOCKER_CMD build --no-cache
+            $DOCKER_CMD up -d --force-recreate
+            
+            echo "--- ESTADO FINAL ---"
+            docker ps | grep wartungsplan
+            echo "Despliegue de rescate completado."
