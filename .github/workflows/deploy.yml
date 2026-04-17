@@ -36,43 +36,44 @@ jobs:
           source: "deploy.tar.gz"
           target: "~/"
 
-      - name: 6. Sincronización Detallada y Reinicio
+      - name: 6. Sincronización Detallada y Diagnóstico Final
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            # No usamos 'set -e' aquí para poder ver las redes aunque falle
+            echo "--- PANORAMA COMPLETO DE CONTENEDORES ---"
+            docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
             
-            echo "--- BUSCANDO RUTA ACTIVA ---"
-            REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
-            if [ -z "$REAL_PATH" ]; then
-                REAL_PATH=$(docker inspect wartungsplan --format '{{ range .Mounts }}{{ if eq .Destination "/app/Journal" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null | xargs dirname)
+            echo "--- BUSCANDO RED DE TRAEFIK ---"
+            TRAEFIK_NAME=$(docker ps --format '{{.Names}}' | grep traefik | head -n 1)
+            if [ -n "$TRAEFIK_NAME" ]; then
+                echo "Traefik encontrado: $TRAEFIK_NAME"
+                echo "Redes de Traefik:"
+                docker inspect $TRAEFIK_NAME --format '{{range $net, $conf := .NetworkSettings.Networks}}{{$net}}{{println}}{{end}}'
+            else
+                echo "AVISO: No se encuentra ningún contenedor con el nombre 'traefik'."
             fi
-            [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
             
-            echo "RUTA DETECTADA: $REAL_PATH"
-            mkdir -p $REAL_PATH
-            
-            echo "--- DIAGNÓSTICO DE REDES ---"
+            echo "--- LISTADO DE REDES (Repaso) ---"
             docker network ls
             
-            echo "--- INSTALACIÓN LIMPIA ---"
-            rm -rf $REAL_PATH/dist
-            tar -xzf ~/deploy.tar.gz -C $REAL_PATH/
-            rm ~/deploy.tar.gz
+            echo "--- INTENTO DE ARRANQUE (Fallback a modo básico) ---"
+            # Buscamos la ruta
+            REAL_PATH=$(docker inspect wartungsplan --format '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' 2>/dev/null)
+            [ -z "$REAL_PATH" ] && REAL_PATH="$HOME/interstellar-nebula"
             
             cd $REAL_PATH
+            rm -rf dist
+            tar -xzf ~/deploy.tar.gz -C ./
             
             # Docker Compose detect
             DOCKER_CMD="docker compose"
             if ! docker compose version &> /dev/null; then DOCKER_CMD="docker-compose"; fi
             
-            echo "--- INTENTO DE ARRANQUE ---"
-            # Si falla por la red, seguiremos viendo los logs del diagnóstico arriba
+            # Intentamos arrancar sin red externa por si acaso es el bloqueo
+            # Primero quitamos la red externa del archivo temporalmente si es necesario
+            # Pero mejor solo probamos el UP normal y leemos el error
             $DOCKER_CMD build --no-cache
-            $DOCKER_CMD up -d --force-recreate || echo "FALLO EN EL UP: Probablemente la red no existe."
-            
-            echo "Estado Final:"
-            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}" | grep wartungsplan || echo "Contenedor no arrancado."
+            $DOCKER_CMD up -d --force-recreate || echo "El arranque sigue fallando por la red."
